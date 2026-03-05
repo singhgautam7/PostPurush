@@ -1,5 +1,13 @@
 import { KeyValuePair } from "@/types/request";
 
+function safeDecodeURIComponent(str: string) {
+    try {
+        return decodeURIComponent(str);
+    } catch {
+        return str;
+    }
+}
+
 export function extractQueryParams(urlStr: string): KeyValuePair[] {
     const queryIndex = urlStr.indexOf("?");
     if (queryIndex === -1) return [{ key: "", value: "" }];
@@ -12,8 +20,8 @@ export function extractQueryParams(urlStr: string): KeyValuePair[] {
         const [key, ...valueParts] = param.split("=");
         const value = valueParts.join("=");
         params.push({
-            key: decodeURIComponent(key || ""),
-            value: decodeURIComponent(value || ""),
+            key: safeDecodeURIComponent(key || ""),
+            value: safeDecodeURIComponent(value || ""),
         });
     }
 
