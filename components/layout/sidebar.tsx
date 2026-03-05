@@ -4,36 +4,37 @@ import { useEffect, useState } from "react";
 import { useRequestStore } from "@/store/request-store";
 import { useEnvironmentStore } from "@/store/environment-store";
 import { useResponseStore } from "@/store/response-store";
-import { loadRequests, loadEnvironment } from "@/lib/storage/storage-helpers";
-import { RequestList } from "@/components/request-list/request-list";
+import { loadRequests, loadEnvironment, loadFolders } from "@/lib/storage/storage-helpers";
+import { TreeView } from "@/components/sidebar/tree-view";
 import { EnvironmentManager } from "@/components/environment/environment-manager";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Input } from "@/components/ui/input";
+import { SidebarContextMenu } from "@/components/sidebar/sidebar-context-menu";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Plus, Settings, Zap } from "lucide-react";
 
 export function Sidebar() {
-  const resetRequest = useRequestStore((s) => s.resetRequest);
   const setSavedRequests = useRequestStore((s) => s.setSavedRequests);
+  const setFolders = useRequestStore((s) => s.setFolders);
   const setVariables = useEnvironmentStore((s) => s.setVariables);
-  const clearResponse = useResponseStore((s) => s.clearResponse);
   const activeRequest = useRequestStore((s) => s.activeRequest);
   const setName = useRequestStore((s) => s.setName);
   const [envOpen, setEnvOpen] = useState(false);
 
   useEffect(() => {
     const init = async () => {
+      const folders = await loadFolders();
+      setFolders(folders);
       const requests = await loadRequests();
       setSavedRequests(requests);
       const vars = await loadEnvironment();
       setVariables(vars);
     };
     init();
-  }, [setSavedRequests, setVariables]);
+  }, [setSavedRequests, setFolders, setVariables]);
 
   const handleNewRequest = () => {
-    resetRequest();
-    clearResponse();
+    window.dispatchEvent(new CustomEvent("trigger-new-request", { detail: "root" }));
   };
 
   return (
@@ -48,44 +49,43 @@ export function Sidebar() {
             <h1 className="text-base font-bold tracking-tight">PostPurush</h1>
           </div>
 
-          {/* Request Name */}
-          <Input
-            value={activeRequest.name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Request name"
-            className="h-8 mb-3 bg-muted/30 border-border/30 text-sm"
-          />
-
           <div className="flex gap-2">
-            <Button
-              onClick={handleNewRequest}
-              className="flex-1 h-8 gap-1.5 text-xs bg-gradient-to-r from-indigo-500 to-blue-600 text-white hover:from-indigo-600 hover:to-blue-700 shadow-sm shadow-indigo-500/20"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              New Request
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setEnvOpen(true)}
-              className="h-8 w-8 border-border/50"
-            >
-              <Settings className="h-3.5 w-3.5" />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={handleNewRequest}
+                  className="flex-1 h-8 gap-1.5 text-xs bg-gradient-to-r from-indigo-500 to-blue-600 text-white hover:from-indigo-600 hover:to-blue-700 shadow-sm shadow-indigo-500/20"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  New Request
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Create a new request tab</TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setEnvOpen(true)}
+                  className="h-8 w-8 border-border/50"
+                >
+                  <Settings className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Manage Environments</TooltipContent>
+            </Tooltip>
           </div>
         </div>
 
         <Separator className="opacity-50" />
 
-        {/* Saved Requests */}
-        <div className="flex-1 overflow-hidden py-2">
-          <div className="px-4 pb-2">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-              Saved Requests
-            </p>
+        <SidebarContextMenu>
+          <div className="flex-1 overflow-hidden py-2 h-full w-full">
+            <TreeView />
           </div>
-          <RequestList />
-        </div>
+        </SidebarContextMenu>
       </div>
 
       <EnvironmentManager open={envOpen} onOpenChange={setEnvOpen} />

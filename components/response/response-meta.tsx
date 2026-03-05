@@ -40,8 +40,28 @@ export function ResponseMeta() {
     );
   }
 
+  const getContentType = () => {
+    if (!response.headers) return null;
+    const contentTypeKey = Object.keys(response.headers).find(
+      (k) => k.toLowerCase() === "content-type"
+    );
+    if (!contentTypeKey) return null;
+
+    const value = response.headers[contentTypeKey];
+    if (value.includes("application/json")) return "JSON";
+    if (value.includes("text/html")) return "HTML";
+    if (value.includes("text/plain")) return "Text";
+    if (value.includes("multipart/form-data")) return "Multipart";
+    if (value.includes("application/xml") || value.includes("text/xml")) return "XML";
+
+    // Return the first part of the mime type
+    return value.split(";")[0];
+  };
+
+  const contentTypeBadge = getContentType();
+
   return (
-    <div className="flex items-center gap-2 px-4 py-2">
+    <div className="flex flex-wrap items-center gap-2 px-4 py-2">
       <Badge
         variant="outline"
         className={cn("font-mono", getStatusColor(response.status))}
@@ -54,6 +74,11 @@ export function ResponseMeta() {
       <Badge variant="outline" className="font-mono text-xs text-muted-foreground border-border/50">
         {formatBytes(response.size)}
       </Badge>
+      {contentTypeBadge && (
+        <Badge variant="outline" className="font-mono text-xs text-blue-400 border-blue-500/30 bg-blue-500/10">
+          {contentTypeBadge}
+        </Badge>
+      )}
     </div>
   );
 }

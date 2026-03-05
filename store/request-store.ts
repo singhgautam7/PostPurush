@@ -1,31 +1,42 @@
 import { create } from "zustand";
-import { HttpMethod, KeyValuePair, RequestBody, SavedRequest } from "@/types/request";
+import { HttpMethod, KeyValuePair, RequestBody, SavedRequest, Folder } from "@/types/request";
+import { extractQueryParams, applyQueryParamsToUrl } from "@/lib/request/sync-query";
 
 interface RequestState {
     activeRequest: SavedRequest;
     savedRequests: SavedRequest[];
+    folders: Folder[];
     setMethod: (method: HttpMethod) => void;
     setUrl: (url: string) => void;
     setName: (name: string) => void;
     setParams: (params: KeyValuePair[]) => void;
     setHeaders: (headers: KeyValuePair[]) => void;
     setBody: (body: RequestBody) => void;
+    updateActiveRequest: (updates: Partial<SavedRequest>) => void;
     loadRequest: (request: SavedRequest) => void;
     resetRequest: () => void;
     setSavedRequests: (requests: SavedRequest[]) => void;
     addSavedRequest: (request: SavedRequest) => void;
     updateSavedRequest: (request: SavedRequest) => void;
     removeSavedRequest: (id: string) => void;
+    setFolders: (folders: Folder[]) => void;
+    addFolder: (folder: Folder) => void;
+    updateFolder: (folder: Folder) => void;
+    removeFolder: (id: string) => void;
+    isDirty: boolean;
+    setDirty: (dirty: boolean) => void;
 }
 
 const createDefaultRequest = (): SavedRequest => ({
     id: crypto.randomUUID(),
     name: "Untitled Request",
+    description: "",
     method: "GET",
     url: "",
     params: [{ key: "", value: "" }],
     headers: [{ key: "", value: "" }],
-    body: { type: "json", content: "" },
+    body: { type: "json", content: "", formData: [{ key: "", value: "" }] },
+    parentId: undefined,
     createdAt: Date.now(),
     updatedAt: Date.now(),
 });
@@ -33,42 +44,68 @@ const createDefaultRequest = (): SavedRequest => ({
 export const useRequestStore = create<RequestState>((set) => ({
     activeRequest: createDefaultRequest(),
     savedRequests: [],
+    isDirty: false,
+
+    setDirty: (dirty) => set({ isDirty: dirty }),
 
     setMethod: (method) =>
         set((state) => ({
             activeRequest: { ...state.activeRequest, method, updatedAt: Date.now() },
+            isDirty: true,
         })),
 
     setUrl: (url) =>
+        set((state) => {
+            const params = extractQueryParams(url);
+            return {
+                activeRequest: { ...state.activeRequest, url, params, updatedAt: Date.now() },
+                isDirty: true,
+            };
+        }),
+
+    updateActiveRequest: (updates) => {
         set((state) => ({
-            activeRequest: { ...state.activeRequest, url, updatedAt: Date.now() },
-        })),
+            activeRequest: {
+                ...state.activeRequest,
+                ...updates,
+                updatedAt: Date.now(),
+            },
+            isDirty: true,
+        }));
+    },
 
     setName: (name) =>
         set((state) => ({
             activeRequest: { ...state.activeRequest, name, updatedAt: Date.now() },
+            isDirty: true,
         })),
 
     setParams: (params) =>
-        set((state) => ({
-            activeRequest: { ...state.activeRequest, params, updatedAt: Date.now() },
-        })),
+        set((state) => {
+            const url = applyQueryParamsToUrl(state.activeRequest.url, params);
+            return {
+                activeRequest: { ...state.activeRequest, params, url, updatedAt: Date.now() },
+                isDirty: true,
+            };
+        }),
 
     setHeaders: (headers) =>
         set((state) => ({
             activeRequest: { ...state.activeRequest, headers, updatedAt: Date.now() },
+            isDirty: true,
         })),
 
     setBody: (body) =>
         set((state) => ({
             activeRequest: { ...state.activeRequest, body, updatedAt: Date.now() },
+            isDirty: true,
         })),
 
     loadRequest: (request) =>
-        set({ activeRequest: { ...request } }),
+        set({ activeRequest: { ...request }, isDirty: false }),
 
     resetRequest: () =>
-        set({ activeRequest: createDefaultRequest() }),
+        set({ activeRequest: createDefaultRequest(), isDirty: false }),
 
     setSavedRequests: (requests) =>
         set({ savedRequests: requests }),
@@ -88,5 +125,27 @@ export const useRequestStore = create<RequestState>((set) => ({
     removeSavedRequest: (id) =>
         set((state) => ({
             savedRequests: state.savedRequests.filter((r) => r.id !== id),
+        })),
+
+    folders: [],
+
+    setFolders: (folders) =>
+        set({ folders }),
+
+    addFolder: (folder) =>
+        set((state) => ({
+            folders: [folder, ...state.folders],
+        })),
+
+    updateFolder: (folder) =>
+        set((state) => ({
+            folders: state.folders.map((f) =>
+                f.id === folder.id ? folder : f
+            ),
+        })),
+
+    removeFolder: (id) =>
+        set((state) => ({
+            folders: state.folders.filter((f) => f.id !== id),
         })),
 }));

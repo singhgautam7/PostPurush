@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { detectResponseType } from "@/lib/utils/detect-response-type";
+import { CodeViewer } from "@/components/code/code-viewer";
 
 export function BodyView() {
   const response = useResponseStore((s) => s.response);
@@ -17,7 +19,7 @@ export function BodyView() {
 
   if (response.error) {
     return (
-      <div className="p-4">
+      <div className="p-4 flex-1 overflow-y-auto">
         <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-4">
           <p className="text-sm text-red-400">{response.error}</p>
         </div>
@@ -32,11 +34,22 @@ export function BodyView() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const responseType = detectResponseType(response.headers);
+  let jsonParsed: object | null = null;
+
+  if (viewMode === "pretty" && responseType === "json") {
+    try {
+      jsonParsed = JSON.parse(response.raw);
+    } catch {
+      // Not valid JSON
+    }
+  }
+
   const displayBody = viewMode === "pretty" ? response.body : response.raw;
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-border/30">
+    <div className="flex flex-col h-full bg-background relative overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-border/30 shrink-0 bg-background z-10">
         <div className="flex items-center gap-1">
           {(["pretty", "raw"] as const).map((mode) => (
             <Badge
@@ -68,11 +81,34 @@ export function BodyView() {
           {copied ? "Copied" : "Copy"}
         </Button>
       </div>
-      <ScrollArea className="flex-1">
-        <pre className="p-4 text-sm font-mono leading-relaxed whitespace-pre-wrap break-all text-foreground/90">
-          {displayBody || <span className="text-muted-foreground italic">Empty response</span>}
-        </pre>
-      </ScrollArea>
+
+      <div className="flex-1 overflow-hidden relative">
+        <div className="absolute inset-0 max-h-[90vh] overflow-auto w-full">
+          {!displayBody ? (
+            <div className="p-4">
+              <span className="text-muted-foreground italic text-sm">Empty response</span>
+            </div>
+          ) : viewMode === "pretty" && responseType === "json" ? (
+            <div className="min-w-max h-full">
+              <CodeViewer
+                code={jsonParsed ? JSON.stringify(jsonParsed, null, 2) : displayBody}
+                language="json"
+                className="h-full border-none rounded-none"
+              />
+            </div>
+          ) : viewMode === "pretty" && responseType === "html" ? (
+            <div className="min-w-max h-full">
+              <CodeViewer code={displayBody} language="html" className="h-full border-none rounded-none" />
+            </div>
+          ) : (
+            <div className="p-4 font-mono text-sm leading-relaxed text-foreground/90 min-w-max">
+              <pre className="whitespace-pre font-mono">
+                {displayBody}
+              </pre>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -15,8 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Copy, Check } from "lucide-react";
+import { CodeViewer } from "@/components/code/code-viewer";
 import { cn } from "@/lib/utils";
 
 interface CodeExportModalProps {
@@ -42,9 +41,11 @@ export function CodeExportModal({ open, onOpenChange }: CodeExportModalProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const syntaxLang = language === "curl" ? "bash" : language;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[680px] bg-card border-border/50">
+      <DialogContent className="sm:max-w-[800px] bg-card border-border/50">
         <DialogHeader>
           <DialogTitle className="text-lg">Export Code</DialogTitle>
         </DialogHeader>
@@ -69,26 +70,7 @@ export function CodeExportModal({ open, onOpenChange }: CodeExportModalProps) {
               </Badge>
             ))}
           </div>
-          <div className="relative">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute top-2 right-2 h-7 gap-1 text-xs text-muted-foreground z-10"
-              onClick={handleCopy}
-            >
-              {copied ? (
-                <Check className="h-3 w-3 text-emerald-400" />
-              ) : (
-                <Copy className="h-3 w-3" />
-              )}
-              {copied ? "Copied" : "Copy"}
-            </Button>
-            <ScrollArea className="h-[350px] rounded-lg border border-border/30 bg-muted/30">
-              <pre className="p-4 text-sm font-mono leading-relaxed whitespace-pre-wrap">
-                {code}
-              </pre>
-            </ScrollArea>
-          </div>
+          <CodeViewer code={code} language={syntaxLang} className="h-[400px]" />
         </div>
       </DialogContent>
     </Dialog>

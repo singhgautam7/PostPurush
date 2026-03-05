@@ -5,6 +5,7 @@ import { BodyType } from "@/types/request";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { BodyKeyValue } from "./body-keyvalue";
 
 export function BodyTab() {
   const body = useRequestStore((s) => s.activeRequest.body);
@@ -21,12 +22,13 @@ export function BodyTab() {
 
   const bodyTypes: { value: BodyType; label: string }[] = [
     { value: "json", label: "JSON" },
+    { value: "form", label: "Form Data" },
     { value: "raw", label: "Raw" },
   ];
 
   return (
-    <div className="p-4 space-y-3">
-      <div className="flex items-center gap-2">
+    <div className="p-4 space-y-3 flex flex-col h-full">
+      <div className="flex items-center gap-2 shrink-0">
         {bodyTypes.map((bt) => (
           <Badge
             key={bt.value}
@@ -43,16 +45,23 @@ export function BodyTab() {
           </Badge>
         ))}
       </div>
-      <Textarea
-        value={body.content}
-        onChange={(e) => setBody({ ...body, content: e.target.value })}
-        placeholder={
-          body.type === "json"
-            ? '{\n  "key": "value"\n}'
-            : "Enter request body..."
-        }
-        className="min-h-[200px] bg-muted/30 border-border/30 font-mono text-sm resize-none"
-      />
+
+      <div className="flex-1 overflow-y-auto min-h-0">
+        {body.type === "form" ? (
+          <BodyKeyValue />
+        ) : (
+          <Textarea
+            value={body.content}
+            onChange={(e) => setBody({ ...body, content: e.target.value })}
+            placeholder={
+              body.type === "json"
+                ? '{\n  "key": "value"\n}'
+                : "Enter request body..."
+            }
+            className="min-h-[200px] h-full bg-muted/30 border-border/30 font-mono text-sm resize-none"
+          />
+        )}
+      </div>
     </div>
   );
 }

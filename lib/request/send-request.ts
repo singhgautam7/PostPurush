@@ -48,19 +48,32 @@ export async function sendRequest(
     }
 
     // Build body
-    let body: string | undefined;
-    if (request.method !== "GET" && request.body.content) {
-        body = replaceVariables(request.body.content, variables);
+    let body: any = undefined;
+    if (request.method !== "GET") {
+        if (request.body.type === "form") {
+            const formData = new URLSearchParams();
+            for (const item of request.body.formData || []) {
+                if (item.key && (item.enabled === undefined || item.enabled)) {
+                    formData.append(
+                        replaceVariables(item.key, variables),
+                        replaceVariables(item.value, variables)
+                    );
+                }
+            }
+            body = formData;
+        } else if (request.body.content) {
+            body = replaceVariables(request.body.content, variables);
 
-        if (request.body.type === "json" && !headers["Content-Type"]) {
-            headers["Content-Type"] = "application/json";
+            if (request.body.type === "json" && !headers["Content-Type"]) {
+                headers["Content-Type"] = "application/json";
+            }
         }
     }
 
     // Validate JSON body
     if (request.body.type === "json" && body) {
         try {
-            JSON.parse(body);
+            JSON.parse(body as string);
         } catch {
             return {
                 status: 0,

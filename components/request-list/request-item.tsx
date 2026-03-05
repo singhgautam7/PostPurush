@@ -3,7 +3,9 @@
 import { SavedRequest } from "@/types/request";
 import { useRequestStore } from "@/store/request-store";
 import { useResponseStore } from "@/store/response-store";
+import { useTabStore } from "@/store/tab-store";
 import { deleteRequest } from "@/lib/storage/storage-helpers";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -25,10 +27,12 @@ export function RequestItem({ request }: RequestItemProps) {
   const loadRequest = useRequestStore((s) => s.loadRequest);
   const removeSavedRequest = useRequestStore((s) => s.removeSavedRequest);
   const clearResponse = useResponseStore((s) => s.clearResponse);
+  const openTab = useTabStore((s) => s.openTab);
 
   const isActive = activeRequest.id === request.id;
 
   const handleSelect = () => {
+    openTab(request.id, request.name);
     loadRequest(request);
     clearResponse();
   };
@@ -63,14 +67,22 @@ export function RequestItem({ request }: RequestItemProps) {
           {request.url || "No URL"}
         </p>
       </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={handleDelete}
-        className="h-6 w-6 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-      >
-        <Trash2 className="h-3 w-3" />
-      </Button>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div onClick={(e) => e.stopPropagation()}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleDelete}
+              className="h-6 w-6 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+            >
+              <Trash2 className="h-3 w-3" />
+            </Button>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>Delete Request</TooltipContent>
+      </Tooltip>
     </button>
   );
 }
