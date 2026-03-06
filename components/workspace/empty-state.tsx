@@ -14,27 +14,27 @@ export function EmptyState() {
 
   return (
     <div className="flex flex-col items-center justify-center h-full w-full max-w-md mx-auto text-center space-y-6">
-      <div className="h-20 w-20 bg-indigo-500/10 rounded-full flex items-center justify-center mb-2 shadow-inner shadow-indigo-500/20">
-        <Rocket className="h-10 w-10 text-indigo-500" />
+      <div className="w-12 h-12 rounded-full bg-zinc-800/60 flex items-center justify-center">
+        <Rocket className="h-6 w-6 text-zinc-500" />
       </div>
       <div>
-        <h2 className="text-2xl font-semibold tracking-tight mb-2 text-foreground">
+        <h2 className="text-base font-semibold tracking-tight mb-2 text-zinc-100">
           Start building requests
         </h2>
-        <p className="text-sm text-muted-foreground/80">
+        <p className="text-sm text-zinc-500">
           Create a new request or organize your API calls in folders.
         </p>
       </div>
 
-      <div className="flex gap-4 pt-4">
+      <div className="flex gap-3 pt-2">
         <Button
           onClick={handleNewRequest}
-          className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white hover:from-indigo-600 hover:to-blue-700 shadow-md shadow-indigo-500/20 px-6"
+          className="bg-white text-zinc-900 hover:bg-zinc-100 font-medium px-6 shadow-none"
         >
           <Plus className="mr-2 h-4 w-4" />
           New Request
         </Button>
-        <Button onClick={handleNewFolder} variant="outline" className="px-6 border-border/50">
+        <Button onClick={handleNewFolder} variant="outline" className="px-6 bg-zinc-900 border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100">
           <FolderPlus className="mr-2 h-4 w-4" />
           New Folder
         </Button>

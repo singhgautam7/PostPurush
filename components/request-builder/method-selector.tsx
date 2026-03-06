@@ -12,9 +12,9 @@ import {
 
 const methods: { value: HttpMethod; color: string }[] = [
   { value: "GET", color: "text-emerald-400" },
-  { value: "POST", color: "text-amber-400" },
-  { value: "PUT", color: "text-blue-400" },
-  { value: "PATCH", color: "text-purple-400" },
+  { value: "POST", color: "text-blue-400" },
+  { value: "PUT", color: "text-amber-400" },
+  { value: "PATCH", color: "text-violet-400" },
   { value: "DELETE", color: "text-red-400" },
 ];
 
@@ -26,7 +26,7 @@ export function MethodSelector() {
 
   return (
     <Select value={method} onValueChange={(v) => setMethod(v as HttpMethod)}>
-      <SelectTrigger className="w-[100px] h-10 border-border/50 bg-muted/50 font-mono font-semibold text-sm">
+      <SelectTrigger className="w-[100px] h-10 bg-zinc-900 border-zinc-700 font-mono font-semibold text-sm rounded-lg">
         <SelectValue>
           <span className={currentMethod?.color}>{method}</span>
         </SelectValue>

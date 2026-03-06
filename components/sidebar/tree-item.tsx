@@ -21,9 +21,9 @@ import { useDraggable, useDroppable } from "@dnd-kit/core";
 
 const methodColors: Record<string, string> = {
   GET: "text-emerald-400",
-  POST: "text-amber-400",
-  PUT: "text-blue-400",
-  PATCH: "text-purple-400",
+  POST: "text-blue-400",
+  PUT: "text-amber-400",
+  PATCH: "text-violet-400",
   DELETE: "text-red-400",
 };
 
@@ -118,9 +118,9 @@ export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequ
           style={{ paddingLeft: `${depth * 12 + 8}px` }}
           className={cn(
             "group flex items-center h-7 cursor-pointer hover:bg-muted/50 rounded-sm text-sm transition-colors pe-2 select-none",
-            isActive && "bg-indigo-500/10 text-indigo-500 hover:bg-indigo-500/15",
+            isActive && "bg-zinc-800 text-zinc-100 hover:bg-zinc-800",
             isDragging && "opacity-50",
-            isOver && "bg-indigo-500/20 ring-1 ring-inset ring-indigo-500/50"
+            isOver && "bg-zinc-800/60 ring-1 ring-inset ring-zinc-600"
           )}
         >
           {/* Caret for folders */}
@@ -135,7 +135,7 @@ export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequ
           {/* Icon */}
           <div className="w-5 flex items-center justify-center shrink-0 me-1">
             {item.type === "folder" ? (
-              isOpen ? <FolderOpen className="h-4 w-4 text-indigo-400" /> : <FolderIcon className="h-4 w-4 text-indigo-400" />
+              isOpen ? <FolderOpen className="h-4 w-4 text-zinc-400" /> : <FolderIcon className="h-4 w-4 text-zinc-400" />
             ) : (
               <span className={cn("text-[9px] font-mono font-bold", item.request ? methodColors[item.request.method] : "")}>
                 {item.request?.method.substring(0, 3)}
@@ -155,11 +155,11 @@ export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequ
                   if (e.key === "Escape") { setIsEditing(false); setEditName(item.name); }
                 }}
                 autoFocus
-                className="h-6 text-xs px-1.5 py-0 bg-background border-indigo-500"
+                className="h-6 text-xs px-1.5 py-0 bg-zinc-900 border-zinc-600"
                 onClick={(e) => e.stopPropagation()}
               />
             ) : (
-              <span className={cn("truncate block", isActive && "text-indigo-400 font-medium")}>{item.name}</span>
+              <span className={cn("truncate block", isActive && "text-zinc-100 font-medium")}>{item.name}</span>
             )}
           </div>
 

@@ -246,7 +246,7 @@ export function TreeView() {
       </div>
       <DragOverlay dropAnimation={{ duration: 200, easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)' }}>
         {activeId ? (
-          <div className="px-2 py-1 text-xs bg-indigo-500/20 text-indigo-400 border border-indigo-500/50 rounded shadow-md backdrop-blur-sm truncate max-w-[200px]">
+          <div className="px-2 py-1 text-xs bg-zinc-800 text-zinc-300 border border-zinc-700 rounded shadow-md backdrop-blur-sm truncate max-w-[200px]">
             Moving item...
           </div>
         ) : null}

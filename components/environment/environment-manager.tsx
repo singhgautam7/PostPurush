@@ -43,7 +43,7 @@ export function EnvironmentManager({ open, onOpenChange }: EnvironmentManagerPro
         <div className="space-y-3">
           <p className="text-xs text-muted-foreground">
             Variables can be used in URLs, headers, and body using{" "}
-            <code className="bg-muted/50 px-1 py-0.5 rounded text-indigo-400">
+            <code className="bg-zinc-800 px-1 py-0.5 rounded text-blue-400">
               {"{{variable_name}}"}
             </code>{" "}
             syntax.
@@ -100,7 +100,7 @@ export function EnvironmentManager({ open, onOpenChange }: EnvironmentManagerPro
               size="sm"
               onClick={handleSave}
               disabled={saving}
-              className="h-7 gap-1 bg-gradient-to-r from-indigo-500 to-blue-600 text-white hover:from-indigo-600 hover:to-blue-700"
+              className="h-7 gap-1 bg-white text-zinc-900 hover:bg-zinc-100 font-medium"
             >
               <Save className="h-3 w-3" />
               {saving ? "Saving..." : "Save"}

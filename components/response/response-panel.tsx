@@ -12,8 +12,8 @@ export function ResponsePanel() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground">
-        <Loader2 className="h-6 w-6 animate-spin text-indigo-400" />
+      <div className="flex flex-col items-center justify-center h-full gap-3 text-zinc-500">
+        <Loader2 className="h-6 w-6 animate-spin text-zinc-400" />
         <p className="text-sm">Sending request...</p>
       </div>
     );
@@ -21,13 +21,13 @@ export function ResponsePanel() {
 
   if (!response) {
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground">
-        <div className="rounded-full bg-muted/50 p-4">
-          <ArrowDownRight className="h-6 w-6 text-muted-foreground/50" />
+      <div className="flex flex-col items-center justify-center h-full gap-3 text-zinc-600">
+        <div className="w-12 h-12 rounded-full bg-zinc-800/60 flex items-center justify-center">
+          <ArrowDownRight className="h-6 w-6 text-zinc-600" />
         </div>
         <div className="text-center">
-          <p className="text-sm font-medium">No response yet</p>
-          <p className="text-xs text-muted-foreground/70 mt-1">
+          <p className="text-sm font-medium text-zinc-500">No response yet</p>
+          <p className="text-xs text-zinc-600 mt-1">
             Send a request to see the response here
           </p>
         </div>

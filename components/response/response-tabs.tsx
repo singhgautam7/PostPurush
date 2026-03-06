@@ -1,43 +1,56 @@
 "use client";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BodyView } from "./body-view";
 import { HeadersView } from "./headers-view";
 import { useResponseStore } from "@/store/response-store";
-import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
+
+type TabValue = "body" | "headers";
 
 export function ResponseTabs() {
   const response = useResponseStore((s) => s.response);
+  const [activeTab, setActiveTab] = useState<TabValue>("body");
 
   const headerCount = response ? Object.keys(response.headers).length : 0;
 
+  const tabs: { value: TabValue; label: string; count?: number }[] = [
+    { value: "body", label: "Body" },
+    { value: "headers", label: "Headers", count: headerCount },
+  ];
+
   return (
-    <Tabs defaultValue="body" className="w-full h-full flex flex-col">
-      <TabsList className="w-full justify-start rounded-none border-b border-border/50 bg-transparent px-4 h-10 shrink-0">
-        <TabsTrigger
-          value="body"
-          className="relative rounded-none border-b-2 border-transparent px-4 pb-2 pt-2 font-medium text-muted-foreground transition-all data-[state=active]:border-indigo-500 data-[state=active]:text-foreground data-[state=active]:shadow-none"
-        >
-          Body
-        </TabsTrigger>
-        <TabsTrigger
-          value="headers"
-          className="relative rounded-none border-b-2 border-transparent px-4 pb-2 pt-2 font-medium text-muted-foreground transition-all data-[state=active]:border-indigo-500 data-[state=active]:text-foreground data-[state=active]:shadow-none"
-        >
-          Headers
-          {headerCount > 0 && (
-            <Badge variant="secondary" className="ml-1.5 h-4 px-1 text-[10px] bg-indigo-500/20 text-indigo-400">
-              {headerCount}
-            </Badge>
-          )}
-        </TabsTrigger>
-      </TabsList>
-      <TabsContent value="body" className="mt-0 flex-1 overflow-hidden">
-        <BodyView />
-      </TabsContent>
-      <TabsContent value="headers" className="mt-0 flex-1 overflow-hidden">
-        <HeadersView />
-      </TabsContent>
-    </Tabs>
+    <div className="w-full h-full flex flex-col">
+      {/* Level 1 — Pill/Segment toggle */}
+      <div className="px-4 py-2 shrink-0">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-1 inline-flex">
+          {tabs.map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setActiveTab(tab.value)}
+              className={cn(
+                "px-4 py-1.5 text-sm rounded-md transition-all flex items-center gap-1.5",
+                activeTab === tab.value
+                  ? "bg-zinc-700 text-zinc-100 font-medium"
+                  : "text-zinc-500 hover:text-zinc-300"
+              )}
+            >
+              {tab.label}
+              {tab.count !== undefined && tab.count > 0 && (
+                <span className="bg-zinc-600 text-zinc-300 text-xs rounded-full px-1.5 py-0.5 leading-none">
+                  {tab.count}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Tab content */}
+      <div className="flex-1 overflow-hidden">
+        {activeTab === "body" && <BodyView />}
+        {activeTab === "headers" && <HeadersView />}
+      </div>
+    </div>
   );
 }

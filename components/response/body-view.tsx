@@ -2,9 +2,7 @@
 
 import { useResponseStore } from "@/store/response-store";
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { detectResponseType } from "@/lib/utils/detect-response-type";
@@ -20,7 +18,7 @@ export function BodyView() {
   if (response.error) {
     return (
       <div className="p-4 flex-1 overflow-y-auto">
-        <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-4">
+        <div className="rounded-lg border border-red-800 bg-red-950 p-4">
           <p className="text-sm text-red-400">{response.error}</p>
         </div>
       </div>
@@ -48,29 +46,29 @@ export function BodyView() {
   const displayBody = viewMode === "pretty" ? response.body : response.raw;
 
   return (
-    <div className="flex flex-col h-full bg-background relative overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-border/30 shrink-0 bg-background z-10">
-        <div className="flex items-center gap-1">
+    <div className="flex flex-col h-full bg-zinc-950 relative overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800 shrink-0 bg-zinc-950 z-10">
+        {/* Level 2 — Underline tabs for Pretty/Raw */}
+        <div className="flex items-center gap-1 border-b border-transparent -mb-px">
           {(["pretty", "raw"] as const).map((mode) => (
-            <Badge
+            <button
               key={mode}
-              variant={viewMode === mode ? "default" : "outline"}
-              className={cn(
-                "cursor-pointer capitalize transition-all text-xs",
-                viewMode === mode
-                  ? "bg-indigo-500/20 text-indigo-400 border-indigo-500/30"
-                  : "hover:bg-muted/60"
-              )}
               onClick={() => setViewMode(mode)}
+              className={cn(
+                "px-3 py-1.5 text-xs font-medium capitalize transition-all border-b-2 -mb-px",
+                viewMode === mode
+                  ? "text-zinc-100 border-zinc-400"
+                  : "text-zinc-500 border-transparent hover:text-zinc-300"
+              )}
             >
               {mode}
-            </Badge>
+            </button>
           ))}
         </div>
         <Button
           variant="ghost"
           size="sm"
-          className="h-7 gap-1 text-xs text-muted-foreground"
+          className="h-7 gap-1 text-xs text-zinc-600 hover:text-zinc-300"
           onClick={handleCopy}
         >
           {copied ? (
@@ -86,7 +84,7 @@ export function BodyView() {
         <div className="absolute inset-0 max-h-[90vh] overflow-auto w-full">
           {!displayBody ? (
             <div className="p-4">
-              <span className="text-muted-foreground italic text-sm">Empty response</span>
+              <span className="text-zinc-600 italic text-sm">Empty response</span>
             </div>
           ) : viewMode === "pretty" && responseType === "json" ? (
             <div className="min-w-max h-full">
@@ -101,7 +99,7 @@ export function BodyView() {
               <CodeViewer code={displayBody} language="html" className="h-full border-none rounded-none" />
             </div>
           ) : (
-            <div className="p-4 font-mono text-sm leading-relaxed text-foreground/90 min-w-max">
+            <div className="p-4 font-mono text-sm leading-relaxed text-zinc-300 min-w-max">
               <pre className="whitespace-pre font-mono">
                 {displayBody}
               </pre>

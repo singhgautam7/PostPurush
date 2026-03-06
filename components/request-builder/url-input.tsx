@@ -147,8 +147,8 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
           onChange={(e) => setUrl(e.target.value)}
           onKeyDown={handleKeyDown}
           onInput={adjustHeight}
-          placeholder="Enter URL or paste text (e.g. https://api.example.com/endpoint)"
-          className="min-h-10 h-10 max-h-[72px] resize-none overflow-y-auto border-border/50 bg-muted/50 pr-4 font-mono text-sm leading-tight placeholder:text-muted-foreground/50 py-2.5"
+          placeholder="e.g. https://api.example.com/endpoint"
+          className="min-h-10 h-10 max-h-[72px] resize-none overflow-y-auto border-zinc-700 bg-zinc-900 pr-4 font-mono text-sm text-zinc-100 leading-tight placeholder:text-zinc-600 py-2.5 focus:ring-2 focus:ring-white/10 focus:border-zinc-500"
           style={{ height: activeRequest.url ? "auto" : "2.5rem" }}
         />
       </div>
@@ -158,7 +158,7 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
           <Button
             onClick={handleSend}
             disabled={loading || !activeRequest.url}
-            className="h-10 gap-2 bg-gradient-to-r from-indigo-500 to-blue-600 text-white hover:from-indigo-600 hover:to-blue-700 shadow-md shadow-indigo-500/20 transition-all duration-200"
+            className="h-10 gap-2 bg-white text-zinc-900 hover:bg-zinc-100 font-medium shadow-none transition-all duration-200"
           >
             <Send className="h-4 w-4" />
             {loading ? "Sending..." : "Send"}
@@ -175,7 +175,7 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
             disabled={saving || !activeRequest.url}
             variant="outline"
             size="icon"
-            className="h-10 w-10 border-border/50"
+            className="h-10 w-10 bg-zinc-900 border-zinc-700 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800"
           >
             <Save className="h-4 w-4" />
           </Button>
@@ -189,7 +189,7 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
             onClick={onCodeExport}
             variant="outline"
             size="icon"
-            className="h-10 w-10 border-border/50"
+            className="h-10 w-10 bg-zinc-900 border-zinc-700 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800"
           >
             <Code className="h-4 w-4" />
           </Button>

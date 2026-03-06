@@ -1,60 +1,61 @@
 "use client";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ParamsTab } from "./params-tab";
 import { HeadersTab } from "./headers-tab";
 import { BodyTab } from "./body-tab";
 import { useRequestStore } from "@/store/request-store";
-import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
+
+type TabValue = "params" | "headers" | "body";
 
 export function RequestTabs() {
   const params = useRequestStore((s) => s.activeRequest.params);
   const headers = useRequestStore((s) => s.activeRequest.headers);
+  const [activeTab, setActiveTab] = useState<TabValue>("params");
 
   const activeParamCount = params.filter((p) => p.key).length;
   const activeHeaderCount = headers.filter((h) => h.key).length;
 
+  const tabs: { value: TabValue; label: string; count?: number }[] = [
+    { value: "params", label: "Params", count: activeParamCount },
+    { value: "headers", label: "Headers", count: activeHeaderCount },
+    { value: "body", label: "Body" },
+  ];
+
   return (
-    <Tabs defaultValue="params" className="w-full">
-      <TabsList className="w-full justify-start rounded-none border-b border-border/50 bg-transparent px-4 h-10">
-        <TabsTrigger
-          value="params"
-          className="relative rounded-none border-b-2 border-transparent px-4 pb-2 pt-2 font-medium text-muted-foreground transition-all data-[state=active]:border-indigo-500 data-[state=active]:text-foreground data-[state=active]:shadow-none"
-        >
-          Params
-          {activeParamCount > 0 && (
-            <Badge variant="secondary" className="ml-1.5 h-4 px-1 text-[10px] bg-indigo-500/20 text-indigo-400">
-              {activeParamCount}
-            </Badge>
-          )}
-        </TabsTrigger>
-        <TabsTrigger
-          value="headers"
-          className="relative rounded-none border-b-2 border-transparent px-4 pb-2 pt-2 font-medium text-muted-foreground transition-all data-[state=active]:border-indigo-500 data-[state=active]:text-foreground data-[state=active]:shadow-none"
-        >
-          Headers
-          {activeHeaderCount > 0 && (
-            <Badge variant="secondary" className="ml-1.5 h-4 px-1 text-[10px] bg-indigo-500/20 text-indigo-400">
-              {activeHeaderCount}
-            </Badge>
-          )}
-        </TabsTrigger>
-        <TabsTrigger
-          value="body"
-          className="relative rounded-none border-b-2 border-transparent px-4 pb-2 pt-2 font-medium text-muted-foreground transition-all data-[state=active]:border-indigo-500 data-[state=active]:text-foreground data-[state=active]:shadow-none"
-        >
-          Body
-        </TabsTrigger>
-      </TabsList>
-      <TabsContent value="params" className="mt-0">
-        <ParamsTab />
-      </TabsContent>
-      <TabsContent value="headers" className="mt-0">
-        <HeadersTab />
-      </TabsContent>
-      <TabsContent value="body" className="mt-0">
-        <BodyTab />
-      </TabsContent>
-    </Tabs>
+    <div className="w-full flex flex-col h-full">
+      {/* Level 1 — Pill/Segment toggle */}
+      <div className="px-4 py-2">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-1 inline-flex">
+          {tabs.map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setActiveTab(tab.value)}
+              className={cn(
+                "px-4 py-1.5 text-sm rounded-md transition-all flex items-center gap-1.5",
+                activeTab === tab.value
+                  ? "bg-zinc-700 text-zinc-100 font-medium"
+                  : "text-zinc-500 hover:text-zinc-300"
+              )}
+            >
+              {tab.label}
+              {tab.count !== undefined && tab.count > 0 && (
+                <span className="bg-zinc-600 text-zinc-300 text-xs rounded-full px-1.5 py-0.5 leading-none">
+                  {tab.count}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Tab content */}
+      <div className="flex-1 overflow-hidden">
+        {activeTab === "params" && <ParamsTab />}
+        {activeTab === "headers" && <HeadersTab />}
+        {activeTab === "body" && <BodyTab />}
+      </div>
+    </div>
   );
 }

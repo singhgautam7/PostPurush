@@ -58,7 +58,7 @@ export function SidebarItemActions({
             <>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onNewRequest?.(); }}>
-                <PlusSquare className="mr-2 h-4 w-4 text-indigo-400" />
+                <PlusSquare className="mr-2 h-4 w-4 text-zinc-300" />
                 New Request
               </DropdownMenuItem>
               <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onNewFolder?.(); }}>

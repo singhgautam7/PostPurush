@@ -2,7 +2,6 @@
 
 import { useRequestStore } from "@/store/request-store";
 import { BodyType } from "@/types/request";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { BodyKeyValue } from "./body-keyvalue";
 import { CodeViewer } from "@/components/code/code-viewer";
@@ -14,7 +13,7 @@ export function BodyTab() {
 
   if (method === "GET") {
     return (
-      <div className="flex items-center justify-center p-8 text-sm text-muted-foreground">
+      <div className="flex items-center justify-center p-8 text-sm text-zinc-600">
         GET requests do not have a body.
       </div>
     );
@@ -28,21 +27,21 @@ export function BodyTab() {
 
   return (
     <div className="p-4 space-y-3 flex flex-col h-full">
-      <div className="flex items-center gap-2 shrink-0">
+      {/* Level 2 — Underline/ghost tabs */}
+      <div className="flex items-center gap-1 border-b border-zinc-800 shrink-0">
         {bodyTypes.map((bt) => (
-          <Badge
+          <button
             key={bt.value}
-            variant={body.type === bt.value ? "default" : "outline"}
-            className={cn(
-              "cursor-pointer transition-all duration-200",
-              body.type === bt.value
-                ? "bg-indigo-500/20 text-indigo-400 border-indigo-500/30 hover:bg-indigo-500/30"
-                : "hover:bg-muted/80"
-            )}
             onClick={() => setBody({ ...body, type: bt.value })}
+            className={cn(
+              "px-3 py-2 text-xs font-medium transition-all border-b-2 -mb-px",
+              body.type === bt.value
+                ? "text-zinc-100 border-zinc-400"
+                : "text-zinc-500 border-transparent hover:text-zinc-300"
+            )}
           >
             {bt.label}
-          </Badge>
+          </button>
         ))}
       </div>
 
@@ -62,4 +61,3 @@ export function BodyTab() {
     </div>
   );
 }
-

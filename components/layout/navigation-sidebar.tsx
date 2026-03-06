@@ -34,7 +34,7 @@ export function NavigationSidebar() {
   return (
     <div
       className={cn(
-        "flex flex-col h-full bg-muted/30 border-r border-border/50 transition-all duration-200 shrink-0",
+        "flex flex-col h-full bg-zinc-950 border-r border-zinc-800 transition-all duration-200 shrink-0",
         collapsed ? "w-14" : "w-[220px]"
       )}
     >
@@ -47,7 +47,7 @@ export function NavigationSidebar() {
               size="sm"
               onClick={() => setCollapsed(!collapsed)}
               className={cn(
-                "h-8 text-muted-foreground hover:text-foreground",
+                "h-8 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900",
                 collapsed ? "w-10 px-0 justify-center" : "w-full justify-start gap-2 px-3"
               )}
             >
@@ -67,7 +67,7 @@ export function NavigationSidebar() {
         </Tooltip>
       </div>
 
-      <Separator className="opacity-30" />
+      <Separator className="bg-zinc-800" />
 
       {/* Nav items */}
       <nav className="flex-1 flex flex-col gap-1 p-2 pt-2">
@@ -84,11 +84,11 @@ export function NavigationSidebar() {
                 "justify-start gap-3 h-9 text-sm font-medium transition-all",
                 collapsed ? "w-10 px-0 justify-center" : "w-full px-3",
                 isActive
-                  ? "bg-indigo-500/15 text-indigo-400 hover:bg-indigo-500/20 hover:text-indigo-300"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                  ? "bg-zinc-900 text-zinc-100 hover:bg-zinc-800"
+                  : "text-zinc-500 hover:text-zinc-100 hover:bg-zinc-900"
               )}
             >
-              <Icon className={cn("shrink-0", collapsed ? "h-4.5 w-4.5" : "h-4 w-4")} />
+              <Icon className={cn("shrink-0", isActive ? "text-zinc-300" : "text-zinc-500", collapsed ? "h-4.5 w-4.5" : "h-4 w-4")} />
               {!collapsed && <span className="truncate">{item.label}</span>}
             </Button>
           );

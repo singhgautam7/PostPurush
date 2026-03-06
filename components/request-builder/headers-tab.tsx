@@ -112,7 +112,7 @@ export function HeadersTab() {
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 text-xs text-indigo-400 hover:text-indigo-300 gap-1 bg-indigo-500/10 hover:bg-indigo-500/20"
+              className="h-7 text-xs text-zinc-400 hover:text-zinc-200 gap-1 bg-zinc-800 hover:bg-zinc-700"
             >
               <Key className="h-3 w-3" />
               Add Auth
