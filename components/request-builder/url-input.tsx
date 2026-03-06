@@ -110,11 +110,10 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
   const autoResize = (el: HTMLTextAreaElement) => {
-    el.style.height = "auto";
-    const lineHeight = 24;
-    const maxHeight = lineHeight * 3 + 16;
-    el.style.height = Math.min(el.scrollHeight, maxHeight) + "px";
-    el.style.overflowY = el.scrollHeight > maxHeight ? "scroll" : "hidden";
+    el.style.height = "36px";
+    const capped = Math.min(el.scrollHeight, 88);
+    el.style.height = capped + "px";
+    el.style.overflowY = el.scrollHeight > 88 ? "auto" : "hidden";
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -129,11 +128,11 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
   }, [activeRequest.url]);
 
   return (
-    <div className="flex items-start gap-2">
-      <div className="mt-1">
+    <div className="flex items-start gap-2 overflow-hidden">
+      <div className="shrink-0">
         <MethodSelector />
       </div>
-      <div className="relative flex-1">
+      <div className="relative flex-1 min-w-0">
         <Textarea
           ref={textareaRef}
           value={activeRequest.url}
@@ -144,18 +143,18 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
           onKeyDown={handleKeyDown}
           placeholder="e.g. https://api.example.com/endpoint"
           rows={1}
-          className="min-h-10 resize-none border-border-subtle bg-panel pr-4 font-mono text-sm text-foreground leading-6 placeholder:text-foreground-subtle py-2 focus:ring-2 focus:ring-border focus:border-border"
+          className="min-h-9 max-h-[88px] resize-none border-border-subtle bg-panel pr-4 font-mono text-sm text-foreground leading-[22px] placeholder:text-foreground-subtle py-[7px] focus:ring-2 focus:ring-border focus:border-border overflow-hidden"
           spellCheck={false}
         />
       </div>
 
-      <div className="flex items-center gap-2 mt-1">
+      <div className="flex items-center gap-2 shrink-0">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               onClick={handleSend}
               disabled={loading || !activeRequest.url}
-              className="h-10 gap-2 bg-primary-action text-primary-action-fg hover:bg-primary-action/85 font-medium shadow-none transition-all duration-200"
+              className="h-9 gap-2 bg-primary-action text-primary-action-fg hover:bg-primary-action/85 font-medium shadow-none transition-all duration-200"
             >
               <Send className="h-4 w-4" />
               {loading ? "Sending..." : "Send"}
@@ -172,7 +171,7 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
               disabled={saving || !activeRequest.url}
               variant="outline"
               size="icon"
-              className="h-10 w-10 bg-panel border-border-subtle text-foreground-muted hover:text-foreground hover:bg-raised"
+              className="h-9 w-9 bg-panel border-border-subtle text-foreground-muted hover:text-foreground hover:bg-raised"
             >
               <Save className="h-4 w-4" />
             </Button>
@@ -186,7 +185,7 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
               onClick={onCodeExport}
               variant="outline"
               size="icon"
-              className="h-10 w-10 bg-panel border-border-subtle text-foreground-muted hover:text-foreground hover:bg-raised"
+              className="h-9 w-9 bg-panel border-border-subtle text-foreground-muted hover:text-foreground hover:bg-raised"
             >
               <Code className="h-4 w-4" />
             </Button>

@@ -1,103 +1,83 @@
 'use client';
 
-import { useState } from 'react';
 import { Palette } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { THEMES, type ThemeId, type ThemeMode } from '@/lib/themes';
+import { THEMES, type ThemeMode } from '@/lib/themes';
 import { useTheme } from '@/hooks/use-theme';
 
 export function ThemePicker() {
   const { theme, mode, setTheme, setMode } = useTheme();
-  const [hoveredTheme, setHoveredTheme] = useState<ThemeId | null>(null);
-
-  const activeThemeDef = THEMES.find((t) => t.id === theme)!;
-  const displayedName = hoveredTheme
-    ? THEMES.find((t) => t.id === hoveredTheme)?.name
-    : activeThemeDef.name;
-  const displayedColor =
-    mode === 'dark'
-      ? (THEMES.find((t) => t.id === (hoveredTheme ?? theme))?.accentColor ?? activeThemeDef.accentColor)
-      : (THEMES.find((t) => t.id === (hoveredTheme ?? theme))?.accentColorLight ?? activeThemeDef.accentColorLight);
 
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <button
-          className={cn(
-            'p-2 rounded-lg transition-colors',
-            'text-foreground-subtle hover:text-foreground hover:bg-raised',
-            'focus:outline-none focus-visible:ring-2 focus-visible:ring-border'
-          )}
-          aria-label="Open theme picker"
-        >
-          <Palette size={16} />
-        </button>
-      </PopoverTrigger>
+      <Tooltip delayDuration={400}>
+        <TooltipTrigger asChild>
+          <PopoverTrigger asChild>
+            <button
+              className={cn(
+                'h-8 w-8 flex items-center justify-center rounded-lg',
+                'text-foreground-muted hover:text-foreground',
+                'hover:bg-raised border border-transparent hover:border-border',
+                'transition-all duration-150 focus:outline-none'
+              )}
+              aria-label="Change themes"
+            >
+              <Palette size={15} />
+            </button>
+          </PopoverTrigger>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" className="text-xs">
+          Change themes
+        </TooltipContent>
+      </Tooltip>
 
       <PopoverContent
         align="end"
         className={cn(
-          'w-72 p-4',
+          'w-80 p-3',
           'bg-panel border border-border',
           'shadow-xl shadow-black/40 rounded-xl'
         )}
       >
-        {/* Section: Accent Color */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-foreground-subtle">
-              Accent Color
-            </span>
-            <span
-              className="text-xs font-medium px-2.5 py-1 rounded-full transition-colors"
-              style={{
-                backgroundColor: displayedColor + '22',
-                color: displayedColor,
-                border: `1px solid ${displayedColor}44`,
-              }}
-            >
-              {displayedName}
-            </span>
-          </div>
-
-          {/* Color swatches — 4 per row, 2 rows */}
-          <div className="grid grid-cols-4 gap-2">
+        {/* Section: Theme */}
+        <div className="mb-3">
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-foreground-subtle px-2 block mb-1">
+            Theme
+          </span>
+          <div className="space-y-0.5">
             {THEMES.map((t) => {
-              const swatchColor = mode === 'dark' ? t.accentColor : t.accentColorLight;
+              const dotColor = mode === 'dark' ? t.accentColor : t.accentColorLight;
               const isActive = theme === t.id;
 
               return (
                 <button
                   key={t.id}
-                  title={t.name}
                   onClick={() => setTheme(t.id)}
-                  onMouseEnter={() => setHoveredTheme(t.id)}
-                  onMouseLeave={() => setHoveredTheme(null)}
                   className={cn(
-                    'relative w-full aspect-square rounded-xl',
-                    'flex items-center justify-center',
-                    'transition-all duration-150',
-                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2'
+                    'w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm transition-colors duration-150',
+                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-border',
+                    isActive
+                      ? 'bg-primary/10 text-foreground'
+                      : 'text-foreground-subtle hover:bg-raised hover:text-foreground'
                   )}
-                  style={{
-                    backgroundColor: swatchColor + (isActive ? '33' : '1a'),
-                    borderWidth: '2px',
-                    borderStyle: 'solid',
-                    borderColor: isActive ? swatchColor : 'transparent',
-                  }}
                 >
                   <div
-                    className="w-8 h-8 rounded-lg"
-                    style={{ backgroundColor: swatchColor }}
+                    className="w-4 h-4 rounded-full shrink-0"
+                    style={{
+                      backgroundColor: dotColor,
+                      boxShadow: isActive ? `0 0 0 2px var(--color-panel), 0 0 0 4px ${dotColor}` : 'none',
+                    }}
                   />
+                  <div className="flex-1 text-left min-w-0">
+                    <div className={cn('text-xs font-medium', isActive ? 'text-foreground' : 'text-foreground-muted')}>
+                      {t.name}
+                    </div>
+                    <div className="text-[10px] text-foreground-subtle truncate">{t.description}</div>
+                  </div>
                   {isActive && (
-                    <svg
-                      className="absolute inset-0 m-auto w-5 h-5"
-                      viewBox="0 0 20 20"
-                      fill="white"
-                      style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.6))' }}
-                    >
+                    <svg className="w-3.5 h-3.5 shrink-0 text-primary" viewBox="0 0 20 20" fill="currentColor">
                       <path
                         fillRule="evenodd"
                         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -112,14 +92,14 @@ export function ThemePicker() {
         </div>
 
         {/* Divider */}
-        <div className="border-t border-border my-3" />
+        <div className="border-t border-border my-2" />
 
         {/* Section: Mode */}
         <div>
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-foreground-subtle block mb-2">
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-foreground-subtle px-2 block mb-1">
             Mode
           </span>
-          <div className="space-y-1">
+          <div className="space-y-0.5">
             {(['light', 'dark'] as ThemeMode[]).map((m) => {
               const isActive = mode === m;
               return (
@@ -128,10 +108,10 @@ export function ThemePicker() {
                   onClick={() => setMode(m)}
                   className={cn(
                     'w-full flex items-center justify-between',
-                    'px-3 py-2 rounded-lg text-sm',
+                    'px-2 py-2 rounded-lg text-sm',
                     'transition-colors duration-150',
                     isActive
-                      ? 'bg-raised text-foreground font-medium'
+                      ? 'bg-primary/10 text-foreground'
                       : 'text-foreground-subtle hover:bg-raised hover:text-foreground'
                   )}
                 >
@@ -146,10 +126,10 @@ export function ThemePicker() {
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                       </svg>
                     )}
-                    <span className="capitalize">{m}</span>
+                    <span className="capitalize text-xs font-medium">{m}</span>
                   </span>
                   {isActive && (
-                    <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                    <svg className="w-3.5 h-3.5 text-primary" viewBox="0 0 20 20" fill="currentColor">
                       <path
                         fillRule="evenodd"
                         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"

@@ -1,8 +1,6 @@
 "use client";
 
-import { Zap, HelpCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Zap } from "lucide-react";
 import { ThemePicker } from "@/components/theme/theme-picker";
 
 export function MasterHeader() {
@@ -19,15 +17,6 @@ export function MasterHeader() {
       {/* Right — Global controls */}
       <div className="flex items-center gap-1">
         <ThemePicker />
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-foreground-subtle hover:text-foreground hover:bg-raised">
-              <HelpCircle className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Help</TooltipContent>
-        </Tooltip>
       </div>
     </header>
   );

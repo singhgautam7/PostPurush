@@ -13,7 +13,7 @@ export function RequestBuilder() {
     <>
       <div className="flex flex-col h-full bg-background border-b border-border/50">
         <RequestMeta />
-        <div className="p-4 pt-1">
+        <div className="px-4 py-2">
           <UrlInput onCodeExport={() => setCodeExportOpen(true)} />
         </div>
         <div className="flex-1 px-4 pb-2">

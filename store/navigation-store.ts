@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 
-export type NavigationSection = "collections" | "testing" | "docs" | "stress" | "analytics" | "env";
+export type NavigationSection = "collections" | "testing" | "docs" | "stress" | "analytics" | "env" | "help";
 
 interface NavigationState {
     activeSection: NavigationSection;
