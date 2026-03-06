@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarContextMenu } from "@/components/sidebar/sidebar-context-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Plus, Settings, Zap } from "lucide-react";
+import { Plus, Settings } from "lucide-react";
 
 export function Sidebar() {
   const setSavedRequests = useRequestStore((s) => s.setSavedRequests);
@@ -42,12 +42,7 @@ export function Sidebar() {
       <div className="flex flex-col h-full bg-card/50">
         {/* Header */}
         <div className="p-3 pb-2">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="flex items-center justify-center w-6 h-6 rounded-md bg-gradient-to-br from-indigo-500 to-blue-600 shadow-sm shadow-indigo-500/20">
-              <Zap className="h-3.5 w-3.5 text-white" />
-            </div>
-            <h1 className="text-sm font-bold tracking-tight">PostPurush</h1>
-          </div>
+          <p className="text-[10px] font-semibold tracking-widest text-muted-foreground/60 uppercase mb-2">Requests</p>
 
           <div className="flex gap-2">
             <Tooltip>

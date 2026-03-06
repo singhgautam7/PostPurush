@@ -1,30 +1,35 @@
 "use client";
 
-import { Sidebar } from "@/components/layout/sidebar";
-import { Workspace } from "@/components/layout/workspace";
-import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from "react-resizable-panels";
+import { MasterHeader } from "@/components/layout/master-header";
+import { NavigationSidebar } from "@/components/layout/navigation-sidebar";
+import { CollectionsView } from "@/features/collections/collections-view";
+import { WipPlaceholder } from "@/features/wip-placeholder";
+import { useNavigationStore } from "@/store/navigation-store";
+
+const sectionTitles: Record<string, string> = {
+  testing: "Testing",
+  docs: "API Docs",
+  stress: "Stress Testing",
+  analytics: "Analytics",
+  env: "Environments",
+};
 
 export default function Home() {
+  const activeSection = useNavigationStore((s) => s.activeSection);
+
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      <PanelGroup orientation="horizontal">
-        {/* Sidebar */}
-        <Panel
-          defaultSize={210}
-          minSize={140}
-          maxSize="50vw"
-          className="bg-card/50 overflow-hidden"
-        >
-          <Sidebar />
-        </Panel>
-
-        <PanelResizeHandle className="w-[4px] bg-border/50 hover:bg-indigo-500/50 transition-all cursor-col-resize" />
-
-        {/* Main Workspace */}
-        <Panel minSize={300} className="bg-background relative">
-          <Workspace />
-        </Panel>
-      </PanelGroup>
+    <div className="flex flex-col h-screen overflow-hidden bg-background">
+      <MasterHeader />
+      <div className="flex flex-1 overflow-hidden">
+        <NavigationSidebar />
+        <main className="flex-1 overflow-hidden">
+          {activeSection === "collections" ? (
+            <CollectionsView />
+          ) : (
+            <WipPlaceholder title={sectionTitles[activeSection] ?? activeSection} />
+          )}
+        </main>
+      </div>
     </div>
   );
 }
