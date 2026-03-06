@@ -19,20 +19,17 @@ export function ResponseMeta() {
       return "bg-amber-950 text-amber-400 border-amber-800";
     if (status >= 500)
       return "bg-red-950 text-red-400 border-red-800";
-    return "bg-zinc-800 text-zinc-300 border-zinc-700";
+    return "bg-raised text-foreground-muted border-border";
   };
 
   if (response.error) {
     return (
       <div className="flex items-center gap-2 px-4 py-2">
-        <Badge
-          variant="outline"
-          className="bg-red-950 text-red-400 border-red-800 font-mono"
-        >
+        <Badge variant="outline" className="bg-red-950 text-red-400 border-red-800 font-mono">
           Error
         </Badge>
         {response.time > 0 && (
-          <Badge variant="outline" className="font-mono text-xs bg-zinc-900 text-zinc-400 border-zinc-800">
+          <Badge variant="outline" className="font-mono text-xs bg-panel text-foreground-muted border-border">
             {response.time} ms
           </Badge>
         )}
@@ -53,8 +50,6 @@ export function ResponseMeta() {
     if (value.includes("text/plain")) return "Text";
     if (value.includes("multipart/form-data")) return "Multipart";
     if (value.includes("application/xml") || value.includes("text/xml")) return "XML";
-
-    // Return the first part of the mime type
     return value.split(";")[0];
   };
 
@@ -62,20 +57,17 @@ export function ResponseMeta() {
 
   return (
     <div className="flex flex-wrap items-center gap-2 px-4 py-2">
-      <Badge
-        variant="outline"
-        className={cn("font-mono", getStatusColor(response.status))}
-      >
+      <Badge variant="outline" className={cn("font-mono", getStatusColor(response.status))}>
         {response.status} {response.statusText}
       </Badge>
-      <Badge variant="outline" className="font-mono text-xs bg-zinc-900 text-zinc-400 border-zinc-800">
+      <Badge variant="outline" className="font-mono text-xs bg-panel text-foreground-muted border-border">
         {response.time} ms
       </Badge>
-      <Badge variant="outline" className="font-mono text-xs bg-zinc-900 text-zinc-400 border-zinc-800">
+      <Badge variant="outline" className="font-mono text-xs bg-panel text-foreground-muted border-border">
         {formatBytes(response.size)}
       </Badge>
       {contentTypeBadge && (
-        <Badge variant="outline" className="font-mono text-xs bg-zinc-900 text-zinc-400 border-zinc-800">
+        <Badge variant="outline" className="font-mono text-xs bg-panel text-foreground-muted border-border">
           {contentTypeBadge}
         </Badge>
       )}

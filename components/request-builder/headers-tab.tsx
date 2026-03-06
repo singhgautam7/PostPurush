@@ -18,7 +18,6 @@ export function HeadersTab() {
   const headers = useRequestStore((s) => s.activeRequest.headers);
   const setHeaders = useRequestStore((s) => s.setHeaders);
 
-  // Refs for auto-focusing the new key input
   const keyRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
   const updateHeader = (index: number, field: keyof KeyValuePair, value: string) => {
@@ -36,11 +35,7 @@ export function HeadersTab() {
     if (e.key === "Enter" && index === headers.length - 1) {
       e.preventDefault();
       setHeaders([...headers, { key: "", value: "" }]);
-
-      // Focus the newly added row
-      setTimeout(() => {
-        keyRefs.current[index + 1]?.focus();
-      }, 0);
+      setTimeout(() => { keyRefs.current[index + 1]?.focus(); }, 0);
     }
   };
 
@@ -58,13 +53,10 @@ export function HeadersTab() {
         </div>
       )}
 
-      {/* Render actual headers */}
       {headers.map((header, index) => (
         <div key={index} className="group grid grid-cols-[1fr_1fr_40px] gap-2">
           <Input
-            ref={(el) => {
-              keyRefs.current[index] = el;
-            }}
+            ref={(el) => { keyRefs.current[index] = el; }}
             value={header.key}
             onChange={(e) => updateHeader(index, "key", e.target.value)}
             onKeyDown={(e) => handleKeyDown(e, index)}
@@ -89,17 +81,13 @@ export function HeadersTab() {
         </div>
       ))}
 
-
-
       <div className="flex items-center gap-2 mt-2">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => {
             setHeaders([...headers, { key: "", value: "" }]);
-            setTimeout(() => {
-              keyRefs.current[headers.length]?.focus();
-            }, 0);
+            setTimeout(() => { keyRefs.current[headers.length]?.focus(); }, 0);
           }}
           className="h-7 text-xs text-muted-foreground hover:text-foreground gap-1"
         >
@@ -112,7 +100,7 @@ export function HeadersTab() {
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 text-xs text-zinc-400 hover:text-zinc-200 gap-1 bg-zinc-800 hover:bg-zinc-700"
+              className="h-7 text-xs text-foreground-muted hover:text-foreground gap-1 bg-raised hover:bg-raised/80"
             >
               <Key className="h-3 w-3" />
               Add Auth
@@ -124,7 +112,6 @@ export function HeadersTab() {
               <DropdownMenuItem
                 key={name}
                 onClick={() => {
-                  // If there is only one empty row, replace it. Otherwise append.
                   if (headers.length === 1 && !headers[0].key && !headers[0].value) {
                     setHeaders([preset]);
                   } else {

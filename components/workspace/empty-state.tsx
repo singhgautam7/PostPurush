@@ -14,14 +14,14 @@ export function EmptyState() {
 
   return (
     <div className="flex flex-col items-center justify-center h-full w-full max-w-md mx-auto text-center space-y-6">
-      <div className="w-12 h-12 rounded-full bg-zinc-800/60 flex items-center justify-center">
-        <Rocket className="h-6 w-6 text-zinc-500" />
+      <div className="w-12 h-12 rounded-full bg-raised/60 flex items-center justify-center">
+        <Rocket className="h-6 w-6 text-foreground-subtle" />
       </div>
       <div>
-        <h2 className="text-base font-semibold tracking-tight mb-2 text-zinc-100">
+        <h2 className="text-base font-semibold tracking-tight mb-2 text-foreground">
           Start building requests
         </h2>
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-foreground-subtle">
           Create a new request or organize your API calls in folders.
         </p>
       </div>
@@ -29,12 +29,16 @@ export function EmptyState() {
       <div className="flex gap-3 pt-2">
         <Button
           onClick={handleNewRequest}
-          className="bg-white text-zinc-900 hover:bg-zinc-100 font-medium px-6 shadow-none"
+          className="bg-primary-action text-primary-action-fg hover:bg-primary-action/85 font-medium px-6 shadow-none"
         >
           <Plus className="mr-2 h-4 w-4" />
           New Request
         </Button>
-        <Button onClick={handleNewFolder} variant="outline" className="px-6 bg-zinc-900 border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100">
+        <Button
+          onClick={handleNewFolder}
+          variant="outline"
+          className="px-6 bg-panel border-border-subtle text-foreground-muted hover:bg-raised hover:text-foreground"
+        >
           <FolderPlus className="mr-2 h-4 w-4" />
           New Folder
         </Button>

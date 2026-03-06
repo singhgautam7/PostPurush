@@ -34,7 +34,7 @@ export function NavigationSidebar() {
   return (
     <div
       className={cn(
-        "flex flex-col h-full bg-zinc-950 border-r border-zinc-800 transition-all duration-200 shrink-0",
+        "flex flex-col h-full bg-background border-r border-border transition-all duration-200 shrink-0",
         collapsed ? "w-14" : "w-[220px]"
       )}
     >
@@ -47,7 +47,7 @@ export function NavigationSidebar() {
               size="sm"
               onClick={() => setCollapsed(!collapsed)}
               className={cn(
-                "h-8 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900",
+                "h-8 text-foreground-subtle hover:text-foreground hover:bg-panel",
                 collapsed ? "w-10 px-0 justify-center" : "w-full justify-start gap-2 px-3"
               )}
             >
@@ -67,7 +67,7 @@ export function NavigationSidebar() {
         </Tooltip>
       </div>
 
-      <Separator className="bg-zinc-800" />
+      <Separator className="bg-border" />
 
       {/* Nav items */}
       <nav className="flex-1 flex flex-col gap-1 p-2 pt-2">
@@ -84,11 +84,11 @@ export function NavigationSidebar() {
                 "justify-start gap-3 h-9 text-sm font-medium transition-all",
                 collapsed ? "w-10 px-0 justify-center" : "w-full px-3",
                 isActive
-                  ? "bg-zinc-900 text-zinc-100 hover:bg-zinc-800"
-                  : "text-zinc-500 hover:text-zinc-100 hover:bg-zinc-900"
+                  ? "bg-panel text-foreground hover:bg-raised"
+                  : "text-foreground-subtle hover:text-foreground hover:bg-panel"
               )}
             >
-              <Icon className={cn("shrink-0", isActive ? "text-zinc-300" : "text-zinc-500", collapsed ? "h-4.5 w-4.5" : "h-4 w-4")} />
+              <Icon className={cn("shrink-0", isActive ? "text-foreground-muted" : "text-foreground-subtle", collapsed ? "h-4.5 w-4.5" : "h-4 w-4")} />
               {!collapsed && <span className="truncate">{item.label}</span>}
             </Button>
           );

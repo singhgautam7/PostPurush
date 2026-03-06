@@ -13,7 +13,7 @@ export function BodyTab() {
 
   if (method === "GET") {
     return (
-      <div className="flex items-center justify-center p-8 text-sm text-zinc-600">
+      <div className="flex items-center justify-center p-8 text-sm text-foreground-subtle">
         GET requests do not have a body.
       </div>
     );
@@ -28,7 +28,7 @@ export function BodyTab() {
   return (
     <div className="p-4 space-y-3 flex flex-col h-full">
       {/* Level 2 — Underline/ghost tabs */}
-      <div className="flex items-center gap-1 border-b border-zinc-800 shrink-0">
+      <div className="flex items-center gap-1 border-b border-border shrink-0">
         {bodyTypes.map((bt) => (
           <button
             key={bt.value}
@@ -36,8 +36,8 @@ export function BodyTab() {
             className={cn(
               "px-3 py-2 text-xs font-medium transition-all border-b-2 -mb-px",
               body.type === bt.value
-                ? "text-zinc-100 border-zinc-400"
-                : "text-zinc-500 border-transparent hover:text-zinc-300"
+                ? "text-foreground border-foreground-muted"
+                : "text-foreground-subtle border-transparent hover:text-foreground-muted"
             )}
           >
             {bt.label}

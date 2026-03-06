@@ -11,7 +11,7 @@ export function Workspace() {
   const tabs = useTabStore((s) => s.tabs);
 
   return (
-    <div className="flex flex-col h-full bg-zinc-950 overflow-hidden">
+    <div className="flex flex-col h-full bg-background overflow-hidden">
       <RequestTabsContainer />
 
       <div className="flex flex-col flex-1 overflow-hidden relative">
@@ -20,7 +20,6 @@ export function Workspace() {
             <EmptyState />
           </div>
         ) : (
-          <>
           <PanelGroup orientation="vertical">
             {/* Request Builder */}
             <Panel defaultSize={45} minSize={20}>
@@ -29,18 +28,15 @@ export function Workspace() {
               </div>
             </Panel>
 
-            <PanelResizeHandle className="h-[3px] bg-zinc-800 hover:bg-zinc-600 transition-colors cursor-row-resize" />
+            <PanelResizeHandle className="h-[3px] bg-border hover:bg-raised transition-colors cursor-row-resize" />
 
-            {/* Response Panel */}
+            {/* Response Panel — no inner card border */}
             <Panel defaultSize={55} minSize={20}>
-              <div className="flex flex-col h-full p-3 pt-2">
-                <div className="flex-1 rounded-lg border border-zinc-800 overflow-hidden bg-zinc-950">
-                  <ResponsePanel />
-                </div>
+              <div className="h-full overflow-hidden">
+                <ResponsePanel />
               </div>
             </Panel>
           </PanelGroup>
-          </>
         )}
       </div>
     </div>

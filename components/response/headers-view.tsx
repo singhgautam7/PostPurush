@@ -13,7 +13,7 @@ export function HeadersView() {
 
   if (headerEntries.length === 0) {
     return (
-      <div className="flex items-center justify-center p-8 text-sm text-zinc-600">
+      <div className="flex items-center justify-center p-8 text-sm text-foreground-subtle">
         No response headers
       </div>
     );
@@ -24,22 +24,22 @@ export function HeadersView() {
       <div className="p-4">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-zinc-800">
-              <th className="text-left py-2 pr-4 font-medium text-zinc-600 text-xs uppercase tracking-wider">
+            <tr className="border-b border-border">
+              <th className="text-left py-2 pr-4 font-medium text-foreground-subtle text-xs uppercase tracking-wider">
                 Key
               </th>
-              <th className="text-left py-2 font-medium text-zinc-600 text-xs uppercase tracking-wider">
+              <th className="text-left py-2 font-medium text-foreground-subtle text-xs uppercase tracking-wider">
                 Value
               </th>
             </tr>
           </thead>
           <tbody>
             {headerEntries.map(([key, value], i) => (
-              <tr key={key} className={cn("border-b border-zinc-800/60 hover:bg-zinc-900/50 transition-colors", i % 2 === 1 && "bg-zinc-900/30")}>
+              <tr key={key} className={cn("border-b border-border/60 hover:bg-panel/50 transition-colors", i % 2 === 1 && "bg-panel/30")}>
                 <td className="py-2 pr-4 font-mono text-blue-400 whitespace-nowrap text-sm">
                   {key}
                 </td>
-                <td className="py-2 font-mono text-zinc-300 break-all text-sm">
+                <td className="py-2 font-mono text-foreground-muted break-all text-sm">
                   {value}
                 </td>
               </tr>

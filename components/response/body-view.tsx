@@ -46,8 +46,8 @@ export function BodyView() {
   const displayBody = viewMode === "pretty" ? response.body : response.raw;
 
   return (
-    <div className="flex flex-col h-full bg-zinc-950 relative overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800 shrink-0 bg-zinc-950 z-10">
+    <div className="flex flex-col h-full bg-background relative overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-border shrink-0 bg-background z-10">
         {/* Level 2 — Underline tabs for Pretty/Raw */}
         <div className="flex items-center gap-1 border-b border-transparent -mb-px">
           {(["pretty", "raw"] as const).map((mode) => (
@@ -57,8 +57,8 @@ export function BodyView() {
               className={cn(
                 "px-3 py-1.5 text-xs font-medium capitalize transition-all border-b-2 -mb-px",
                 viewMode === mode
-                  ? "text-zinc-100 border-zinc-400"
-                  : "text-zinc-500 border-transparent hover:text-zinc-300"
+                  ? "text-foreground border-foreground-muted"
+                  : "text-foreground-subtle border-transparent hover:text-foreground-muted"
               )}
             >
               {mode}
@@ -68,7 +68,7 @@ export function BodyView() {
         <Button
           variant="ghost"
           size="sm"
-          className="h-7 gap-1 text-xs text-zinc-600 hover:text-zinc-300"
+          className="h-7 gap-1 text-xs text-foreground-subtle hover:text-foreground-muted"
           onClick={handleCopy}
         >
           {copied ? (
@@ -84,7 +84,7 @@ export function BodyView() {
         <div className="absolute inset-0 max-h-[90vh] overflow-auto w-full">
           {!displayBody ? (
             <div className="p-4">
-              <span className="text-zinc-600 italic text-sm">Empty response</span>
+              <span className="text-foreground-subtle italic text-sm">Empty response</span>
             </div>
           ) : viewMode === "pretty" && responseType === "json" ? (
             <div className="min-w-max h-full">
@@ -99,7 +99,7 @@ export function BodyView() {
               <CodeViewer code={displayBody} language="html" className="h-full border-none rounded-none" />
             </div>
           ) : (
-            <div className="p-4 font-mono text-sm leading-relaxed text-zinc-300 min-w-max">
+            <div className="p-4 font-mono text-sm leading-relaxed text-foreground-muted min-w-max">
               <pre className="whitespace-pre font-mono">
                 {displayBody}
               </pre>

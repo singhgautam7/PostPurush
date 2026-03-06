@@ -48,11 +48,11 @@ export function SortableTab({
       {...listeners}
       onClick={onClick}
       className={cn(
-        "group relative flex h-full min-w-[140px] max-w-[200px] shrink-0 cursor-pointer items-center justify-between gap-2 border-r border-zinc-800 px-3 transition-colors",
+        "group relative flex h-full min-w-[140px] max-w-[200px] shrink-0 cursor-pointer items-center justify-between gap-2 border-r border-border px-3 transition-colors",
         isActive
-          ? "bg-zinc-900 border-t-2 border-t-white font-medium text-zinc-100"
-          : "bg-transparent border-t-2 border-t-transparent font-normal text-zinc-500 hover:bg-zinc-900/50 hover:text-zinc-300",
-        isDragging && "opacity-50 ring-2 ring-zinc-600 ring-inset bg-zinc-900/50"
+          ? "bg-panel border-t-2 border-t-primary-action font-medium text-foreground"
+          : "bg-transparent border-t-2 border-t-transparent font-normal text-foreground-subtle hover:bg-panel/50 hover:text-foreground-muted",
+        isDragging && "opacity-50 ring-2 ring-border-subtle ring-inset bg-panel/50"
       )}
     >
       <div className="flex items-center gap-2 truncate">
@@ -67,7 +67,9 @@ export function SortableTab({
         onClick={onClose}
         className={cn(
           "rounded-md p-1 opacity-0 group-hover:opacity-100 transition-all z-10",
-          isActive ? "opacity-100 text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300" : "text-zinc-600 hover:bg-zinc-800 hover:text-zinc-300"
+          isActive
+            ? "opacity-100 text-foreground-subtle hover:bg-raised hover:text-foreground-muted"
+            : "text-foreground-subtle hover:bg-raised hover:text-foreground-muted"
         )}
       >
         <X className="h-3 w-3" />
