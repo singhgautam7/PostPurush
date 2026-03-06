@@ -41,12 +41,12 @@ export function Sidebar() {
     <>
       <div className="flex flex-col h-full bg-card/50">
         {/* Header */}
-        <div className="p-4 pb-3">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-blue-600 shadow-md shadow-indigo-500/20">
-              <Zap className="h-4 w-4 text-white" />
+        <div className="p-3 pb-2">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center justify-center w-6 h-6 rounded-md bg-gradient-to-br from-indigo-500 to-blue-600 shadow-sm shadow-indigo-500/20">
+              <Zap className="h-3.5 w-3.5 text-white" />
             </div>
-            <h1 className="text-base font-bold tracking-tight">PostPurush</h1>
+            <h1 className="text-sm font-bold tracking-tight">PostPurush</h1>
           </div>
 
           <div className="flex gap-2">
@@ -54,7 +54,7 @@ export function Sidebar() {
               <TooltipTrigger asChild>
                 <Button
                   onClick={handleNewRequest}
-                  className="flex-1 h-8 gap-1.5 text-xs bg-gradient-to-r from-indigo-500 to-blue-600 text-white hover:from-indigo-600 hover:to-blue-700 shadow-sm shadow-indigo-500/20"
+                  className="flex-1 h-7 gap-1.5 text-xs bg-gradient-to-r from-indigo-500 to-blue-600 text-white hover:from-indigo-600 hover:to-blue-700 shadow-sm shadow-indigo-500/20"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   New Request

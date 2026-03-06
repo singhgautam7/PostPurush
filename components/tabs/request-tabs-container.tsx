@@ -9,6 +9,17 @@ import { cn } from "@/lib/utils";
 
 import { useState } from "react";
 import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import { SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable";
+import { SortableTab } from "./sortable-tab";
+import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogDescription,
@@ -97,60 +108,67 @@ export function RequestTabsContainer() {
     handleTabClick(useTabStore.getState().activeTabId!, newId);
   };
 
+  const reorderTabs = useTabStore((s) => s.reorderTabs);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      reorderTabs(active.id as string, over.id as string);
+    }
+  };
+
   if (tabs.length === 0) {
     return (
-      <div className="flex h-10 items-center justify-between border-b border-border/50 bg-muted/20 px-2">
+      <div className="flex h-9 items-center justify-between border-b border-border/50 bg-muted/20 px-2 leading-none">
         <div className="text-xs text-muted-foreground/70 px-2">No open tabs</div>
         <button
           onClick={handleNewTab}
           className="p-1.5 text-muted-foreground hover:bg-muted/50 rounded-md transition-colors"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-3.5 w-3.5" />
         </button>
       </div>
     );
   }
 
   return (
-    <div className="flex h-10 items-center border-b border-border/50 bg-muted/20 pl-2">
-      <div className="flex h-full flex-1 overflow-x-auto no-scrollbar items-end">
-        {tabs.map((tab) => {
-          const isActive = tab.id === activeTabId;
-          return (
-            <div
-              key={tab.id}
-              onClick={() => handleTabClick(tab.id, tab.requestId)}
-              className={cn(
-                "group relative flex h-full min-w-[140px] max-w-[200px] shrink-0 cursor-pointer items-center justify-between gap-2 border-r border-border/50 px-3 transition-colors",
-                isActive
-                  ? "bg-background border-t-[3px] border-t-indigo-500 font-medium text-foreground"
-                  : "bg-transparent border-t-[3px] border-t-transparent font-normal text-muted-foreground hover:bg-muted/30 hover:text-foreground"
-              )}
-            >
-              <div className="flex items-center gap-2 truncate">
-                <span className={cn("truncate text-xs", tab.isDirty && "italic")}>
-                  {tab.title}
-                </span>
-                {tab.isDirty && (
-                  <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 shrink-0" />
-                )}
-              </div>
-              <button
-                onClick={(e) => {
+    <div className="flex h-9 items-center border-b border-border/50 bg-muted/20 pl-2 leading-none">
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="flex h-full flex-1 overflow-x-auto no-scrollbar items-end">
+          <SortableContext
+            items={tabs.map((t) => t.id)}
+            strategy={horizontalListSortingStrategy}
+          >
+            {tabs.map((tab) => (
+              <SortableTab
+                key={tab.id}
+                id={tab.id}
+                requestId={tab.requestId}
+                title={tab.title}
+                isActive={tab.id === activeTabId}
+                isDirty={tab.isDirty}
+                onClick={() => handleTabClick(tab.id, tab.requestId)}
+                onClose={(e) => {
                   e.stopPropagation();
                   handleTabCloseClick(tab.id, !!tab.isDirty);
                 }}
-                className={cn(
-                  "rounded-md p-1 opacity-0 group-hover:opacity-100 transition-all",
-                  isActive ? "opacity-100 text-muted-foreground hover:bg-muted/50" : "text-muted-foreground/50 hover:bg-muted/50 hover:text-foreground"
-                )}
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </div>
-          );
-        })}
-      </div>
+              />
+            ))}
+          </SortableContext>
+        </div>
+      </DndContext>
       <div className="flex h-full items-center px-2 z-10 bg-muted/20 shadow-[-4px_0_4px_-4px_rgba(0,0,0,0.1)]">
         <button
           onClick={handleNewTab}

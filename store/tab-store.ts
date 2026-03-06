@@ -14,6 +14,7 @@ interface TabState {
     closeTab: (tabId: string) => void;
     setActiveTab: (tabId: string) => void;
     updateTab: (tabId: string, updates: Partial<Tab>) => void;
+    reorderTabs: (activeId: string, overId: string) => void;
 }
 
 export const useTabStore = create<TabState>((set, get) => ({
@@ -70,4 +71,17 @@ export const useTabStore = create<TabState>((set, get) => ({
         set((state) => ({
             tabs: state.tabs.map((t) => (t.id === tabId ? { ...t, ...updates } : t)),
         })),
+
+    reorderTabs: (activeId, overId) =>
+        set((state) => {
+            const oldIndex = state.tabs.findIndex((t) => t.id === activeId);
+            const newIndex = state.tabs.findIndex((t) => t.id === overId);
+            if (oldIndex < 0 || newIndex < 0) return state;
+
+            const newTabs = [...state.tabs];
+            const [movedTab] = newTabs.splice(oldIndex, 1);
+            newTabs.splice(newIndex, 0, movedTab);
+
+            return { tabs: newTabs };
+        }),
 }));

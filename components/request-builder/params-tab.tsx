@@ -13,15 +13,6 @@ export function ParamsTab() {
   const updateParam = (index: number, field: keyof KeyValuePair, value: string) => {
     const newParams = [...params];
     newParams[index] = { ...newParams[index], [field]: value };
-
-    // Auto-add empty row at end
-    if (
-      index === newParams.length - 1 &&
-      (newParams[index].key || newParams[index].value)
-    ) {
-      newParams.push({ key: "", value: "" });
-    }
-
     setParams(newParams);
   };
 
@@ -29,6 +20,13 @@ export function ParamsTab() {
     if (params.length <= 1) return;
     const newParams = params.filter((_, i) => i !== index);
     setParams(newParams);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
+    if (e.key === "Enter" && index === params.length - 1) {
+      e.preventDefault();
+      setParams([...params, { key: "", value: "" }]);
+    }
   };
 
   return (
@@ -43,12 +41,14 @@ export function ParamsTab() {
           <Input
             value={param.key}
             onChange={(e) => updateParam(index, "key", e.target.value)}
+            onKeyDown={(e) => handleKeyDown(e, index)}
             placeholder="parameter"
             className="h-8 bg-muted/30 border-border/30 text-sm font-mono"
           />
           <Input
             value={param.value}
             onChange={(e) => updateParam(index, "value", e.target.value)}
+            onKeyDown={(e) => handleKeyDown(e, index)}
             placeholder="value"
             className="h-8 bg-muted/30 border-border/30 text-sm font-mono"
           />

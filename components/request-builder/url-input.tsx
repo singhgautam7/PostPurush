@@ -5,12 +5,12 @@ import { useResponseStore } from "@/store/response-store";
 import { useEnvironmentStore } from "@/store/environment-store";
 import { sendRequest } from "@/lib/request/send-request";
 import { saveRequest } from "@/lib/storage/storage-helpers";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { MethodSelector } from "./method-selector";
 import { Send, Save, Code } from "lucide-react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useTabStore } from "@/store/tab-store";
 
 interface UrlInputProps {
@@ -116,22 +116,40 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
       handleSend();
     }
   };
+
+  const adjustHeight = () => {
+    const target = textareaRef.current;
+    if (target) {
+      target.style.height = "2.5rem"; // h-10 reset equivalent
+      target.style.height = `${Math.min(target.scrollHeight, 72)}px`; // Max 3 lines (~72px)
+    }
+  };
+
+  useEffect(() => {
+    adjustHeight();
+  }, [activeRequest.url]);
 
   return (
     <div className="flex items-center gap-2">
       <MethodSelector />
       <div className="relative flex-1">
-        <Input
+        <Textarea
+          ref={textareaRef}
           value={activeRequest.url}
           onChange={(e) => setUrl(e.target.value)}
           onKeyDown={handleKeyDown}
+          onInput={adjustHeight}
           placeholder="Enter URL or paste text (e.g. https://api.example.com/endpoint)"
-          className="h-10 border-border/50 bg-muted/50 pr-4 font-mono text-sm placeholder:text-muted-foreground/50"
+          className="min-h-10 h-10 max-h-[72px] resize-none overflow-y-auto border-border/50 bg-muted/50 pr-4 font-mono text-sm leading-tight placeholder:text-muted-foreground/50 py-2.5"
+          style={{ height: activeRequest.url ? "auto" : "2.5rem" }}
         />
       </div>
 

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/context-menu";
 import { ChevronRight, ChevronDown, Folder as FolderIcon, FolderOpen, FileCode, Trash2, Edit2, Plus, GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SidebarItemActions } from "./sidebar-item-actions";
 import { Input } from "@/components/ui/input";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 
@@ -161,6 +162,21 @@ export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequ
               <span className={cn("truncate block", isActive && "text-indigo-400 font-medium")}>{item.name}</span>
             )}
           </div>
+
+          {!isEditing && (
+            <div className="shrink-0 flex items-center pr-1 transition-opacity">
+              <SidebarItemActions
+                type={item.type}
+                onRename={() => {
+                  setEditName(item.name);
+                  setIsEditing(true);
+                }}
+                onDelete={handleDelete}
+                onNewFolder={item.type === "folder" ? () => onNewFolder?.(item.id) : undefined}
+                onNewRequest={item.type === "folder" ? () => onNewRequest?.(item.id) : undefined}
+              />
+            </div>
+          )}
         </div>
       </ContextMenuTrigger>
 

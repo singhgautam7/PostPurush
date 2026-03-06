@@ -4,7 +4,14 @@ import { useRequestStore } from "@/store/request-store";
 import { KeyValuePair } from "@/types/request";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Key, ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { AuthPresets } from "@/lib/request/header-presets";
 
 export function HeadersTab() {
   const headers = useRequestStore((s) => s.activeRequest.headers);
@@ -13,14 +20,6 @@ export function HeadersTab() {
   const updateHeader = (index: number, field: keyof KeyValuePair, value: string) => {
     const newHeaders = [...headers];
     newHeaders[index] = { ...newHeaders[index], [field]: value };
-
-    if (
-      index === newHeaders.length - 1 &&
-      (newHeaders[index].key || newHeaders[index].value)
-    ) {
-      newHeaders.push({ key: "", value: "" });
-    }
-
     setHeaders(newHeaders);
   };
 
@@ -28,6 +27,13 @@ export function HeadersTab() {
     if (headers.length <= 1) return;
     const newHeaders = headers.filter((_, i) => i !== index);
     setHeaders(newHeaders);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
+    if (e.key === "Enter" && index === headers.length - 1) {
+      e.preventDefault();
+      setHeaders([...headers, { key: "", value: "" }]);
+    }
   };
 
   return (
@@ -42,12 +48,14 @@ export function HeadersTab() {
           <Input
             value={header.key}
             onChange={(e) => updateHeader(index, "key", e.target.value)}
+            onKeyDown={(e) => handleKeyDown(e, index)}
             placeholder="header name"
             className="h-8 bg-muted/30 border-border/30 text-sm font-mono"
           />
           <Input
             value={header.value}
             onChange={(e) => updateHeader(index, "value", e.target.value)}
+            onKeyDown={(e) => handleKeyDown(e, index)}
             placeholder="value"
             className="h-8 bg-muted/30 border-border/30 text-sm font-mono"
           />
@@ -62,15 +70,52 @@ export function HeadersTab() {
           </Button>
         </div>
       ))}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => setHeaders([...headers, { key: "", value: "" }])}
-        className="h-7 text-xs text-muted-foreground hover:text-foreground gap-1"
-      >
-        <Plus className="h-3 w-3" />
-        Add Header
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setHeaders([...headers, { key: "", value: "" }])}
+          className="h-7 text-xs text-muted-foreground hover:text-foreground gap-1"
+        >
+          <Plus className="h-3 w-3" />
+          Add Header
+        </Button>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 text-xs text-indigo-400 hover:text-indigo-300 gap-1 bg-indigo-500/10 hover:bg-indigo-500/20"
+            >
+              <Key className="h-3 w-3" />
+              Add Auth
+              <ChevronDown className="h-3 w-3 opacity-50" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-[180px]">
+            {Object.entries(AuthPresets).map(([name, preset]) => (
+              <DropdownMenuItem
+                key={name}
+                onClick={() => {
+                  // If there is only one empty row, replace it. Otherwise append.
+                  if (headers.length === 1 && !headers[0].key && !headers[0].value) {
+                    setHeaders([preset]);
+                  } else {
+                    setHeaders([...headers, preset]);
+                  }
+                }}
+                className="text-xs flex flex-col items-start px-3 py-1.5"
+              >
+                <span className="font-medium">{name}</span>
+                <span className="text-[10px] text-muted-foreground font-mono mt-0.5 opacity-70">
+                  {preset.key}: {preset.value.split(" ")[0]}...
+                </span>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </div>
   );
 }

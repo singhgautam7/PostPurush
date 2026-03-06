@@ -15,15 +15,6 @@ export function BodyKeyValue() {
   const updateFormData = (index: number, field: keyof KeyValuePair, value: string) => {
     const newFormData = [...formData];
     newFormData[index] = { ...newFormData[index], [field]: value };
-
-    // Auto-add empty row at end
-    if (
-      index === newFormData.length - 1 &&
-      (newFormData[index].key || newFormData[index].value)
-    ) {
-      newFormData.push({ key: "", value: "" });
-    }
-
     setBody({ ...body, formData: newFormData });
   };
 
@@ -31,6 +22,13 @@ export function BodyKeyValue() {
     if (formData.length <= 1) return;
     const newFormData = formData.filter((_, i) => i !== index);
     setBody({ ...body, formData: newFormData });
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
+    if (e.key === "Enter" && index === formData.length - 1) {
+      e.preventDefault();
+      setBody({ ...body, formData: [...formData, { key: "", value: "" }] });
+    }
   };
 
   return (
@@ -45,12 +43,14 @@ export function BodyKeyValue() {
           <Input
             value={param.key}
             onChange={(e) => updateFormData(index, "key", e.target.value)}
+            onKeyDown={(e) => handleKeyDown(e, index)}
             placeholder="key"
             className="h-8 bg-muted/30 border-border/30 text-sm font-mono"
           />
           <Input
             value={param.value}
             onChange={(e) => updateFormData(index, "value", e.target.value)}
+            onKeyDown={(e) => handleKeyDown(e, index)}
             placeholder="value"
             className="h-8 bg-muted/30 border-border/30 text-sm font-mono"
           />

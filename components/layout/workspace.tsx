@@ -6,6 +6,7 @@ import { RequestTabsContainer } from "@/components/tabs/request-tabs-container";
 import { Separator } from "@/components/ui/separator";
 import { useTabStore } from "@/store/tab-store";
 import { EmptyState } from "@/components/workspace/empty-state";
+import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from "react-resizable-panels";
 
 export function Workspace() {
   const tabs = useTabStore((s) => s.tabs);
@@ -21,19 +22,25 @@ export function Workspace() {
           </div>
         ) : (
           <>
+          <PanelGroup orientation="vertical">
             {/* Request Builder */}
-            <div className="shrink-0">
-              <RequestBuilder />
-            </div>
+            <Panel defaultSize={45} minSize={20}>
+              <div className="h-full overflow-y-auto">
+                <RequestBuilder />
+              </div>
+            </Panel>
 
-            <Separator className="opacity-30" />
+            <PanelResizeHandle className="h-[1px] bg-border/50 hover:bg-indigo-500/50 hover:h-1 transition-all" />
 
             {/* Response Panel */}
-            <div className="flex-1 overflow-y-auto min-h-[200px] p-4 pt-2">
-              <div className="h-full rounded-xl border border-border/50 overflow-hidden shadow-sm bg-background">
-                <ResponsePanel />
+            <Panel defaultSize={55} minSize={20}>
+              <div className="flex flex-col h-full p-4 pt-2">
+                <div className="flex-1 rounded-xl border border-border/50 overflow-hidden shadow-sm bg-background">
+                  <ResponsePanel />
+                </div>
               </div>
-            </div>
+            </Panel>
+          </PanelGroup>
           </>
         )}
       </div>
