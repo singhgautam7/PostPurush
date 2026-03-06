@@ -2,10 +2,10 @@
 
 import { useRequestStore } from "@/store/request-store";
 import { BodyType } from "@/types/request";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { BodyKeyValue } from "./body-keyvalue";
+import { CodeViewer } from "@/components/code/code-viewer";
 
 export function BodyTab() {
   const body = useRequestStore((s) => s.activeRequest.body);
@@ -46,22 +46,20 @@ export function BodyTab() {
         ))}
       </div>
 
-      <div className="flex-1 overflow-y-auto min-h-0">
+      <div className="flex-1 overflow-hidden min-h-0">
         {body.type === "form" ? (
           <BodyKeyValue />
         ) : (
-          <Textarea
-            value={body.content}
-            onChange={(e) => setBody({ ...body, content: e.target.value })}
-            placeholder={
-              body.type === "json"
-                ? '{\n  "key": "value"\n}'
-                : "Enter request body..."
-            }
-            className="min-h-[200px] h-full bg-muted/30 border-border/30 font-mono text-sm resize-none"
+          <CodeViewer
+            code={body.content}
+            language={body.type === "json" ? "json" : "javascript"}
+            editable={true}
+            onChange={(value) => setBody({ ...body, content: value })}
+            className="h-full"
           />
         )}
       </div>
     </div>
   );
 }
+

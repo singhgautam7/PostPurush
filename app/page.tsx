@@ -10,7 +10,7 @@ export default function Home() {
       <PanelGroup orientation="horizontal">
         {/* Sidebar */}
         <Panel
-          defaultSize={280}
+          defaultSize={210}
           minSize={140}
           maxSize="50vw"
           className="bg-card/50 overflow-hidden"

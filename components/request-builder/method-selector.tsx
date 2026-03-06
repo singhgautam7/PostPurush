@@ -26,7 +26,7 @@ export function MethodSelector() {
 
   return (
     <Select value={method} onValueChange={(v) => setMethod(v as HttpMethod)}>
-      <SelectTrigger className="w-[130px] h-10 border-border/50 bg-muted/50 font-mono font-semibold text-sm">
+      <SelectTrigger className="w-[100px] h-10 border-border/50 bg-muted/50 font-mono font-semibold text-sm">
         <SelectValue>
           <span className={currentMethod?.color}>{method}</span>
         </SelectValue>

@@ -30,7 +30,7 @@ export function Workspace() {
               </div>
             </Panel>
 
-            <PanelResizeHandle className="h-[1px] bg-border/50 hover:bg-indigo-500/50 hover:h-1 transition-all" />
+            <PanelResizeHandle className="h-[4px] bg-border/50 hover:bg-indigo-500/50 transition-all cursor-row-resize" />
 
             {/* Response Panel */}
             <Panel defaultSize={55} minSize={20}>
