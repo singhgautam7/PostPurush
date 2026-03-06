@@ -49,7 +49,7 @@ export function CodeExportModal({ open, onOpenChange }: CodeExportModalProps) {
         <DialogHeader>
           <DialogTitle className="text-lg">Export Code</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
+        <div className="space-y-4 overflow-hidden w-full max-w-full">
           <div className="flex items-center gap-2">
             {supportedLanguages.map((lang) => (
               <Badge
@@ -70,7 +70,9 @@ export function CodeExportModal({ open, onOpenChange }: CodeExportModalProps) {
               </Badge>
             ))}
           </div>
-          <CodeViewer code={code} language={syntaxLang} className="h-[400px]" />
+          <div className="min-w-0 w-full overflow-hidden rounded-lg border border-border/10">
+            <CodeViewer code={code} language={syntaxLang} className="h-[400px]" />
+          </div>
         </div>
       </DialogContent>
     </Dialog>

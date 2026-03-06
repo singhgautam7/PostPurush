@@ -11,6 +11,10 @@ export function buildUrl(baseUrl: string, params: KeyValuePair[]): string {
 
     const url = new URL(baseUrl.includes("://") ? baseUrl : `https://${baseUrl}`);
 
+    // Clear existing search parameters to prevent duplication
+    // since the baseUrl often holds the URL representation of the params already
+    url.search = "";
+
     for (const { key, value } of enabledParams) {
         url.searchParams.append(key, value);
     }
