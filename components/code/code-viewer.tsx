@@ -5,10 +5,11 @@ import { Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import CodeMirror from "@uiw/react-codemirror";
-import { vscodeDark } from "@uiw/codemirror-theme-vscode";
+import { githubDark } from "@uiw/codemirror-theme-github";
 import { json } from "@codemirror/lang-json";
 import { javascript } from "@codemirror/lang-javascript";
 import { python } from "@codemirror/lang-python";
+import { go } from "@codemirror/lang-go";
 import { EditorView } from "@codemirror/view";
 
 const languageExtensions: Record<string, () => ReturnType<typeof json>> = {
@@ -16,6 +17,8 @@ const languageExtensions: Record<string, () => ReturnType<typeof json>> = {
   javascript: () => javascript(),
   typescript: () => javascript({ typescript: true }),
   python: () => python(),
+  go: () => go(),
+  bash: () => javascript(), // fallback for shell/curl
 };
 
 interface CodeViewerProps {
@@ -62,7 +65,7 @@ export function CodeViewer({ code, language, className, editable = false, onChan
       <div className="flex-1 w-full rounded-lg border border-border/30 overflow-auto [&_.cm-editor]:bg-transparent [&_.cm-gutters]:bg-transparent [&_.cm-gutters]:border-none">
         <CodeMirror
           value={code}
-          theme={vscodeDark}
+          theme={githubDark}
           extensions={extensions}
           onChange={onChange}
           basicSetup={{

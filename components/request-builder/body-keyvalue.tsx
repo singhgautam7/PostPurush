@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { useRequestStore } from "@/store/request-store";
 import { KeyValuePair } from "@/types/request";
 import { Input } from "@/components/ui/input";
@@ -10,7 +11,8 @@ export function BodyKeyValue() {
   const body = useRequestStore((s) => s.activeRequest.body);
   const setBody = useRequestStore((s) => s.setBody);
 
-  const formData = body.formData || [{ key: "", value: "" }];
+  const formData = body.formData || [];
+  const keyRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
   const updateFormData = (index: number, field: keyof KeyValuePair, value: string) => {
     const newFormData = [...formData];
@@ -19,7 +21,6 @@ export function BodyKeyValue() {
   };
 
   const removeFormData = (index: number) => {
-    if (formData.length <= 1) return;
     const newFormData = formData.filter((_, i) => i !== index);
     setBody({ ...body, formData: newFormData });
   };
@@ -28,6 +29,7 @@ export function BodyKeyValue() {
     if (e.key === "Enter" && index === formData.length - 1) {
       e.preventDefault();
       setBody({ ...body, formData: [...formData, { key: "", value: "" }] });
+      setTimeout(() => { keyRefs.current[index + 1]?.focus(); }, 0);
     }
   };
 
@@ -38,9 +40,15 @@ export function BodyKeyValue() {
         <span>Value</span>
         <span></span>
       </div>
+
+      {formData.length === 0 && (
+        <div className="text-xs text-muted-foreground italic mb-2 px-1">No form data added</div>
+      )}
+
       {formData.map((param, index) => (
         <div key={index} className="group grid grid-cols-[1fr_1fr_40px] gap-2">
           <Input
+            ref={(el) => { keyRefs.current[index] = el; }}
             value={param.key}
             onChange={(e) => updateFormData(index, "key", e.target.value)}
             onKeyDown={(e) => handleKeyDown(e, index)}
@@ -58,8 +66,7 @@ export function BodyKeyValue() {
             variant="ghost"
             size="icon"
             onClick={() => removeFormData(index)}
-            className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-            disabled={formData.length <= 1}
+            className="h-8 w-8 text-muted-foreground hover:text-destructive"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </Button>
@@ -68,8 +75,11 @@ export function BodyKeyValue() {
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => setBody({ ...body, formData: [...formData, { key: "", value: "" }] })}
-        className="h-7 text-xs text-muted-foreground hover:text-foreground gap-1"
+        onClick={() => {
+          setBody({ ...body, formData: [...formData, { key: "", value: "" }] });
+          setTimeout(() => { keyRefs.current[formData.length]?.focus(); }, 0);
+        }}
+        className="h-7 text-xs text-muted-foreground hover:text-foreground gap-1 mt-2"
       >
         <Plus className="h-3 w-3" />
         Add Item
