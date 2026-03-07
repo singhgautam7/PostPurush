@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeScript } from "@/components/theme/theme-script";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -34,6 +35,18 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <TooltipProvider>{children}</TooltipProvider>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            classNames: {
+              toast: "bg-panel border border-border text-foreground shadow-xl shadow-black/20 rounded-xl",
+              title: "text-sm font-medium text-foreground",
+              description: "text-xs text-foreground-muted",
+              error: "border-red-800/50",
+              success: "border-emerald-800/50",
+            },
+          }}
+        />
       </body>
     </html>
   );
