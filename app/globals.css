@@ -56,6 +56,8 @@
   --color-code-bg: var(--code-bg);
   --color-primary-action: var(--primary-action);
   --color-primary-action-fg: var(--primary-action-fg);
+  --color-sidebar-bg: var(--sidebar-bg);
+  --color-foreground-nav: var(--foreground-nav);
 }
 
 /* ============================================================
@@ -98,6 +100,7 @@
   --background-panel: oklch(0.97 0 0);
   --background-raised: oklch(0.93 0 0);
   --foreground-muted: oklch(0.552 0.016 285.938);
+  --foreground-nav: oklch(0.26 0.008 286);
   --foreground-subtle: oklch(0.44 0.01 286);
   --border-subtle: oklch(0.84 0.006 286);
   --sidebar-bg: oklch(0.985 0 0);
@@ -146,9 +149,10 @@
   --background-panel: oklch(0.205 0.006 286);
   --background-raised: oklch(0.274 0.006 286);
   --foreground-muted: oklch(0.625 0.013 286);
+  --foreground-nav: oklch(0.78 0.01 286);
   --foreground-subtle: oklch(0.44 0.01 286);
   --border-subtle: oklch(0.332 0.007 286);
-  --sidebar-bg: oklch(0.145 0.005 286);
+  --sidebar-bg: oklch(0.185 0.005 286);
   --tab-active-bg: oklch(0.332 0.007 286);
   --code-bg: oklch(0.145 0.005 286);
   --primary-action: oklch(1 0 0);
@@ -184,9 +188,10 @@
   --background-panel: hsl(20, 10%, 12%);
   --background-raised: hsl(20, 8%, 18%);
   --foreground-muted: hsl(20, 8%, 60%);
+  --foreground-nav: hsl(20, 8%, 78%);
   --foreground-subtle: hsl(20, 6%, 38%);
   --border-subtle: hsl(20, 6%, 25%);
-  --sidebar-bg: hsl(20, 14%, 8%);
+  --sidebar-bg: hsl(20, 14%, 11%);
   --tab-active-bg: hsl(16, 80%, 20%);
   --code-bg: hsl(20, 14%, 6%);
   --primary-action: hsl(16, 100%, 61%);
@@ -222,6 +227,7 @@
   --background-panel: hsl(20, 10%, 97%);
   --background-raised: hsl(20, 8%, 93%);
   --foreground-muted: hsl(20, 8%, 40%);
+  --foreground-nav: hsl(20, 8%, 25%);
   --foreground-subtle: hsl(20, 6%, 58%);
   --border-subtle: hsl(20, 6%, 80%);
   --sidebar-bg: hsl(20, 10%, 97%);
@@ -260,9 +266,10 @@
   --background-panel: hsl(0, 0%, 11%);
   --background-raised: hsl(0, 0%, 17%);
   --foreground-muted: hsl(0, 0%, 62%);
+  --foreground-nav: hsl(0, 0%, 78%);
   --foreground-subtle: hsl(0, 0%, 40%);
   --border-subtle: hsl(0, 0%, 24%);
-  --sidebar-bg: hsl(0, 0%, 7%);
+  --sidebar-bg: hsl(0, 0%, 10%);
   --tab-active-bg: hsl(0, 70%, 16%);
   --code-bg: hsl(0, 0%, 6%);
   --primary-action: hsl(0, 100%, 50%);
@@ -298,6 +305,7 @@
   --background-panel: hsl(0, 0%, 97%);
   --background-raised: hsl(0, 0%, 93%);
   --foreground-muted: hsl(0, 0%, 44%);
+  --foreground-nav: hsl(0, 0%, 25%);
   --foreground-subtle: hsl(0, 0%, 60%);
   --border-subtle: hsl(0, 0%, 80%);
   --sidebar-bg: hsl(0, 0%, 98%);
@@ -336,9 +344,10 @@
   --background-panel: hsl(215, 22%, 11%);
   --background-raised: hsl(215, 16%, 17%);
   --foreground-muted: hsl(215, 10%, 55%);
+  --foreground-nav: hsl(215, 10%, 78%);
   --foreground-subtle: hsl(215, 8%, 36%);
   --border-subtle: hsl(215, 10%, 26%);
-  --sidebar-bg: hsl(215, 28%, 7%);
+  --sidebar-bg: hsl(215, 28%, 10%);
   --tab-active-bg: hsl(213, 60%, 16%);
   --code-bg: hsl(215, 28%, 5%);
   --primary-action: hsl(213, 100%, 68%);
@@ -374,6 +383,7 @@
   --background-panel: hsl(210, 17%, 98%);
   --background-raised: hsl(210, 14%, 93%);
   --foreground-muted: hsl(215, 12%, 40%);
+  --foreground-nav: hsl(215, 12%, 24%);
   --foreground-subtle: hsl(215, 10%, 58%);
   --border-subtle: hsl(210, 12%, 80%);
   --sidebar-bg: hsl(210, 17%, 97%);
@@ -412,9 +422,10 @@
   --background-panel: hsl(160, 14%, 9%);
   --background-raised: hsl(160, 10%, 14%);
   --foreground-muted: hsl(150, 8%, 55%);
+  --foreground-nav: hsl(150, 8%, 78%);
   --foreground-subtle: hsl(150, 6%, 36%);
   --border-subtle: hsl(160, 8%, 22%);
-  --sidebar-bg: hsl(160, 20%, 5%);
+  --sidebar-bg: hsl(160, 20%, 8%);
   --tab-active-bg: hsl(142, 45%, 12%);
   --code-bg: hsl(160, 20%, 4%);
   --primary-action: hsl(142, 65%, 49%);
@@ -450,6 +461,7 @@
   --background-panel: hsl(145, 14%, 97%);
   --background-raised: hsl(145, 10%, 93%);
   --foreground-muted: hsl(150, 8%, 40%);
+  --foreground-nav: hsl(150, 8%, 24%);
   --foreground-subtle: hsl(150, 6%, 56%);
   --border-subtle: hsl(145, 8%, 80%);
   --sidebar-bg: hsl(145, 14%, 97%);
@@ -488,9 +500,10 @@
   --background-panel: hsl(48, 6%, 10%);
   --background-raised: hsl(48, 5%, 16%);
   --foreground-muted: hsl(48, 6%, 58%);
+  --foreground-nav: hsl(48, 6%, 78%);
   --foreground-subtle: hsl(48, 4%, 37%);
   --border-subtle: hsl(48, 4%, 24%);
-  --sidebar-bg: hsl(48, 8%, 6%);
+  --sidebar-bg: hsl(48, 8%, 9%);
   --tab-active-bg: hsl(59, 80%, 14%);
   --code-bg: hsl(48, 8%, 4%);
   --primary-action: hsl(59, 100%, 50%);
@@ -526,6 +539,7 @@
   --background-panel: hsl(50, 14%, 97%);
   --background-raised: hsl(50, 10%, 93%);
   --foreground-muted: hsl(48, 6%, 42%);
+  --foreground-nav: hsl(48, 6%, 24%);
   --foreground-subtle: hsl(48, 4%, 58%);
   --border-subtle: hsl(50, 8%, 80%);
   --sidebar-bg: hsl(50, 14%, 97%);

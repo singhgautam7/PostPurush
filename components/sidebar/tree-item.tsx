@@ -143,7 +143,7 @@ export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequ
           </div>
 
           {/* Name */}
-          <div className="flex-1 truncate text-foreground-subtle group-hover:text-foreground transition-colors overflow-hidden">
+          <div className="flex-1 truncate text-foreground-nav group-hover:text-foreground transition-colors overflow-hidden">
             {isEditing ? (
               <Input
                 value={editName}

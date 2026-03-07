@@ -37,7 +37,7 @@ export function ResponseTabs() {
             >
               {tab.label}
               {tab.count !== undefined && tab.count > 0 && (
-                <span className="ml-1 bg-raised text-foreground-subtle text-[10px] rounded-full px-1 py-px leading-none">
+                <span className="ml-1 bg-primary/15 text-primary text-[10px] font-semibold rounded-full px-1.5 py-px leading-none">
                   {tab.count}
                 </span>
               )}
