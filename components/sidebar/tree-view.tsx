@@ -202,22 +202,8 @@ export function TreeView() {
       onDragStart={(e) => setActiveId(e.active.id as string)}
       onDragEnd={(e) => { handleDragEnd(e); setActiveId(null); }}
     >
-      <div className="flex flex-col h-full text-sm">
-        <div className="px-4 py-2 flex items-center justify-between group">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-foreground-subtle w-full flex justify-between">
-            Requests
-            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button onClick={() => handleNewRequest()} className="text-foreground-subtle hover:text-foreground text-xs" title="New Request">
-                +Req
-              </button>
-              <button onClick={() => handleNewFolder()} className="text-foreground-subtle hover:text-foreground text-xs ml-2" title="New Folder">
-                +Fol
-              </button>
-            </div>
-          </span>
-        </div>
-
-        <div className="flex-1 overflow-y-auto w-full group/tree pt-1 pb-4">
+      <div className="flex flex-col text-sm">
+        <div className="w-full group/tree pb-4">
           <TreeDroppableRoot id="root">
             {tree.length === 0 ? (
               <div className="px-4 py-6 text-center text-xs text-foreground-subtle">
