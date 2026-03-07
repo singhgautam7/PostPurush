@@ -12,9 +12,9 @@ import { cn } from "@/lib/utils";
 
 const methodColors: Record<string, string> = {
   GET: "text-emerald-400",
-  POST: "text-amber-400",
-  PUT: "text-blue-400",
-  PATCH: "text-purple-400",
+  POST: "text-blue-400",
+  PUT: "text-amber-400",
+  PATCH: "text-violet-400",
   DELETE: "text-red-400",
 };
 
@@ -49,8 +49,8 @@ export function RequestItem({ request }: RequestItemProps) {
       className={cn(
         "group w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left transition-all duration-150",
         isActive
-          ? "bg-indigo-500/10 border border-indigo-500/20"
-          : "hover:bg-muted/50 border border-transparent"
+          ? "bg-zinc-800 border border-zinc-700"
+          : "hover:bg-zinc-900/50 border border-transparent"
       )}
     >
       <span

@@ -69,16 +69,11 @@ export function RequestTabsContainer() {
   };
 
   const handleSaveAndClose = () => {
-    // If the tab is currently active, we can just trigger the main save logic.
-    // If it's a background tab, it's safer to switch to it first so the states sync up.
     if (tabToClose) {
       if (activeTabId !== tabToClose) {
         const tab = tabs.find(t => t.id === tabToClose);
         if (tab) handleTabClick(tab.id, tab.requestId);
       }
-
-      // We will trigger the save button click that resides in the URL bar
-      // Give React a tick to sync state if we just switched tabs
       setTimeout(() => {
         document.getElementById("save-btn-trigger")?.click();
         performClose(tabToClose);
@@ -88,16 +83,12 @@ export function RequestTabsContainer() {
 
   const handleTabClick = async (tabId: string, requestId: string) => {
     setActiveTab(tabId);
-
-    // Load the request content
     if (requestId.startsWith("new-")) {
       resetRequest();
     } else {
       const allRequests = await loadRequests();
       const req = allRequests.find(r => r.id === requestId);
-      if (req) {
-        loadRequest(req);
-      }
+      if (req) loadRequest(req);
     }
     clearResponse();
   };
@@ -111,11 +102,7 @@ export function RequestTabsContainer() {
   const reorderTabs = useTabStore((s) => s.reorderTabs);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5,
-      },
-    })
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -127,11 +114,11 @@ export function RequestTabsContainer() {
 
   if (tabs.length === 0) {
     return (
-      <div className="flex h-9 items-center justify-between border-b border-border/50 bg-muted/20 px-2 leading-none">
-        <div className="text-xs text-muted-foreground/70 px-2">No open tabs</div>
+      <div className="flex h-9 items-center justify-between border-b border-border bg-background px-2 leading-none">
+        <div className="text-xs text-foreground-subtle px-2">No open tabs</div>
         <button
           onClick={handleNewTab}
-          className="p-1.5 text-muted-foreground hover:bg-muted/50 rounded-md transition-colors"
+          className="p-1.5 text-foreground-subtle hover:text-foreground-muted hover:bg-panel rounded-md transition-colors"
         >
           <Plus className="h-3.5 w-3.5" />
         </button>
@@ -140,7 +127,7 @@ export function RequestTabsContainer() {
   }
 
   return (
-    <div className="flex h-9 items-center border-b border-border/50 bg-muted/20 pl-2 leading-none">
+    <div className="flex h-9 items-center border-b border-border bg-background pl-2 leading-none">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -169,10 +156,10 @@ export function RequestTabsContainer() {
           </SortableContext>
         </div>
       </DndContext>
-      <div className="flex h-full items-center px-2 z-10 bg-muted/20 shadow-[-4px_0_4px_-4px_rgba(0,0,0,0.1)]">
+      <div className="flex h-full items-center px-2 z-10 bg-background">
         <button
           onClick={handleNewTab}
-          className="p-1.5 text-muted-foreground hover:bg-muted/50 rounded-md transition-colors"
+          className="p-1.5 text-foreground-subtle hover:text-foreground-muted hover:bg-panel rounded-md transition-colors"
         >
           <Plus className="h-4 w-4" />
         </button>
@@ -192,7 +179,7 @@ export function RequestTabsContainer() {
               <Button variant="destructive" onClick={handleDiscardAndClose}>
                 Don't Save
               </Button>
-              <Button onClick={handleSaveAndClose} className="bg-indigo-500 hover:bg-indigo-600">
+              <Button onClick={handleSaveAndClose} className="bg-primary-action text-primary-action-fg hover:bg-primary-action/85">
                 Save
               </Button>
             </AlertDialogFooter>

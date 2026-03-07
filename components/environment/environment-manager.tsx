@@ -43,7 +43,7 @@ export function EnvironmentManager({ open, onOpenChange }: EnvironmentManagerPro
         <div className="space-y-3">
           <p className="text-xs text-muted-foreground">
             Variables can be used in URLs, headers, and body using{" "}
-            <code className="bg-muted/50 px-1 py-0.5 rounded text-indigo-400">
+            <code className="bg-raised px-1 py-0.5 rounded text-blue-400">
               {"{{variable_name}}"}
             </code>{" "}
             syntax.
@@ -59,17 +59,13 @@ export function EnvironmentManager({ open, onOpenChange }: EnvironmentManagerPro
               <div key={index} className="group grid grid-cols-[1fr_1fr_40px] gap-2">
                 <Input
                   value={v.key}
-                  onChange={(e) =>
-                    updateVariable(index, { ...v, key: e.target.value })
-                  }
+                  onChange={(e) => updateVariable(index, { ...v, key: e.target.value })}
                   placeholder="variable_name"
                   className="h-8 bg-muted/30 border-border/30 text-sm font-mono"
                 />
                 <Input
                   value={v.value}
-                  onChange={(e) =>
-                    updateVariable(index, { ...v, value: e.target.value })
-                  }
+                  onChange={(e) => updateVariable(index, { ...v, value: e.target.value })}
                   placeholder="value"
                   className="h-8 bg-muted/30 border-border/30 text-sm font-mono"
                 />
@@ -100,7 +96,7 @@ export function EnvironmentManager({ open, onOpenChange }: EnvironmentManagerPro
               size="sm"
               onClick={handleSave}
               disabled={saving}
-              className="h-7 gap-1 bg-gradient-to-r from-indigo-500 to-blue-600 text-white hover:from-indigo-600 hover:to-blue-700"
+              className="h-7 gap-1 bg-primary-action text-primary-action-fg hover:bg-primary-action/85 font-medium"
             >
               <Save className="h-3 w-3" />
               {saving ? "Saving..." : "Save"}

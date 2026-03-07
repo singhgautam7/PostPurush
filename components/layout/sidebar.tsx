@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRequestStore } from "@/store/request-store";
 import { useEnvironmentStore } from "@/store/environment-store";
-import { useResponseStore } from "@/store/response-store";
 import { loadRequests, loadEnvironment, loadFolders } from "@/lib/storage/storage-helpers";
 import { TreeView } from "@/components/sidebar/tree-view";
 import { EnvironmentManager } from "@/components/environment/environment-manager";
@@ -17,8 +16,6 @@ export function Sidebar() {
   const setSavedRequests = useRequestStore((s) => s.setSavedRequests);
   const setFolders = useRequestStore((s) => s.setFolders);
   const setVariables = useEnvironmentStore((s) => s.setVariables);
-  const activeRequest = useRequestStore((s) => s.activeRequest);
-  const setName = useRequestStore((s) => s.setName);
   const [envOpen, setEnvOpen] = useState(false);
 
   useEffect(() => {
@@ -39,17 +36,17 @@ export function Sidebar() {
 
   return (
     <>
-      <div className="flex flex-col h-full bg-card/50">
+      <div className="flex flex-col h-full bg-background">
         {/* Header */}
         <div className="p-3 pb-2">
-          <p className="text-[10px] font-semibold tracking-widest text-muted-foreground/60 uppercase mb-2">Requests</p>
+          <p className="text-[10px] font-medium tracking-widest text-foreground-subtle uppercase mb-2">Requests</p>
 
           <div className="flex gap-2">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   onClick={handleNewRequest}
-                  className="flex-1 h-7 gap-1.5 text-xs bg-gradient-to-r from-indigo-500 to-blue-600 text-white hover:from-indigo-600 hover:to-blue-700 shadow-sm shadow-indigo-500/20"
+                  className="flex-1 h-7 gap-1.5 text-xs bg-primary-action text-primary-action-fg hover:bg-primary-action/85 font-medium"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   New Request
@@ -64,7 +61,7 @@ export function Sidebar() {
                   variant="outline"
                   size="icon"
                   onClick={() => setEnvOpen(true)}
-                  className="h-8 w-8 border-border/50"
+                  className="h-8 w-8 border-border text-foreground-subtle hover:text-foreground hover:bg-panel"
                 >
                   <Settings className="h-3.5 w-3.5" />
                 </Button>
@@ -74,7 +71,7 @@ export function Sidebar() {
           </div>
         </div>
 
-        <Separator className="opacity-50" />
+        <Separator className="bg-border" />
 
         <SidebarContextMenu>
           <div className="flex-1 overflow-hidden py-2 h-full w-full">

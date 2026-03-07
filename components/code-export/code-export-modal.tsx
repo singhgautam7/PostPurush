@@ -13,8 +13,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { CodeViewer } from "@/components/code/code-viewer";
 import { cn } from "@/lib/utils";
 
@@ -26,7 +24,6 @@ interface CodeExportModalProps {
 export function CodeExportModal({ open, onOpenChange }: CodeExportModalProps) {
   const activeRequest = useRequestStore((s) => s.activeRequest);
   const [language, setLanguage] = useState<CodeLanguage>("curl");
-  const [copied, setCopied] = useState(false);
 
   let code = "";
   try {
@@ -35,42 +32,33 @@ export function CodeExportModal({ open, onOpenChange }: CodeExportModalProps) {
     code = "// Error generating code";
   }
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   const syntaxLang = language === "curl" ? "bash" : language;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[800px] bg-card border-border/50">
+      <DialogContent className="sm:max-w-[800px] bg-panel border-border rounded-xl shadow-2xl shadow-black/50 p-6">
         <DialogHeader>
-          <DialogTitle className="text-lg">Export Code</DialogTitle>
+          <DialogTitle className="text-base font-semibold text-foreground">Export Code</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 overflow-hidden w-full max-w-full">
-          <div className="flex items-center gap-2">
+          {/* Level 2 — Underline tabs for language selector */}
+          <div className="flex items-center gap-1 border-b border-border">
             {supportedLanguages.map((lang) => (
-              <Badge
+              <button
                 key={lang.value}
-                variant={language === lang.value ? "default" : "outline"}
+                onClick={() => setLanguage(lang.value)}
                 className={cn(
-                  "cursor-pointer transition-all",
+                  "px-3 py-2 text-xs font-medium transition-all border-b-2 -mb-px",
                   language === lang.value
-                    ? "bg-indigo-500/20 text-indigo-400 border-indigo-500/30 hover:bg-indigo-500/30"
-                    : "hover:bg-muted/60"
+                    ? "text-foreground border-foreground-muted"
+                    : "text-foreground-subtle border-transparent hover:text-foreground-muted"
                 )}
-                onClick={() => {
-                  setLanguage(lang.value);
-                  setCopied(false);
-                }}
               >
                 {lang.label}
-              </Badge>
+              </button>
             ))}
           </div>
-          <div className="min-w-0 w-full overflow-hidden rounded-lg border border-border/10">
+          <div className="min-w-0 w-full overflow-hidden rounded-lg border border-border">
             <CodeViewer code={code} language={syntaxLang} className="h-[400px]" />
           </div>
         </div>

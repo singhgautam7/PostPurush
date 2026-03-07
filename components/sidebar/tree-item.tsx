@@ -13,7 +13,7 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { ChevronRight, ChevronDown, Folder as FolderIcon, FolderOpen, FileCode, Trash2, Edit2, Plus, GripVertical } from "lucide-react";
+import { ChevronRight, ChevronDown, Folder as FolderIcon, FolderOpen, Trash2, Edit2, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SidebarItemActions } from "./sidebar-item-actions";
 import { Input } from "@/components/ui/input";
@@ -21,9 +21,9 @@ import { useDraggable, useDroppable } from "@dnd-kit/core";
 
 const methodColors: Record<string, string> = {
   GET: "text-emerald-400",
-  POST: "text-amber-400",
-  PUT: "text-blue-400",
-  PATCH: "text-purple-400",
+  POST: "text-blue-400",
+  PUT: "text-amber-400",
+  PATCH: "text-violet-400",
   DELETE: "text-red-400",
 };
 
@@ -54,14 +54,12 @@ export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequ
 
   const { isOver, setNodeRef: setDroppableRef } = useDroppable({
     id: item.id,
-    disabled: item.type !== "folder", // Only folders can be dropped into
+    disabled: item.type !== "folder",
   });
 
   const setNodeRef = (element: HTMLElement | null) => {
     setDraggableRef(element);
-    if (item.type === "folder") {
-      setDroppableRef(element);
-    }
+    if (item.type === "folder") setDroppableRef(element);
   };
 
   const isActive = item.type === "request" && activeRequest.id === item.id;
@@ -95,7 +93,6 @@ export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequ
       setEditName(item.name);
       return;
     }
-
     if (item.type === "request" && item.request) {
       const updated = { ...item.request, name: editName.trim(), updatedAt: Date.now() };
       await saveRequest(updated);
@@ -117,16 +114,16 @@ export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequ
           onClick={handleOpen}
           style={{ paddingLeft: `${depth * 12 + 8}px` }}
           className={cn(
-            "group flex items-center h-7 cursor-pointer hover:bg-muted/50 rounded-sm text-sm transition-colors pe-2 select-none",
-            isActive && "bg-indigo-500/10 text-indigo-500 hover:bg-indigo-500/15",
+            "group flex items-center h-7 cursor-pointer hover:bg-panel/50 rounded-sm text-sm transition-colors pe-2 select-none",
+            isActive && "bg-raised text-foreground hover:bg-raised",
             isDragging && "opacity-50",
-            isOver && "bg-indigo-500/20 ring-1 ring-inset ring-indigo-500/50"
+            isOver && "bg-raised/60 ring-1 ring-inset ring-border-subtle"
           )}
         >
           {/* Caret for folders */}
           <div className="w-4 flex items-center justify-center shrink-0">
             {item.type === "folder" && (
-              <span className="text-muted-foreground">
+              <span className="text-foreground-subtle">
                 {isOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
               </span>
             )}
@@ -135,7 +132,9 @@ export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequ
           {/* Icon */}
           <div className="w-5 flex items-center justify-center shrink-0 me-1">
             {item.type === "folder" ? (
-              isOpen ? <FolderOpen className="h-4 w-4 text-indigo-400" /> : <FolderIcon className="h-4 w-4 text-indigo-400" />
+              isOpen
+                ? <FolderOpen className="h-4 w-4 text-foreground-muted" />
+                : <FolderIcon className="h-4 w-4 text-foreground-muted" />
             ) : (
               <span className={cn("text-[9px] font-mono font-bold", item.request ? methodColors[item.request.method] : "")}>
                 {item.request?.method.substring(0, 3)}
@@ -144,7 +143,7 @@ export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequ
           </div>
 
           {/* Name */}
-          <div className="flex-1 truncate text-muted-foreground group-hover:text-foreground transition-colors overflow-hidden">
+          <div className="flex-1 truncate text-foreground-nav group-hover:text-foreground transition-colors overflow-hidden">
             {isEditing ? (
               <Input
                 value={editName}
@@ -155,11 +154,11 @@ export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequ
                   if (e.key === "Escape") { setIsEditing(false); setEditName(item.name); }
                 }}
                 autoFocus
-                className="h-6 text-xs px-1.5 py-0 bg-background border-indigo-500"
+                className="h-6 text-xs px-1.5 py-0 bg-panel border-border-subtle"
                 onClick={(e) => e.stopPropagation()}
               />
             ) : (
-              <span className={cn("truncate block", isActive && "text-indigo-400 font-medium")}>{item.name}</span>
+              <span className={cn("truncate block", isActive && "text-foreground font-medium")}>{item.name}</span>
             )}
           </div>
 
@@ -167,10 +166,7 @@ export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequ
             <div className="shrink-0 flex items-center pr-1 transition-opacity">
               <SidebarItemActions
                 type={item.type}
-                onRename={() => {
-                  setEditName(item.name);
-                  setIsEditing(true);
-                }}
+                onRename={() => { setEditName(item.name); setIsEditing(true); }}
                 onDelete={handleDelete}
                 onNewFolder={item.type === "folder" ? () => onNewFolder?.(item.id) : undefined}
                 onNewRequest={item.type === "folder" ? () => onNewRequest?.(item.id) : undefined}

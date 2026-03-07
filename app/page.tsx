@@ -12,6 +12,8 @@ const sectionTitles: Record<string, string> = {
   stress: "Stress Testing",
   analytics: "Analytics",
   env: "Environments",
+  help: "Help",
+  settings: "Settings",
 };
 
 export default function Home() {

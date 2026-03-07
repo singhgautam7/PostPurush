@@ -16,7 +16,6 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
-  DragStartEvent,
   useDroppable
 } from "@dnd-kit/core";
 
@@ -33,12 +32,10 @@ type TreeNode = {
 function buildTree(folders: Folder[], requests: SavedRequest[]): TreeNode[] {
   const nodeMap = new Map<string, TreeNode>();
 
-  // Add folders
   folders.forEach((f) => {
     nodeMap.set(f.id, { id: f.id, name: f.name, type: "folder", folder: f, parentId: f.parentId, children: [] });
   });
 
-  // Add requests
   requests.forEach((r) => {
     nodeMap.set(r.id, { id: r.id, name: r.name, type: "request", request: r, parentId: r.parentId, children: [] });
   });
@@ -53,7 +50,6 @@ function buildTree(folders: Folder[], requests: SavedRequest[]): TreeNode[] {
     }
   });
 
-  // Sort folders first, then alphabetically
   const sortNodes = (nodes: TreeNode[]) => {
     nodes.sort((a, b) => {
       if (a.type !== b.type) return a.type === "folder" ? -1 : 1;
@@ -122,8 +118,6 @@ export function TreeView() {
     await saveRequest(req);
     addSavedRequest(req);
     if (parentId) setOpenFolders(prev => new Set(prev).add(parentId));
-
-    // Open and focus the newly created request
     openTab(req.id, req.name);
     setActiveTab(req.id);
     loadRequest(req);
@@ -157,7 +151,6 @@ export function TreeView() {
 
   const renderNode = (node: TreeNode, depth: number = 0) => {
     const isOpen = openFolders.has(node.id);
-
     return (
       <div key={node.id}>
         <TreeItem
@@ -181,26 +174,21 @@ export function TreeView() {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    // active.id is the dragged item
-    // over.id is the target folder (or root)
-
-    // Determine if we are dropping on a folder or root
     const targetId = over.id === "root" ? undefined : (over.id as string);
-    const activeId = active.id as string;
+    const draggedId = active.id as string;
 
-    const request = requests.find(r => r.id === activeId);
+    const request = requests.find(r => r.id === draggedId);
     if (request) {
-      if (request.parentId === targetId) return; // No change
+      if (request.parentId === targetId) return;
       const updated = { ...request, parentId: targetId, updatedAt: Date.now() };
       await saveRequest(updated);
       updateSavedRequest(updated);
       return;
     }
 
-    const folder = folders.find(f => f.id === activeId);
+    const folder = folders.find(f => f.id === draggedId);
     if (folder) {
-      // Prevent dropping a folder into itself or its own children (simple check: cant drop on own id handled above)
-      if (folder.parentId === targetId) return; // No change
+      if (folder.parentId === targetId) return;
       const updated = { ...folder, parentId: targetId, updatedAt: Date.now() };
       await saveFolder(updated);
       updateDBFolder(updated);
@@ -212,22 +200,19 @@ export function TreeView() {
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragStart={(e) => setActiveId(e.active.id as string)}
-      onDragEnd={(e) => {
-        handleDragEnd(e);
-        setActiveId(null);
-      }}
+      onDragEnd={(e) => { handleDragEnd(e); setActiveId(null); }}
     >
       <div className="flex flex-col h-full text-sm">
         <div className="px-4 py-2 flex items-center justify-between group">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 w-full flex justify-between">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-foreground-subtle w-full flex justify-between">
             Requests
             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-               <button onClick={() => handleNewRequest()} className="text-muted-foreground hover:text-foreground text-xs" title="New Request" >
-                 +Req
-               </button>
-               <button onClick={() => handleNewFolder()} className="text-muted-foreground hover:text-foreground text-xs ml-2" title="New Folder">
-                 +Fol
-               </button>
+              <button onClick={() => handleNewRequest()} className="text-foreground-subtle hover:text-foreground text-xs" title="New Request">
+                +Req
+              </button>
+              <button onClick={() => handleNewFolder()} className="text-foreground-subtle hover:text-foreground text-xs ml-2" title="New Folder">
+                +Fol
+              </button>
             </div>
           </span>
         </div>
@@ -235,8 +220,8 @@ export function TreeView() {
         <div className="flex-1 overflow-y-auto w-full group/tree pt-1 pb-4">
           <TreeDroppableRoot id="root">
             {tree.length === 0 ? (
-              <div className="px-4 py-6 text-center text-xs text-muted-foreground">
-                No requests yet.<br/>Create a new request or folder to begin.
+              <div className="px-4 py-6 text-center text-xs text-foreground-subtle">
+                No requests yet.<br />Create a new request or folder to begin.
               </div>
             ) : (
               tree.map(node => renderNode(node, 0))
@@ -246,7 +231,7 @@ export function TreeView() {
       </div>
       <DragOverlay dropAnimation={{ duration: 200, easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)' }}>
         {activeId ? (
-          <div className="px-2 py-1 text-xs bg-indigo-500/20 text-indigo-400 border border-indigo-500/50 rounded shadow-md backdrop-blur-sm truncate max-w-[200px]">
+          <div className="px-2 py-1 text-xs bg-raised text-foreground-muted border border-border-subtle rounded shadow-md backdrop-blur-sm truncate max-w-[200px]">
             Moving item...
           </div>
         ) : null}

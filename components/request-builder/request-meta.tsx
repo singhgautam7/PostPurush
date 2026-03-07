@@ -14,7 +14,6 @@ export function RequestMeta() {
   const [title, setTitle] = useState(activeRequest.name);
   const [description, setDescription] = useState(activeRequest.description || "");
 
-  // Sync state when active request changes
   useEffect(() => {
     setTitle(activeRequest.name);
     setDescription(activeRequest.description || "");
@@ -46,7 +45,7 @@ export function RequestMeta() {
         onChange={(e) => setTitle(e.target.value)}
         onBlur={handleTitleBlur}
         onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
-        className="text-xl font-semibold bg-transparent border-none outline-none focus:ring-0 placeholder:text-muted-foreground/50 w-full"
+        className="text-base font-semibold bg-transparent border-none outline-none focus:ring-0 text-foreground placeholder:text-foreground-subtle w-full"
         placeholder="Untitled Request"
       />
       <ReactTextareaAutosize
@@ -54,7 +53,7 @@ export function RequestMeta() {
         onChange={(e) => setDescription(e.target.value)}
         onBlur={handleDescriptionBlur}
         minRows={1}
-        className="text-sm text-muted-foreground resize-none bg-transparent border-none outline-none focus:ring-0 placeholder:text-muted-foreground/50 w-full leading-relaxed"
+        className="text-sm text-foreground-muted resize-none bg-transparent border-none outline-none focus:ring-0 placeholder:text-foreground-subtle w-full leading-relaxed"
         placeholder="Add a description..."
       />
     </div>

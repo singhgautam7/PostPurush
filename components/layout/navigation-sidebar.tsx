@@ -8,22 +8,67 @@ import {
   Activity,
   BarChart3,
   Globe,
+  HelpCircle,
+  Settings,
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useNavigationStore, NavigationSection } from "@/store/navigation-store";
 
-const navItems: { id: NavigationSection; label: string; icon: React.ElementType }[] = [
-  { id: "collections", label: "Collections", icon: Folder },
-  { id: "testing", label: "Testing", icon: FlaskConical },
-  { id: "docs", label: "API Docs", icon: BookText },
-  { id: "stress", label: "Stress Testing", icon: Activity },
-  { id: "analytics", label: "Analytics", icon: BarChart3 },
-  { id: "env", label: "Environments", icon: Globe },
+interface NavItemProps {
+  icon: React.ReactNode;
+  label: string;
+  isActive?: boolean;
+  collapsed?: boolean;
+  onClick?: () => void;
+}
+
+function NavItem({ icon, label, isActive, collapsed, onClick }: NavItemProps) {
+  const button = (
+    <button
+      onClick={onClick}
+      className={cn(
+        "w-full flex items-center cursor-pointer",
+        "rounded-none text-sm transition-colors duration-100",
+        collapsed ? "justify-center py-2.5" : "gap-2.5 px-3 py-2",
+        isActive
+          ? "bg-raised text-foreground font-medium border-l-2 border-accent"
+          : "text-foreground-nav hover:bg-raised hover:text-foreground border-l-2 border-transparent"
+      )}
+    >
+      <span className={cn("flex-shrink-0", isActive ? "text-foreground-subtle" : "text-foreground-nav")}>{icon}</span>
+      {!collapsed && <span className="flex-1 text-left truncate">{label}</span>}
+    </button>
+  );
+
+  if (collapsed) {
+    return (
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>{button}</TooltipTrigger>
+        <TooltipContent side="right" sideOffset={8}>
+          {label}
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return button;
+}
+
+const exploreItems: { id: NavigationSection; label: string; icon: React.ReactNode }[] = [
+  { id: "collections", label: "Collections", icon: <Folder size={15} /> },
+  { id: "testing", label: "Testing", icon: <FlaskConical size={15} /> },
+  { id: "docs", label: "API Docs", icon: <BookText size={15} /> },
+  { id: "stress", label: "Stress Testing", icon: <Activity size={15} /> },
+  { id: "analytics", label: "Analytics", icon: <BarChart3 size={15} /> },
+  { id: "env", label: "Environments", icon: <Globe size={15} /> },
+];
+
+const supportItems: { id: NavigationSection; label: string; icon: React.ReactNode }[] = [
+  { id: "help", label: "Help", icon: <HelpCircle size={15} /> },
+  { id: "settings", label: "Settings", icon: <Settings size={15} /> },
 ];
 
 export function NavigationSidebar() {
@@ -32,81 +77,70 @@ export function NavigationSidebar() {
   const setActiveSection = useNavigationStore((s) => s.setActiveSection);
 
   return (
-    <div
+    <aside
       className={cn(
-        "flex flex-col h-full bg-muted/30 border-r border-border/50 transition-all duration-200 shrink-0",
-        collapsed ? "w-14" : "w-[220px]"
+        "flex-shrink-0 flex flex-col h-full bg-sidebar-bg border-r border-border transition-all duration-200",
+        collapsed ? "w-14" : "w-[210px]"
       )}
     >
-      {/* Collapse toggle — top */}
-      <div className="p-2">
+      {/* Top: Collapse toggle */}
+      <div className={cn("h-12 flex items-center border-b border-border", collapsed ? "justify-center" : "px-4")}>
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               onClick={() => setCollapsed(!collapsed)}
-              className={cn(
-                "h-8 text-muted-foreground hover:text-foreground",
-                collapsed ? "w-10 px-0 justify-center" : "w-full justify-start gap-2 px-3"
-              )}
+              className="flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors cursor-pointer"
             >
-              {collapsed ? (
-                <PanelLeftOpen className="h-4 w-4 shrink-0" />
-              ) : (
-                <>
-                  <PanelLeftClose className="h-4 w-4 shrink-0" />
-                  <span className="text-xs">Collapse</span>
-                </>
-              )}
-            </Button>
+              {collapsed ? <PanelLeftOpen size={15} /> : <PanelLeftClose size={15} />}
+              {!collapsed && <span>Collapse</span>}
+            </button>
           </TooltipTrigger>
-          <TooltipContent side="right" sideOffset={8}>
-            {collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          </TooltipContent>
+          {collapsed && (
+            <TooltipContent side="right" sideOffset={8}>
+              Expand sidebar
+            </TooltipContent>
+          )}
         </Tooltip>
       </div>
 
-      <Separator className="opacity-30" />
+      {/* Explore section */}
+      <nav className="flex-1 flex flex-col py-2 overflow-y-auto">
+        {!collapsed && (
+          <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-foreground-subtle">
+            Explore
+          </p>
+        )}
+        {exploreItems.map((item) => (
+          <NavItem
+            key={item.id}
+            icon={item.icon}
+            label={item.label}
+            isActive={activeSection === item.id}
+            collapsed={collapsed}
+            onClick={() => setActiveSection(item.id)}
+          />
+        ))}
 
-      {/* Nav items */}
-      <nav className="flex-1 flex flex-col gap-1 p-2 pt-2">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = activeSection === item.id;
-
-          const button = (
-            <Button
+        {/* Support section — pushed to bottom */}
+        <div className="mt-auto">
+          <div className={cn("my-2 border-t border-border", collapsed ? "mx-2" : "mx-3")} />
+          {!collapsed && (
+            <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-foreground-subtle">
+              Support
+            </p>
+          )}
+          {supportItems.map((item) => (
+            <NavItem
               key={item.id}
-              variant="ghost"
+              icon={item.icon}
+              label={item.label}
+              isActive={activeSection === item.id}
+              collapsed={collapsed}
               onClick={() => setActiveSection(item.id)}
-              className={cn(
-                "justify-start gap-3 h-9 text-sm font-medium transition-all",
-                collapsed ? "w-10 px-0 justify-center" : "w-full px-3",
-                isActive
-                  ? "bg-indigo-500/15 text-indigo-400 hover:bg-indigo-500/20 hover:text-indigo-300"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-              )}
-            >
-              <Icon className={cn("shrink-0", collapsed ? "h-4.5 w-4.5" : "h-4 w-4")} />
-              {!collapsed && <span className="truncate">{item.label}</span>}
-            </Button>
-          );
-
-          if (collapsed) {
-            return (
-              <Tooltip key={item.id} delayDuration={0}>
-                <TooltipTrigger asChild>{button}</TooltipTrigger>
-                <TooltipContent side="right" sideOffset={8}>
-                  {item.label}
-                </TooltipContent>
-              </Tooltip>
-            );
-          }
-
-          return button;
-        })}
+            />
+          ))}
+        </div>
       </nav>
-    </div>
+    </aside>
   );
 }

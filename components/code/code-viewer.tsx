@@ -5,12 +5,14 @@ import { Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import CodeMirror from "@uiw/react-codemirror";
-import { githubDark } from "@uiw/codemirror-theme-github";
+import { vscodeDark } from "@uiw/codemirror-theme-vscode";
+import { githubLight } from "@uiw/codemirror-theme-github";
 import { json } from "@codemirror/lang-json";
 import { javascript } from "@codemirror/lang-javascript";
 import { python } from "@codemirror/lang-python";
 import { go } from "@codemirror/lang-go";
 import { EditorView } from "@codemirror/view";
+import { useTheme } from "@/hooks/use-theme";
 
 const languageExtensions: Record<string, () => ReturnType<typeof json>> = {
   json: () => json(),
@@ -18,7 +20,7 @@ const languageExtensions: Record<string, () => ReturnType<typeof json>> = {
   typescript: () => javascript({ typescript: true }),
   python: () => python(),
   go: () => go(),
-  bash: () => javascript(), // fallback for shell/curl
+  bash: () => javascript(),
 };
 
 interface CodeViewerProps {
@@ -31,6 +33,8 @@ interface CodeViewerProps {
 
 export function CodeViewer({ code, language, className, editable = false, onChange }: CodeViewerProps) {
   const [copied, setCopied] = useState(false);
+  const { mode } = useTheme();
+  const cmTheme = mode === "dark" ? vscodeDark : githubLight;
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(code);
@@ -52,7 +56,7 @@ export function CodeViewer({ code, language, className, editable = false, onChan
       <Button
         variant="secondary"
         size="sm"
-        className="absolute top-2 right-3 h-7 gap-1 text-xs z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-background/50 hover:bg-background/80 backdrop-blur-sm shadow-sm"
+        className="absolute top-2 right-3 h-7 gap-1 text-xs z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-raised/80 hover:bg-raised text-foreground-muted hover:text-foreground backdrop-blur-sm border-none shadow-none"
         onClick={handleCopy}
       >
         {copied ? (
@@ -62,10 +66,10 @@ export function CodeViewer({ code, language, className, editable = false, onChan
         )}
         {copied ? "Copied" : "Copy"}
       </Button>
-      <div className="flex-1 w-full rounded-lg border border-border/30 overflow-auto [&_.cm-editor]:bg-transparent [&_.cm-gutters]:bg-transparent [&_.cm-gutters]:border-none">
+      <div className="flex-1 w-full rounded-lg border border-border overflow-auto [&_.cm-editor]:bg-code-bg [&_.cm-gutters]:bg-code-bg [&_.cm-gutters]:border-r [&_.cm-gutters]:border-border">
         <CodeMirror
           value={code}
-          theme={githubDark}
+          theme={cmTheme}
           extensions={extensions}
           onChange={onChange}
           basicSetup={{
@@ -76,6 +80,7 @@ export function CodeViewer({ code, language, className, editable = false, onChan
           }}
           style={{
             fontSize: "13px",
+            fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
             minHeight: "100%",
           }}
         />
