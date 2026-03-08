@@ -35,8 +35,8 @@ export function RequestTabs() {
               className={cn(
                 "px-3 py-1 text-xs rounded-md font-medium transition-all flex items-center gap-1.5",
                 activeTab === tab.value
-                  ? "bg-tab-active text-foreground"
-                  : "text-foreground-subtle hover:text-foreground-muted"
+                  ? "bg-raised text-foreground shadow-sm"
+                  : "text-foreground-subtle hover:bg-raised/50 hover:text-foreground-muted"
               )}
             >
               {tab.label}

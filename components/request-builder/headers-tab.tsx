@@ -100,11 +100,11 @@ export function HeadersTab() {
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 text-xs text-foreground-muted hover:text-foreground gap-1 bg-raised hover:bg-raised/80"
+              className="h-7 text-xs text-primary font-medium gap-1 bg-primary/10 border border-primary/30 hover:bg-primary/20 hover:border-primary/50 transition-colors"
             >
               <Key className="h-3 w-3" />
               Add Auth
-              <ChevronDown className="h-3 w-3 opacity-50" />
+              <ChevronDown className="h-3 w-3 text-primary opacity-70" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-[180px]">

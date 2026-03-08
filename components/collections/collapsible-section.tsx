@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -21,13 +21,14 @@ export function CollapsibleSection({
   storageKey,
   onOpenChange,
 }: CollapsibleSectionProps) {
-  const [isOpen, setIsOpen] = useState(() => {
-    if (storageKey && typeof window !== "undefined") {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  useEffect(() => {
+    if (storageKey) {
       const stored = localStorage.getItem(storageKey);
-      if (stored !== null) return stored === "true";
+      if (stored !== null) setIsOpen(stored === "true");
     }
-    return defaultOpen;
-  });
+  }, [storageKey]);
 
   const toggle = () => {
     const next = !isOpen;
