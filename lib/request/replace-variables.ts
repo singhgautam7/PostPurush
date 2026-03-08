@@ -1,4 +1,5 @@
 import { EnvironmentVariable } from "@/types/environment";
+import { Environment } from "@/types/environment";
 
 export function replaceVariables(
     text: string,
@@ -14,6 +15,23 @@ export function replaceVariables(
         }
     }
     return result;
+}
+
+/**
+ * Returns true if `text` contains any {{variable}} tokens that cannot be
+ * resolved against the active environment.
+ */
+export function hasInvalidVariables(
+    text: string,
+    activeEnv: Environment | undefined
+): boolean {
+    if (!text) return false;
+    const matches = [...text.matchAll(/\{\{([^}]+)\}\}/g)];
+    if (matches.length === 0) return false;
+    if (!activeEnv) return true;
+    return matches.some(
+        (m) => !activeEnv.variables.some((v) => v.enabled && v.key === m[1].trim())
+    );
 }
 
 function escapeRegex(str: string): string {

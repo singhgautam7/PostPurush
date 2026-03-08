@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { useRequestStore } from "@/store/request-store";
 import { KeyValuePair } from "@/types/request";
 import { Input } from "@/components/ui/input";
+import { VariableInput } from "@/components/shared/variable-input";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
 
@@ -54,19 +55,19 @@ export function ParamsTab() {
       {/* Render actual params */}
       {params.map((param, index) => (
         <div key={index} className="group grid grid-cols-[1fr_1fr_40px] gap-2">
-          <Input
+          <VariableInput
             ref={(el) => {
               keyRefs.current[index] = el;
             }}
             value={param.key}
-            onChange={(e) => updateParam(index, "key", e.target.value)}
+            onChange={(val) => updateParam(index, "key", val)}
             onKeyDown={(e) => handleKeyDown(e, index)}
             placeholder="parameter"
             className="h-8 bg-muted/30 border-border/30 text-sm font-mono"
           />
-          <Input
+          <VariableInput
             value={param.value}
-            onChange={(e) => updateParam(index, "value", e.target.value)}
+            onChange={(val) => updateParam(index, "value", val)}
             onKeyDown={(e) => handleKeyDown(e, index)}
             placeholder="value"
             className="h-8 bg-muted/30 border-border/30 text-sm font-mono"

@@ -59,11 +59,10 @@ function NavItem({ icon, label, isActive, collapsed, onClick }: NavItemProps) {
 
 const exploreItems: { id: NavigationSection; label: string; icon: React.ReactNode }[] = [
   { id: "collections", label: "Collections", icon: <Folder size={15} /> },
-  { id: "testing", label: "Testing", icon: <FlaskConical size={15} /> },
-  { id: "docs", label: "API Docs", icon: <BookText size={15} /> },
-  { id: "stress", label: "Stress Testing", icon: <Activity size={15} /> },
-  { id: "analytics", label: "Analytics", icon: <BarChart3 size={15} /> },
   { id: "env", label: "Environments", icon: <Globe size={15} /> },
+  { id: "analytics", label: "Analytics", icon: <BarChart3 size={15} /> },
+  { id: "testing", label: "API Testing", icon: <FlaskConical size={15} /> },
+  { id: "docs", label: "API Docs", icon: <BookText size={15} /> },
 ];
 
 const supportItems: { id: NavigationSection; label: string; icon: React.ReactNode }[] = [

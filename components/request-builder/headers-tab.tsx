@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { useRequestStore } from "@/store/request-store";
 import { KeyValuePair } from "@/types/request";
 import { Input } from "@/components/ui/input";
+import { VariableInput } from "@/components/shared/variable-input";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2, Key, ChevronDown } from "lucide-react";
 import {
@@ -55,17 +56,17 @@ export function HeadersTab() {
 
       {headers.map((header, index) => (
         <div key={index} className="group grid grid-cols-[1fr_1fr_40px] gap-2">
-          <Input
+          <VariableInput
             ref={(el) => { keyRefs.current[index] = el; }}
             value={header.key}
-            onChange={(e) => updateHeader(index, "key", e.target.value)}
+            onChange={(val) => updateHeader(index, "key", val)}
             onKeyDown={(e) => handleKeyDown(e, index)}
             placeholder="header name"
             className="h-8 bg-muted/30 border-border/30 text-sm font-mono"
           />
-          <Input
+          <VariableInput
             value={header.value}
-            onChange={(e) => updateHeader(index, "value", e.target.value)}
+            onChange={(val) => updateHeader(index, "value", val)}
             onKeyDown={(e) => handleKeyDown(e, index)}
             placeholder="value"
             className="h-8 bg-muted/30 border-border/30 text-sm font-mono"
