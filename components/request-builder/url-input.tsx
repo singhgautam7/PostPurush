@@ -264,7 +264,10 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
           value={activeRequest.url}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
-          onKeyUp={(e) => setCursorPos((e.target as HTMLTextAreaElement).selectionStart ?? 0)}
+          onKeyUp={(e) => {
+            const pos = (e.target as HTMLTextAreaElement).selectionStart ?? 0;
+            setCursorPos(pos);
+          }}
           onClick={(e) => setCursorPos((e.target as HTMLTextAreaElement).selectionStart ?? 0)}
           onScroll={syncScroll}
           placeholder="e.g. https://api.example.com/endpoint"

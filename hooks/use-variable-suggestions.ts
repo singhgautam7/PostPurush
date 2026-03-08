@@ -41,8 +41,14 @@ export function highlightVariables(
 }
 
 export function useVariableSuggestions(value: string, cursorPos: number) {
-  const activeEnv = useEnvironmentStore((s) => s.activeEnv);
-  const currentEnv = activeEnv();
+  const activeEnvFn = useEnvironmentStore((s) => s.activeEnv);
+  // Subscribe to reactive data so we re-render when env changes
+  const _activeEnvId = useEnvironmentStore((s) => s.activeEnvId);
+  const _envVariables = useEnvironmentStore((s) => {
+    const env = s.environments.find((e) => e.id === s.activeEnvId);
+    return env?.variables;
+  });
+  const currentEnv = activeEnvFn();
   const toastShownRef = useRef(false);
 
   const textBeforeCursor = value.slice(0, cursorPos);
