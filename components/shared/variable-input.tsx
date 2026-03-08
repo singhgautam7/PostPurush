@@ -132,8 +132,7 @@ export const VariableInput = forwardRef<HTMLInputElement, VariableInputProps>(
           onKeyUp={(e) => setCursorPos((e.target as HTMLInputElement).selectionStart ?? 0)}
           onClick={(e) => setCursorPos((e.target as HTMLInputElement).selectionStart ?? 0)}
           className={cn(
-            "text-foreground",
-            hasVariableTokens && "bg-transparent",
+            hasVariableTokens ? "bg-transparent text-transparent caret-foreground" : "text-foreground",
             className
           )}
           {...props}

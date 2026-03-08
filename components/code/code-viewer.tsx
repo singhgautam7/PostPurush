@@ -38,6 +38,12 @@ export function CodeViewer({ code, language, className, editable = false, onChan
   const { mode } = useTheme();
   const cmTheme = mode === "dark" ? vscodeDark : githubLight;
   const activeEnvFn = useEnvironmentStore((s) => s.activeEnv);
+  const activeEnvId = useEnvironmentStore((s) => s.activeEnvId);
+  // Subscribe to the active env's variables so extensions rebuild when vars change
+  const activeEnvVars = useEnvironmentStore((s) => {
+    const env = s.environments.find((e) => e.id === s.activeEnvId);
+    return env?.variables;
+  });
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(code);
@@ -53,7 +59,8 @@ export function CodeViewer({ code, language, className, editable = false, onChan
     if (editable) exts.push(variableHighlight(activeEnvFn));
     exts.push(EditorView.lineWrapping);
     return exts;
-  }, [language, editable, activeEnvFn]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language, editable, activeEnvFn, activeEnvId, activeEnvVars]);
 
   return (
     <div className={cn("relative group w-full flex flex-col", className)}>

@@ -38,6 +38,7 @@ export function EnvEditSheet({ open, onOpenChange, envId }: EnvEditSheetProps) {
       enabled: true,
     };
     upsertVariable(envId, newVar);
+    setTimeout(() => document.getElementById(`var-key-${newVar.id}`)?.focus(), 50);
   };
 
   return (
@@ -54,9 +55,9 @@ export function EnvEditSheet({ open, onOpenChange, envId }: EnvEditSheetProps) {
           <SheetDescription>Changes are saved automatically</SheetDescription>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto space-y-2 mt-4">
+        <div className="flex-1 overflow-y-auto space-y-2 mt-4 px-4">
           {env.variables.length === 0 && (
-            <p className="text-xs text-muted-foreground italic px-1">
+            <p className="text-xs text-muted-foreground italic">
               No variables yet. Add one below.
             </p>
           )}
@@ -75,16 +76,15 @@ export function EnvEditSheet({ open, onOpenChange, envId }: EnvEditSheetProps) {
               variable={v}
               onChange={(updated) => upsertVariable(envId, updated)}
               onDelete={() => deleteVariable(envId, v.id)}
+              onAddNew={handleAdd}
             />
           ))}
-        </div>
 
-        <div className="pt-3 border-t border-border mt-auto">
           <Button
             variant="ghost"
             size="sm"
             onClick={handleAdd}
-            className="h-7 text-xs text-muted-foreground hover:text-foreground gap-1"
+            className="h-7 text-xs text-muted-foreground hover:text-foreground gap-1 mt-1"
           >
             <Plus className="h-3 w-3" />
             Add Variable

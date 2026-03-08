@@ -10,9 +10,11 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { MethodSelector } from "./method-selector";
 import { Send, Save, Code } from "lucide-react";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useTabStore } from "@/store/tab-store";
 import { useVariableSuggestions } from "@/hooks/use-variable-suggestions";
+import { hasInvalidVariables } from "@/lib/request/replace-variables";
+import { toast } from "sonner";
 
 interface UrlInputProps {
   onCodeExport: () => void;
@@ -57,6 +59,17 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
 
   // Only render mirror when there are completed {{var}} tokens AND an env is active
   const hasVariableTokens = hookEnv && /\{\{[^}]+\}\}/.test(activeRequest.url);
+
+  // Detect unresolvable {{variables}} across all request fields
+  const hasAnyInvalidVar = useMemo(() => {
+    const env = hookEnv;
+    return (
+      hasInvalidVariables(activeRequest.url, env) ||
+      activeRequest.params.some((p) => hasInvalidVariables(p.value, env)) ||
+      activeRequest.headers.some((h) => hasInvalidVariables(h.value, env)) ||
+      hasInvalidVariables(activeRequest.body.content, env)
+    );
+  }, [activeRequest.url, activeRequest.params, activeRequest.headers, activeRequest.body.content, hookEnv]);
 
   // Show/hide suggestions based on hook state
   useEffect(() => {
@@ -200,7 +213,14 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
 
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      if (hasAnyInvalidVar) {
+        toast.error("Unresolved variables", {
+          description: "Fix invalid {{variable}} references before sending.",
+          duration: 4000,
+        });
+      } else {
+        handleSend();
+      }
     }
   };
 
@@ -249,8 +269,8 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
           onScroll={syncScroll}
           placeholder="e.g. https://api.example.com/endpoint"
           rows={1}
-          className={`relative w-full min-h-9 max-h-[88px] resize-none rounded-md border border-border-subtle px-3 font-mono text-sm text-foreground leading-[22px] py-[7px] focus:outline-none focus:ring-2 focus:ring-border focus:border-border overflow-hidden placeholder:text-foreground-subtle ${
-            hasVariableTokens ? "bg-transparent" : "bg-panel"
+          className={`relative w-full min-h-9 max-h-[88px] resize-none rounded-md border border-border-subtle px-3 font-mono text-sm leading-[22px] py-[7px] focus:outline-none focus:ring-2 focus:ring-border focus:border-border overflow-hidden placeholder:text-foreground-subtle ${
+            hasVariableTokens ? "bg-transparent text-transparent caret-foreground" : "bg-panel text-foreground"
           }`}
           spellCheck={false}
         />
@@ -282,16 +302,22 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
       <div className="flex items-center gap-2 shrink-0">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
-              onClick={handleSend}
-              disabled={loading || !activeRequest.url}
-              className="h-9 gap-2 bg-primary-action text-primary-action-fg hover:bg-primary-action/85 font-medium shadow-none transition-all duration-200"
-            >
-              <Send className="h-4 w-4" />
-              {loading ? "Sending..." : "Send"}
-            </Button>
+            <span>
+              <Button
+                onClick={handleSend}
+                disabled={loading || !activeRequest.url || hasAnyInvalidVar}
+                className="h-9 gap-2 bg-primary-action text-primary-action-fg hover:bg-primary-action/85 font-medium shadow-none transition-all duration-200"
+              >
+                <Send className="h-4 w-4" />
+                {loading ? "Sending..." : "Send"}
+              </Button>
+            </span>
           </TooltipTrigger>
-          <TooltipContent>Send Request (Enter)</TooltipContent>
+          <TooltipContent>
+            {hasAnyInvalidVar
+              ? "Fix unresolved variable references before sending"
+              : "Send Request (Enter)"}
+          </TooltipContent>
         </Tooltip>
 
         <Tooltip>

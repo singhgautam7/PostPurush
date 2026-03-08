@@ -51,13 +51,22 @@ export function EnvSelector() {
       enabled: true,
     };
     upsertVariable(activeEnvId, newVar);
+    setTimeout(() => document.getElementById(`var-key-${newVar.id}`)?.focus(), 50);
   };
 
   return (
     <div className="px-3 py-2 border-b border-border flex items-center gap-1.5">
       <Select
         value={activeEnvId ?? "__none__"}
-        onValueChange={(val) => setActiveEnvId(val === "__none__" ? null : val)}
+        onValueChange={(val) => {
+          setActiveEnvId(val === "__none__" ? null : val);
+          setTimeout(() => {
+            const urlTextarea = document.querySelector<HTMLTextAreaElement>(
+              'textarea[placeholder*="example.com"]'
+            );
+            urlTextarea?.focus();
+          }, 50);
+        }}
       >
         <SelectTrigger className="flex-1 h-7 text-xs bg-panel border-border/50">
           <SelectValue>
@@ -139,9 +148,9 @@ export function EnvSelector() {
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-2 max-h-[400px] overflow-y-auto">
+            <div className="space-y-2 max-h-[400px] overflow-y-auto px-4">
               {currentEnv.variables.length === 0 && (
-                <p className="text-xs text-muted-foreground italic px-1">
+                <p className="text-xs text-muted-foreground italic">
                   No variables yet. Add one below.
                 </p>
               )}
@@ -160,20 +169,22 @@ export function EnvSelector() {
                   variable={v}
                   onChange={(updated) => upsertVariable(activeEnvId!, updated)}
                   onDelete={() => deleteVariable(activeEnvId!, v.id)}
+                  onAddNew={handleAddVariable}
                 />
               ))}
-            </div>
 
-            <DialogFooter className="flex items-center justify-between sm:justify-between">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleAddVariable}
-                className="h-7 text-xs text-muted-foreground hover:text-foreground gap-1"
+                className="h-7 text-xs text-muted-foreground hover:text-foreground gap-1 mt-1"
               >
                 <Plus className="h-3 w-3" />
                 Add Variable
               </Button>
+            </div>
+
+            <DialogFooter className="flex items-center justify-end sm:justify-end">
               <Button
                 size="sm"
                 onClick={() => setManageOpen(false)}

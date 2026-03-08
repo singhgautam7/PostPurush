@@ -9,20 +9,31 @@ interface EnvVariableRowProps {
   variable: EnvVariable;
   onChange: (variable: EnvVariable) => void;
   onDelete: () => void;
+  onAddNew?: () => void;
 }
 
-export function EnvVariableRow({ variable, onChange, onDelete }: EnvVariableRowProps) {
+export function EnvVariableRow({ variable, onChange, onDelete, onAddNew }: EnvVariableRowProps) {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      onAddNew?.();
+    }
+  };
+
   return (
     <div className="group grid grid-cols-[1fr_1fr_32px] gap-2 items-center">
       <Input
+        id={`var-key-${variable.id}`}
         value={variable.key}
         onChange={(e) => onChange({ ...variable, key: e.target.value })}
+        onKeyDown={handleKeyDown}
         placeholder="variable_name"
         className="h-8 bg-muted/30 border-border/30 text-sm font-mono"
       />
       <Input
         value={variable.value}
         onChange={(e) => onChange({ ...variable, value: e.target.value })}
+        onKeyDown={handleKeyDown}
         placeholder="value"
         className="h-8 bg-muted/30 border-border/30 text-sm font-mono"
       />
