@@ -27,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" data-theme="og-shadcn" data-mode="dark">
+    <html lang="en" className="dark" data-theme="og-shadcn" data-mode="dark" suppressHydrationWarning>
       <head>
         <ThemeScript />
       </head>
