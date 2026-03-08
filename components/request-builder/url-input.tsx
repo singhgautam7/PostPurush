@@ -253,7 +253,7 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
           <div
             ref={mirrorRef}
             aria-hidden="true"
-            className="absolute inset-0 pointer-events-none min-h-9 max-h-[88px] overflow-hidden px-3 font-mono text-sm text-foreground leading-[22px] py-[7px] border border-transparent rounded-md whitespace-pre-wrap"
+            className="absolute inset-0 z-[1] pointer-events-none min-h-9 max-h-[88px] overflow-hidden px-3 font-mono text-sm text-foreground leading-[22px] py-[7px] border border-transparent rounded-md whitespace-pre-wrap"
             style={{ wordBreak: "break-all" }}
             dangerouslySetInnerHTML={{ __html: highlightedHtml + "\u200b" }}
           />
@@ -272,9 +272,10 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
           onScroll={syncScroll}
           placeholder="e.g. https://api.example.com/endpoint"
           rows={1}
-          className={`relative w-full min-h-9 max-h-[88px] resize-none rounded-md border border-border-subtle px-3 font-mono text-sm leading-[22px] py-[7px] focus:outline-none focus:ring-2 focus:ring-border focus:border-border overflow-hidden placeholder:text-foreground-subtle ${
-            hasVariableTokens ? "bg-transparent text-transparent caret-foreground" : "bg-panel text-foreground"
+          className={`relative z-0 w-full min-h-9 max-h-[88px] resize-none rounded-md border border-border-subtle px-3 font-mono text-sm leading-[22px] py-[7px] focus:outline-none focus:ring-2 focus:ring-border focus:border-border overflow-hidden placeholder:text-foreground-subtle ${
+            hasVariableTokens ? "text-transparent caret-foreground" : "bg-panel text-foreground"
           }`}
+          style={hasVariableTokens ? { background: "transparent" } : undefined}
           spellCheck={false}
         />
         {showSuggestions && suggestions.length > 0 && (

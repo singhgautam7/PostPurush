@@ -115,7 +115,7 @@ export const VariableInput = forwardRef<HTMLInputElement, VariableInputProps>(
           <div
             aria-hidden="true"
             className={cn(
-              "absolute inset-0 pointer-events-none overflow-hidden",
+              "absolute inset-0 z-[1] pointer-events-none overflow-hidden",
               "h-8 px-2.5 py-1 text-sm rounded-md border border-transparent",
               "whitespace-nowrap text-foreground font-mono",
               className
@@ -132,9 +132,11 @@ export const VariableInput = forwardRef<HTMLInputElement, VariableInputProps>(
           onKeyUp={(e) => setCursorPos((e.target as HTMLInputElement).selectionStart ?? 0)}
           onClick={(e) => setCursorPos((e.target as HTMLInputElement).selectionStart ?? 0)}
           className={cn(
-            hasVariableTokens ? "bg-transparent text-transparent caret-foreground" : "text-foreground",
+            "relative z-0",
+            hasVariableTokens ? "text-transparent caret-foreground" : "text-foreground",
             className
           )}
+          style={hasVariableTokens ? { background: "transparent" } : undefined}
           {...props}
         />
         {showSuggestions && suggestions.length > 0 && (
