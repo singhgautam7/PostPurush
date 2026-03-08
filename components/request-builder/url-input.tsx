@@ -4,14 +4,15 @@ import { useRequestStore } from "@/store/request-store";
 import { useResponseStore } from "@/store/response-store";
 import { useEnvironmentStore } from "@/store/environment-store";
 import { sendRequest } from "@/lib/request/send-request";
+import { EnvironmentVariable } from "@/types/environment";
 import { saveRequest } from "@/lib/storage/storage-helpers";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { MethodSelector } from "./method-selector";
 import { Send, Save, Code } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useTabStore } from "@/store/tab-store";
+import { useVariableSuggestions } from "@/hooks/use-variable-suggestions";
 
 interface UrlInputProps {
   onCodeExport: () => void;
@@ -25,7 +26,13 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
   const addSavedRequest = useRequestStore((s) => s.addSavedRequest);
   const updateSavedRequest = useRequestStore((s) => s.updateSavedRequest);
   const savedRequests = useRequestStore((s) => s.savedRequests);
-  const variables = useEnvironmentStore((s) => s.variables);
+  const activeEnv = useEnvironmentStore((s) => s.activeEnv);
+  const currentEnv = activeEnv();
+  const variables: EnvironmentVariable[] = currentEnv
+    ? currentEnv.variables
+        .filter((v) => v.enabled && v.key)
+        .map((v) => ({ key: v.key, value: v.value }))
+    : [];
   const setResponse = useResponseStore((s) => s.setResponse);
   const setLoading = useResponseStore((s) => s.setLoading);
   const loading = useResponseStore((s) => s.loading);
@@ -38,6 +45,33 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
   const setActiveTab = useTabStore((s) => s.setActiveTab);
   const resetRequest = useRequestStore((s) => s.resetRequest);
   const clearResponse = useResponseStore((s) => s.clearResponse);
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const mirrorRef = useRef<HTMLDivElement>(null);
+  const [cursorPos, setCursorPos] = useState(0);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const { isTriggered, suggestions, noEnvWarning, showNoEnvToast, highlightedHtml, currentEnv: hookEnv } =
+    useVariableSuggestions(activeRequest.url, cursorPos);
+
+  // Only render mirror when there are completed {{var}} tokens AND an env is active
+  const hasVariableTokens = hookEnv && /\{\{[^}]+\}\}/.test(activeRequest.url);
+
+  // Show/hide suggestions based on hook state
+  useEffect(() => {
+    if (isTriggered && suggestions.length > 0) {
+      setShowSuggestions(true);
+      setSelectedIndex(0);
+    } else {
+      setShowSuggestions(false);
+    }
+  }, [isTriggered, suggestions.length]);
+
+  // Show toast when no env
+  useEffect(() => {
+    if (noEnvWarning) showNoEnvToast();
+  }, [noEnvWarning, showNoEnvToast]);
 
   // Sync tab isDirty when it changes
   useEffect(() => {
@@ -69,8 +103,12 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
   }, [openTab, setActiveTab, resetRequest, clearResponse]);
 
   const handleSend = async () => {
+    const resolvedRequest = {
+      ...activeRequest,
+      url: activeRequest.url,
+    };
     setLoading(true);
-    const response = await sendRequest(activeRequest, variables);
+    const response = await sendRequest(resolvedRequest, variables);
     setResponse(response);
   };
 
@@ -107,8 +145,6 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
     }
   };
 
-  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
-
   const autoResize = (el: HTMLTextAreaElement) => {
     el.style.height = "36px";
     const capped = Math.min(el.scrollHeight, 88);
@@ -116,12 +152,71 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
     el.style.overflowY = el.scrollHeight > 88 ? "auto" : "hidden";
   };
 
+  const syncScroll = () => {
+    if (textareaRef.current && mirrorRef.current) {
+      mirrorRef.current.scrollTop = textareaRef.current.scrollTop;
+      mirrorRef.current.scrollLeft = textareaRef.current.scrollLeft;
+    }
+  };
+
+  const applySuggestion = useCallback(
+    (key: string) => {
+      const url = activeRequest.url;
+      const before = url.slice(0, cursorPos).replace(/\{\{[^}]*$/, `{{${key}}}`);
+      const after = url.slice(cursorPos);
+      setUrl(before + after);
+      setShowSuggestions(false);
+      textareaRef.current?.focus();
+    },
+    [activeRequest.url, cursorPos, setUrl]
+  );
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value;
+    setUrl(val);
+    setCursorPos(e.target.selectionStart ?? val.length);
+    autoResize(e.target);
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (showSuggestions && suggestions.length > 0) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setSelectedIndex((i) => Math.min(i + 1, suggestions.length - 1));
+        return;
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setSelectedIndex((i) => Math.max(i - 1, 0));
+        return;
+      } else if (e.key === "Enter" || e.key === "Tab") {
+        e.preventDefault();
+        applySuggestion(suggestions[selectedIndex].key);
+        return;
+      } else if (e.key === "Escape") {
+        setShowSuggestions(false);
+        return;
+      }
+    }
+
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
   };
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (
+        textareaRef.current &&
+        !textareaRef.current.parentElement?.contains(e.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   useEffect(() => {
     if (textareaRef.current) autoResize(textareaRef.current);
@@ -133,19 +228,55 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
         <MethodSelector />
       </div>
       <div className="relative flex-1 min-w-0">
-        <Textarea
+        {/* Mirror div — underneath textarea, renders {{var}} tokens in color */}
+        {hasVariableTokens && (
+          <div
+            ref={mirrorRef}
+            aria-hidden="true"
+            className="absolute inset-0 pointer-events-none min-h-9 max-h-[88px] overflow-hidden px-3 font-mono text-sm text-foreground leading-[22px] py-[7px] border border-transparent rounded-md whitespace-pre-wrap"
+            style={{ wordBreak: "break-all" }}
+            dangerouslySetInnerHTML={{ __html: highlightedHtml + "\u200b" }}
+          />
+        )}
+        {/* Textarea — bg-transparent when mirror is active so colored spans show through */}
+        <textarea
           ref={textareaRef}
           value={activeRequest.url}
-          onChange={(e) => {
-            setUrl(e.target.value);
-            autoResize(e.target);
-          }}
+          onChange={handleChange}
           onKeyDown={handleKeyDown}
+          onKeyUp={(e) => setCursorPos((e.target as HTMLTextAreaElement).selectionStart ?? 0)}
+          onClick={(e) => setCursorPos((e.target as HTMLTextAreaElement).selectionStart ?? 0)}
+          onScroll={syncScroll}
           placeholder="e.g. https://api.example.com/endpoint"
           rows={1}
-          className="min-h-9 max-h-[88px] resize-none border-border-subtle bg-panel pr-4 font-mono text-sm text-foreground leading-[22px] placeholder:text-foreground-subtle py-[7px] focus:ring-2 focus:ring-border focus:border-border overflow-hidden"
+          className={`relative w-full min-h-9 max-h-[88px] resize-none rounded-md border border-border-subtle px-3 font-mono text-sm text-foreground leading-[22px] py-[7px] focus:outline-none focus:ring-2 focus:ring-border focus:border-border overflow-hidden placeholder:text-foreground-subtle ${
+            hasVariableTokens ? "bg-transparent" : "bg-panel"
+          }`}
           spellCheck={false}
         />
+        {showSuggestions && suggestions.length > 0 && (
+          <div className="absolute z-50 top-full left-0 mt-1 w-72 bg-panel border border-border rounded-lg shadow-xl overflow-hidden">
+            {suggestions.map((v, i) => (
+              <button
+                key={v.id}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  applySuggestion(v.key);
+                }}
+                className={`w-full flex items-center gap-3 px-3 py-2 text-xs text-left transition-colors ${
+                  i === selectedIndex ? "bg-raised" : "hover:bg-raised/50"
+                }`}
+              >
+                <span className="font-mono text-blue-400">
+                  {v.key}
+                </span>
+                <span className="text-foreground-subtle truncate">
+                  {v.value}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="flex items-center gap-2 shrink-0">

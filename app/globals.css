@@ -60,6 +60,21 @@
   --color-foreground-nav: var(--foreground-nav);
 }
 
+/* Variable token colors — fixed semantic colors across all themes */
+:root {
+  --var-valid: #3b82f6;   /* blue-500 — variable exists in active env */
+  --var-missing: #ef4444; /* red-500  — variable not found in active env */
+}
+
+/* CuTube Red exception: red vars invisible on red UI → use amber */
+[data-theme="cutube-red"] {
+  --var-missing: #f59e0b;
+}
+
+/* CodeMirror variable token highlighting */
+.cm-var-valid   { color: var(--var-valid) !important; }
+.cm-var-missing { color: var(--var-missing) !important; }
+
 /* ============================================================
    BASE: OG-SHADCN (light — :root)
    ============================================================ */

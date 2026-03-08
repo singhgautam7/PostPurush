@@ -13,6 +13,8 @@ import { python } from "@codemirror/lang-python";
 import { go } from "@codemirror/lang-go";
 import { EditorView } from "@codemirror/view";
 import { useTheme } from "@/hooks/use-theme";
+import { useEnvironmentStore } from "@/store/environment-store";
+import { variableHighlight } from "@/lib/codemirror-variable-highlight";
 
 const languageExtensions: Record<string, () => ReturnType<typeof json>> = {
   json: () => json(),
@@ -35,6 +37,7 @@ export function CodeViewer({ code, language, className, editable = false, onChan
   const [copied, setCopied] = useState(false);
   const { mode } = useTheme();
   const cmTheme = mode === "dark" ? vscodeDark : githubLight;
+  const activeEnvFn = useEnvironmentStore((s) => s.activeEnv);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(code);
@@ -47,9 +50,10 @@ export function CodeViewer({ code, language, className, editable = false, onChan
     const langExt = languageExtensions[language];
     if (langExt) exts.push(langExt());
     if (!editable) exts.push(EditorView.editable.of(false));
+    if (editable) exts.push(variableHighlight(activeEnvFn));
     exts.push(EditorView.lineWrapping);
     return exts;
-  }, [language, editable]);
+  }, [language, editable, activeEnvFn]);
 
   return (
     <div className={cn("relative group w-full flex flex-col", className)}>
