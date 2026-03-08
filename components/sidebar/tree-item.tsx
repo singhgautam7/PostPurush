@@ -13,6 +13,16 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { ChevronRight, ChevronDown, Folder as FolderIcon, FolderOpen, Trash2, Edit2, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SidebarItemActions } from "./sidebar-item-actions";
@@ -39,13 +49,19 @@ interface TreeItemProps {
 export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequest }: TreeItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(item.name);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const updateSavedRequest = useRequestStore((s) => s.updateSavedRequest);
   const removeSavedRequest = useRequestStore((s) => s.removeSavedRequest);
   const updateDBFolder = useRequestStore((s) => s.updateFolder);
   const removeDBFolder = useRequestStore((s) => s.removeFolder);
   const activeRequest = useRequestStore((s) => s.activeRequest);
+  const savedRequests = useRequestStore((s) => s.savedRequests);
+  const folders = useRequestStore((s) => s.folders);
   const openTab = useTabStore((s) => s.openTab);
+  const tabs = useTabStore((s) => s.tabs);
+  const closeTab = useTabStore((s) => s.closeTab);
+  const resetRequest = useRequestStore((s) => s.resetRequest);
 
   const { attributes, listeners, setNodeRef: setDraggableRef, isDragging } = useDraggable({
     id: item.id,
@@ -79,11 +95,66 @@ export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequ
 
   const handleDelete = async () => {
     if (item.type === "request") {
+      // Delete from DB and store
       await deleteRequest(item.id);
       removeSavedRequest(item.id);
+      // Close any open tab for this request
+      const tab = tabs.find((t) => t.requestId === item.id);
+      if (tab) {
+        closeTab(tab.id);
+        if (activeRequest.id === item.id) resetRequest();
+      }
     } else {
-      await deleteFolder(item.id);
-      removeDBFolder(item.id);
+      // Cascade: collect all descendant folder IDs and request IDs
+      const folderIdsToDelete = new Set<string>();
+      const requestIdsToDelete = new Set<string>();
+
+      const collectDescendants = (parentId: string) => {
+        folderIdsToDelete.add(parentId);
+        // Find child folders
+        for (const f of folders) {
+          if (f.parentId === parentId && !folderIdsToDelete.has(f.id)) {
+            collectDescendants(f.id);
+          }
+        }
+        // Find child requests
+        for (const r of savedRequests) {
+          if (r.parentId === parentId) {
+            requestIdsToDelete.add(r.id);
+          }
+        }
+      };
+
+      collectDescendants(item.id);
+
+      // Delete all from IndexedDB
+      for (const reqId of requestIdsToDelete) {
+        await deleteRequest(reqId);
+      }
+      for (const folderId of folderIdsToDelete) {
+        await deleteFolder(folderId);
+      }
+
+      // Remove from store
+      for (const reqId of requestIdsToDelete) {
+        removeSavedRequest(reqId);
+      }
+      for (const folderId of folderIdsToDelete) {
+        removeDBFolder(folderId);
+      }
+
+      // Close tabs for deleted requests
+      for (const reqId of requestIdsToDelete) {
+        const tab = tabs.find((t) => t.requestId === reqId);
+        if (tab) {
+          closeTab(tab.id);
+        }
+      }
+
+      // Reset active request if it was inside the deleted folder
+      if (requestIdsToDelete.has(activeRequest.id)) {
+        resetRequest();
+      }
     }
   };
 
@@ -191,10 +262,37 @@ export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequ
         <ContextMenuItem onClick={() => setIsEditing(true)}>
           <Edit2 className="h-3.5 w-3.5 mr-2" /> Rename
         </ContextMenuItem>
-        <ContextMenuItem onClick={handleDelete} className="text-destructive focus:text-destructive">
+        <ContextMenuItem onClick={() => setIsDeleteDialogOpen(true)} className="text-destructive focus:text-destructive">
           <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
         </ContextMenuItem>
       </ContextMenuContent>
+
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Delete {item.name}?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {item.type === "folder"
+                ? "This folder and all its contents will be permanently deleted."
+                : "This request will be permanently deleted."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete();
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </ContextMenu>
   );
 }
