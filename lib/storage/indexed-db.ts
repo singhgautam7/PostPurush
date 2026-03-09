@@ -1,6 +1,7 @@
 import { openDB, DBSchema, IDBPDatabase } from "idb";
 import { SavedRequest, Folder } from "@/types/request";
 import { Environment, EnvironmentVariable } from "@/types/environment";
+import { ResponseMetadata } from "@/types/response-metadata";
 
 interface PostPurushDB extends DBSchema {
     requests: {
@@ -17,13 +18,17 @@ interface PostPurushDB extends DBSchema {
         value: Folder;
         indexes: { "by-updated": number };
     };
+    responses_metadata: {
+        key: string;
+        value: ResponseMetadata[];
+    };
 }
 
 let dbPromise: Promise<IDBPDatabase<PostPurushDB>> | null = null;
 
 function getDB() {
     if (!dbPromise) {
-        dbPromise = openDB<PostPurushDB>("postpurush-db", 4, {
+        dbPromise = openDB<PostPurushDB>("postpurush-db", 5, {
             upgrade(db, oldVersion, _newVersion, transaction) {
                 if (oldVersion < 1) {
                     const requestStore = db.createObjectStore("requests", {
@@ -61,6 +66,12 @@ function getDB() {
 
                 // v4: Migration from old single-environment is handled post-open
                 // (see migrateV3ToV4 below)
+
+                if (oldVersion < 5) {
+                    if (!db.objectStoreNames.contains("responses_metadata")) {
+                        db.createObjectStore("responses_metadata");
+                    }
+                }
             },
         });
     }
@@ -155,4 +166,26 @@ export async function loadFoldersFromDB(): Promise<Folder[]> {
 export async function deleteFolderFromDB(id: string): Promise<void> {
     const db = await getDB();
     await db.delete("folders", id);
+}
+
+// === Response Metadata ===
+
+export async function saveResponseMetadataToDB(
+    requestId: string,
+    record: ResponseMetadata
+): Promise<void> {
+    const db = await getDB();
+    const tx = db.transaction("responses_metadata", "readwrite");
+    const existing: ResponseMetadata[] =
+        (await tx.store.get(requestId)) ?? [];
+    const updated = [...existing, record].slice(-100);
+    await tx.store.put(updated, requestId);
+    await tx.done;
+}
+
+export async function loadResponseMetadataFromDB(
+    requestId: string
+): Promise<ResponseMetadata[]> {
+    const db = await getDB();
+    return (await db.get("responses_metadata", requestId)) ?? [];
 }

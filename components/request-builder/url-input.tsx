@@ -4,6 +4,8 @@ import { useRequestStore } from "@/store/request-store";
 import { useResponseStore } from "@/store/response-store";
 import { useEnvironmentStore } from "@/store/environment-store";
 import { sendRequest } from "@/lib/request/send-request";
+import { saveResponseMetadata } from "@/lib/storage/storage-helpers";
+import { ResponseMetadata } from "@/types/response-metadata";
 import { EnvironmentVariable } from "@/types/environment";
 import { saveRequest } from "@/lib/storage/storage-helpers";
 import { Button } from "@/components/ui/button";
@@ -38,6 +40,7 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
   const setResponse = useResponseStore((s) => s.setResponse);
   const setLoading = useResponseStore((s) => s.setLoading);
   const loading = useResponseStore((s) => s.loading);
+  const setCurrentMeta = useResponseStore((s) => s.setCurrentMeta);
   const [saving, setSaving] = useState(false);
 
   const tabs = useTabStore((s) => s.tabs);
@@ -121,8 +124,29 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
       url: activeRequest.url,
     };
     setLoading(true);
-    const response = await sendRequest(resolvedRequest, variables);
-    setResponse(response);
+    const result = await sendRequest(resolvedRequest, variables);
+    setResponse(result.response);
+
+    const contentTypeHeader = Object.keys(result.response.headers).find(
+      (k) => k.toLowerCase() === "content-type"
+    );
+    const meta: ResponseMetadata = {
+      id: crypto.randomUUID(),
+      requestName: `${activeRequest.method} — ${activeRequest.name || "Untitled"}`,
+      method: activeRequest.method,
+      resolvedUrl: result.resolvedUrl,
+      statusCode: result.response.status,
+      statusText: result.response.error ? "Network Error" : result.response.statusText,
+      durationMs: result.response.time,
+      responseSizeBytes: result.response.size,
+      contentType: contentTypeHeader ? result.response.headers[contentTypeHeader] : "",
+      startTime: result.startTime,
+      endTime: result.endTime,
+      envId: currentEnv?.id ?? null,
+      envName: currentEnv?.name ?? null,
+    };
+    setCurrentMeta(meta);
+    saveResponseMetadata(activeRequest.id, meta).catch(() => {});
   };
 
   const handleSave = async () => {
