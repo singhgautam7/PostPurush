@@ -2,7 +2,10 @@
 
 import { SavedRequest } from "@/types/request";
 import { useRequestStore } from "@/store/request-store";
-import { useResponseStore } from "@/store/response-store";
+import {
+  cacheCurrentResponse,
+  restoreResponseFromCache,
+} from "@/store/response-store";
 import { useTabStore } from "@/store/tab-store";
 import { deleteRequest } from "@/lib/storage/storage-helpers";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -26,15 +29,15 @@ export function RequestItem({ request }: RequestItemProps) {
   const activeRequest = useRequestStore((s) => s.activeRequest);
   const loadRequest = useRequestStore((s) => s.loadRequest);
   const removeSavedRequest = useRequestStore((s) => s.removeSavedRequest);
-  const clearResponse = useResponseStore((s) => s.clearResponse);
   const openTab = useTabStore((s) => s.openTab);
 
   const isActive = activeRequest.id === request.id;
 
   const handleSelect = () => {
+    cacheCurrentResponse(activeRequest.id);
     openTab(request.id, request.name);
     loadRequest(request);
-    clearResponse();
+    restoreResponseFromCache(request.id);
   };
 
   const handleDelete = async (e: React.MouseEvent) => {

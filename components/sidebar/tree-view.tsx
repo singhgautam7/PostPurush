@@ -4,7 +4,7 @@ import { useMemo, useState, useEffect } from "react";
 import { Folder, SavedRequest } from "@/types/request";
 import { useRequestStore } from "@/store/request-store";
 import { useTabStore } from "@/store/tab-store";
-import { useResponseStore } from "@/store/response-store";
+import { useResponseStore, restoreResponseFromCache } from "@/store/response-store";
 import { TreeItem } from "./tree-item";
 import { saveFolder, saveRequest } from "@/lib/storage/storage-helpers";
 import {

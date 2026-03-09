@@ -8,4 +8,8 @@ export {
     saveFolderToDB as saveFolder,
     loadFoldersFromDB as loadFolders,
     deleteFolderFromDB as deleteFolder,
+    saveResponseMetadataToDB as saveResponseMetadata,
+    loadResponseMetadataFromDB as loadResponseMetadata,
+    loadAllResponseMetadataFromDB as loadAllResponseMetadata,
+    clearAllResponseMetadataFromDB as clearAllResponseMetadata,
 } from "./indexed-db";

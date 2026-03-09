@@ -5,10 +5,17 @@ import { replaceVariables } from "./replace-variables";
 import { buildUrl } from "./build-url";
 import { getResponseSize } from "@/utils/get-response-size";
 
+export interface SendResult {
+    response: ApiResponse;
+    resolvedUrl: string;
+    startTime: number;
+    endTime: number;
+}
+
 export async function sendRequest(
     request: SavedRequest,
     variables: EnvironmentVariable[]
-): Promise<ApiResponse> {
+): Promise<SendResult> {
     // Replace variables in URL
     const processedUrl = replaceVariables(request.url, variables);
 
@@ -24,15 +31,21 @@ export async function sendRequest(
     try {
         finalUrl = buildUrl(processedUrl, processedParams);
     } catch {
+        const now = Date.now();
         return {
-            status: 0,
-            statusText: "Error",
-            time: 0,
-            size: 0,
-            headers: {},
-            body: "",
-            raw: "",
-            error: "Invalid URL. Please check the URL and try again.",
+            response: {
+                status: 0,
+                statusText: "Error",
+                time: 0,
+                size: 0,
+                headers: {},
+                body: "",
+                raw: "",
+                error: "Invalid URL. Please check the URL and try again.",
+            },
+            resolvedUrl: processedUrl,
+            startTime: now,
+            endTime: now,
         };
     }
 
@@ -75,20 +88,27 @@ export async function sendRequest(
         try {
             JSON.parse(body as string);
         } catch {
+            const now = Date.now();
             return {
-                status: 0,
-                statusText: "Error",
-                time: 0,
-                size: 0,
-                headers: {},
-                body: "",
-                raw: "",
-                error: "Invalid JSON body. Please check syntax and try again.",
+                response: {
+                    status: 0,
+                    statusText: "Error",
+                    time: 0,
+                    size: 0,
+                    headers: {},
+                    body: "",
+                    raw: "",
+                    error: "Invalid JSON body. Please check syntax and try again.",
+                },
+                resolvedUrl: finalUrl,
+                startTime: now,
+                endTime: now,
             };
         }
     }
 
-    const startTime = performance.now();
+    const wallStart = Date.now();
+    const perfStart = performance.now();
 
     try {
         const controller = new AbortController();
@@ -102,8 +122,9 @@ export async function sendRequest(
         });
 
         clearTimeout(timeout);
-        const endTime = performance.now();
-        const time = Math.round(endTime - startTime);
+        const perfEnd = performance.now();
+        const wallEnd = Date.now();
+        const time = Math.round(perfEnd - perfStart);
 
         const raw = await response.text();
         const size = getResponseSize(raw);
@@ -124,17 +145,23 @@ export async function sendRequest(
         }
 
         return {
-            status: response.status,
-            statusText: response.statusText,
-            time,
-            size,
-            headers: responseHeaders,
-            body: formattedBody,
-            raw,
+            response: {
+                status: response.status,
+                statusText: response.statusText,
+                time,
+                size,
+                headers: responseHeaders,
+                body: formattedBody,
+                raw,
+            },
+            resolvedUrl: finalUrl,
+            startTime: wallStart,
+            endTime: wallEnd,
         };
     } catch (err) {
-        const endTime = performance.now();
-        const time = Math.round(endTime - startTime);
+        const perfEnd = performance.now();
+        const wallEnd = Date.now();
+        const time = Math.round(perfEnd - perfStart);
 
         let errorMessage = "An unknown error occurred.";
         if (err instanceof DOMException && err.name === "AbortError") {
@@ -146,14 +173,19 @@ export async function sendRequest(
         }
 
         return {
-            status: 0,
-            statusText: "Error",
-            time,
-            size: 0,
-            headers: {},
-            body: "",
-            raw: "",
-            error: errorMessage,
+            response: {
+                status: 0,
+                statusText: "Error",
+                time,
+                size: 0,
+                headers: {},
+                body: "",
+                raw: "",
+                error: errorMessage,
+            },
+            resolvedUrl: finalUrl,
+            startTime: wallStart,
+            endTime: wallEnd,
         };
     }
 }

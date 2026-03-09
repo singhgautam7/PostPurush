@@ -46,8 +46,8 @@ export function BodyView() {
   const displayBody = viewMode === "pretty" ? response.body : response.raw;
 
   return (
-    <div className="flex flex-col h-full bg-background relative overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-border shrink-0 bg-background z-10">
+    <div className="flex flex-col bg-background">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-border shrink-0 bg-background sticky top-0 z-10">
         {/* Level 2 — Underline tabs for Pretty/Raw */}
         <div className="flex items-center gap-1 border-b border-transparent -mb-px">
           {(["pretty", "raw"] as const).map((mode) => (
@@ -80,32 +80,27 @@ export function BodyView() {
         </Button>
       </div>
 
-      <div className="flex-1 overflow-hidden relative">
-        <div className="absolute inset-0 max-h-[90vh] overflow-auto w-full">
-          {!displayBody ? (
-            <div className="p-4">
-              <span className="text-foreground-subtle italic text-sm">Empty response</span>
-            </div>
-          ) : viewMode === "pretty" && responseType === "json" ? (
-            <div className="min-w-max h-full">
-              <CodeViewer
-                code={jsonParsed ? JSON.stringify(jsonParsed, null, 2) : displayBody}
-                language="json"
-                className="h-full border-none rounded-none"
-              />
-            </div>
-          ) : viewMode === "pretty" && responseType === "html" ? (
-            <div className="min-w-max h-full">
-              <CodeViewer code={displayBody} language="html" className="h-full border-none rounded-none" />
-            </div>
-          ) : (
-            <div className="p-4 font-mono text-sm leading-relaxed text-foreground-muted min-w-max">
-              <pre className="whitespace-pre font-mono">
-                {displayBody}
-              </pre>
-            </div>
-          )}
-        </div>
+      <div>
+        {!displayBody ? (
+          <div className="p-4">
+            <span className="text-foreground-subtle italic text-sm">Empty response</span>
+          </div>
+        ) : viewMode === "pretty" && responseType === "json" ? (
+          <CodeViewer
+            code={jsonParsed ? JSON.stringify(jsonParsed, null, 2) : displayBody}
+            language="json"
+            showCopy={false}
+            className="border-none rounded-none"
+          />
+        ) : viewMode === "pretty" && responseType === "html" ? (
+          <CodeViewer code={displayBody} language="html" showCopy={false} className="border-none rounded-none" />
+        ) : (
+          <div className="p-4 font-mono text-sm leading-relaxed text-foreground-muted">
+            <pre className="whitespace-pre font-mono">
+              {displayBody}
+            </pre>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -30,10 +30,11 @@ interface CodeViewerProps {
   language: string;
   className?: string;
   editable?: boolean;
+  showCopy?: boolean;
   onChange?: (value: string) => void;
 }
 
-export function CodeViewer({ code, language, className, editable = false, onChange }: CodeViewerProps) {
+export function CodeViewer({ code, language, className, editable = false, showCopy = true, onChange }: CodeViewerProps) {
   const [copied, setCopied] = useState(false);
   const { mode } = useTheme();
   const cmTheme = mode === "dark" ? vscodeDark : githubLight;
@@ -64,25 +65,28 @@ export function CodeViewer({ code, language, className, editable = false, onChan
 
   return (
     <div className={cn("relative group w-full flex flex-col", className)}>
-      <Button
-        variant="secondary"
-        size="sm"
-        className="absolute top-2 right-3 h-7 gap-1 text-xs z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-raised/80 hover:bg-raised text-foreground-muted hover:text-foreground backdrop-blur-sm border-none shadow-none"
-        onClick={handleCopy}
-      >
-        {copied ? (
-          <Check className="h-3 w-3 text-emerald-400" />
-        ) : (
-          <Copy className="h-3 w-3" />
-        )}
-        {copied ? "Copied" : "Copy"}
-      </Button>
-      <div className="flex-1 w-full rounded-lg border border-border overflow-auto [&_.cm-editor]:bg-code-bg [&_.cm-gutters]:bg-code-bg [&_.cm-gutters]:border-r [&_.cm-gutters]:border-border">
+      {showCopy && (
+        <Button
+          variant="secondary"
+          size="sm"
+          className="absolute top-2 right-3 h-7 gap-1 text-xs z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-raised/80 hover:bg-raised text-foreground-muted hover:text-foreground backdrop-blur-sm border-none shadow-none"
+          onClick={handleCopy}
+        >
+          {copied ? (
+            <Check className="h-3 w-3 text-emerald-400" />
+          ) : (
+            <Copy className="h-3 w-3" />
+          )}
+          {copied ? "Copied" : "Copy"}
+        </Button>
+      )}
+      <div className="flex-1 w-full rounded-lg border border-border [&_.cm-editor]:bg-code-bg [&_.cm-gutters]:bg-code-bg [&_.cm-gutters]:border-r [&_.cm-gutters]:border-border">
         <CodeMirror
           value={code}
           theme={cmTheme}
           extensions={extensions}
           onChange={onChange}
+          height={editable ? "100%" : "auto"}
           basicSetup={{
             lineNumbers: true,
             foldGutter: false,
@@ -92,7 +96,7 @@ export function CodeViewer({ code, language, className, editable = false, onChan
           style={{
             fontSize: "13px",
             fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-            minHeight: "100%",
+            minHeight: editable ? "100%" : "200px",
           }}
         />
       </div>

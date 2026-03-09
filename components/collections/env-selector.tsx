@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useEnvironmentStore } from "@/store/environment-store";
-import { useNavigationStore } from "@/store/navigation-store";
+import { useRouter } from "next/navigation";
 import { EnvVariable } from "@/types/environment";
 import { EnvVariableRow } from "@/components/environment/env-variable-row";
 import {
@@ -32,7 +32,7 @@ export function EnvSelector() {
   const activeEnv = useEnvironmentStore((s) => s.activeEnv);
   const upsertVariable = useEnvironmentStore((s) => s.upsertVariable);
   const deleteVariable = useEnvironmentStore((s) => s.deleteVariable);
-  const setActiveSection = useNavigationStore((s) => s.setActiveSection);
+  const router = useRouter();
 
   const [manageOpen, setManageOpen] = useState(false);
 
@@ -92,7 +92,7 @@ export function EnvSelector() {
                   <button
                     onMouseDown={(e) => {
                       e.stopPropagation();
-                      setActiveSection("env");
+                      router.push("/environments");
                     }}
                     className="text-primary underline underline-offset-2 hover:opacity-80"
                   >

@@ -4,7 +4,10 @@ import { useState } from "react";
 import { Folder, SavedRequest } from "@/types/request";
 import { useRequestStore } from "@/store/request-store";
 import { useTabStore } from "@/store/tab-store";
-import { useResponseStore } from "@/store/response-store";
+import {
+  cacheCurrentResponse,
+  restoreResponseFromCache,
+} from "@/store/response-store";
 import { deleteRequest, deleteFolder, saveFolder, saveRequest } from "@/lib/storage/storage-helpers";
 import {
   ContextMenu,
@@ -81,13 +84,13 @@ export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequ
   const isActive = item.type === "request" && activeRequest.id === item.id;
 
   const loadRequest = useRequestStore((s) => s.loadRequest);
-  const clearResponse = useResponseStore((s) => s.clearResponse);
 
   const handleOpen = () => {
     if (item.type === "request" && item.request) {
+      cacheCurrentResponse(activeRequest.id);
       openTab(item.request.id, item.request.name);
       loadRequest(item.request);
-      clearResponse();
+      restoreResponseFromCache(item.request.id);
     } else if (item.type === "folder" && onToggle) {
       onToggle();
     }
