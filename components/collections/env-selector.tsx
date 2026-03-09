@@ -24,6 +24,8 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { Settings, Globe, Plus } from "lucide-react";
+import { EnvIcon } from "@/components/environment/env-icon";
+import { getEnvColor } from "@/lib/env-presets";
 
 export function EnvSelector() {
   const environments = useEnvironmentStore((s) => s.environments);
@@ -38,9 +40,6 @@ export function EnvSelector() {
 
   const currentEnv = activeEnv();
   const hasEnvs = environments.length > 0;
-  const selectedName = activeEnvId
-    ? environments.find((e) => e.id === activeEnvId)?.name
-    : null;
 
   const handleAddVariable = () => {
     if (!activeEnvId) return;
@@ -70,7 +69,14 @@ export function EnvSelector() {
       >
         <SelectTrigger className="flex-1 h-7 text-xs bg-panel border-border/50">
           <SelectValue>
-            {selectedName ?? (
+            {currentEnv ? (
+              <div className="flex items-center gap-1.5">
+                <div className={cn("w-3.5 h-3.5 rounded flex items-center justify-center shrink-0", getEnvColor(currentEnv.color).bg)}>
+                  <EnvIcon name={currentEnv.icon} className={cn(getEnvColor(currentEnv.color).text, "w-2 h-2")} size={8} />
+                </div>
+                <span>{currentEnv.name}</span>
+              </div>
+            ) : (
               <span className="text-foreground-subtle">No env selected</span>
             )}
           </SelectValue>
@@ -105,11 +111,19 @@ export function EnvSelector() {
           ) : (
             <>
               <SelectItem value="__none__">— No environment —</SelectItem>
-              {environments.map((env) => (
-                <SelectItem key={env.id} value={env.id}>
-                  {env.name}
-                </SelectItem>
-              ))}
+              {environments.map((env) => {
+                const tokens = getEnvColor(env.color);
+                return (
+                  <SelectItem key={env.id} value={env.id}>
+                    <div className="flex items-center gap-2">
+                      <div className={cn("w-4 h-4 rounded flex items-center justify-center shrink-0", tokens.bg)}>
+                        <EnvIcon name={env.icon} className={cn(tokens.text, "w-2.5 h-2.5")} size={10} />
+                      </div>
+                      <span>{env.name}</span>
+                    </div>
+                  </SelectItem>
+                );
+              })}
             </>
           )}
         </SelectContent>

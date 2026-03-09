@@ -19,8 +19,8 @@ interface EnvironmentState {
   init: () => Promise<void>;
 
   // Environment CRUD
-  createEnvironment: (name: string, description?: string) => Promise<Environment>;
-  updateEnvironment: (id: string, updates: Partial<Pick<Environment, "name" | "description">>) => Promise<void>;
+  createEnvironment: (name: string, description?: string, icon?: string | null, color?: string | null) => Promise<Environment>;
+  updateEnvironment: (id: string, updates: Partial<Pick<Environment, "name" | "description" | "icon" | "color">>) => Promise<void>;
   deleteEnvironment: (id: string) => Promise<void>;
   duplicateEnvironment: (id: string) => Promise<Environment | undefined>;
 
@@ -60,12 +60,14 @@ export const useEnvironmentStore = create<EnvironmentState>((set, get) => ({
     }
   },
 
-  createEnvironment: async (name: string, description?: string) => {
+  createEnvironment: async (name: string, description?: string, icon?: string | null, color?: string | null) => {
     const now = Date.now();
     const env: Environment = {
       id: crypto.randomUUID(),
       name,
       ...(description ? { description } : {}),
+      icon: icon ?? null,
+      color: color ?? null,
       variables: [],
       createdAt: now,
       updatedAt: now,
@@ -109,6 +111,8 @@ export const useEnvironmentStore = create<EnvironmentState>((set, get) => ({
       id: crypto.randomUUID(),
       name: `${env.name} (copy)`,
       ...(env.description ? { description: env.description } : {}),
+      icon: env.icon ?? null,
+      color: env.color ?? null,
       variables: env.variables.map((v) => ({ ...v, id: crypto.randomUUID() })),
       createdAt: now,
       updatedAt: now,

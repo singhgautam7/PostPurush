@@ -9,6 +9,8 @@ export interface Environment {
   id: string;
   name: string;
   description?: string;
+  icon?: string | null;
+  color?: string | null;
   variables: EnvVariable[];
   createdAt: number;
   updatedAt: number;

@@ -3,6 +3,11 @@
 import { useEnvironmentStore } from "@/store/environment-store";
 import { EnvVariable } from "@/types/environment";
 import { EnvVariableRow } from "./env-variable-row";
+import { ColorPicker } from "./color-picker";
+import { IconPicker } from "./icon-picker";
+import { EnvIcon } from "./env-icon";
+import { getEnvColor } from "@/lib/env-presets";
+import { cn } from "@/lib/utils";
 import {
   Sheet,
   SheetContent,
@@ -30,6 +35,8 @@ export function EnvEditSheet({ open, onOpenChange, envId }: EnvEditSheetProps) {
 
   if (!env) return null;
 
+  const tokens = getEnvColor(env.color);
+
   const handleAdd = () => {
     const newVar: EnvVariable = {
       id: crypto.randomUUID(),
@@ -46,16 +53,44 @@ export function EnvEditSheet({ open, onOpenChange, envId }: EnvEditSheetProps) {
       <SheetContent className="sm:max-w-[520px] bg-card border-border/50 flex flex-col">
         <SheetHeader>
           <SheetTitle>Edit — {env.name}</SheetTitle>
+          <SheetDescription>Changes are saved automatically</SheetDescription>
+        </SheetHeader>
+
+        {/* Icon + Color pickers */}
+        <div className="flex items-start gap-4 px-6 py-4 border-b border-border">
+          <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center shrink-0", tokens.bg)}>
+            <EnvIcon name={env.icon} className={cn(tokens.text)} size={24} />
+          </div>
+          <div className="flex-1 space-y-3">
+            <div>
+              <label className="text-xs text-foreground-muted mb-1.5 block">Color</label>
+              <ColorPicker
+                value={env.color ?? null}
+                onChange={(c) => updateEnvironment(envId, { color: c })}
+              />
+            </div>
+            <div>
+              <label className="text-xs text-foreground-muted mb-1.5 block">Icon</label>
+              <IconPicker
+                value={env.icon ?? null}
+                color={env.color ?? null}
+                onChange={(i) => updateEnvironment(envId, { icon: i })}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Description */}
+        <div className="px-6 py-2">
           <Input
             value={env.description ?? ""}
             onChange={(e) => updateEnvironment(envId, { description: e.target.value })}
             placeholder="Add a description..."
-            className="text-sm text-foreground-muted border-0 bg-transparent px-0 h-auto focus-visible:ring-0 mt-1"
+            className="text-sm text-foreground-muted border-0 bg-transparent px-0 h-auto focus-visible:ring-0"
           />
-          <SheetDescription>Changes are saved automatically</SheetDescription>
-        </SheetHeader>
+        </div>
 
-        <div className="flex-1 overflow-y-auto space-y-2 mt-4 px-4">
+        <div className="flex-1 overflow-y-auto space-y-2 mt-2 px-4">
           {env.variables.length === 0 && (
             <p className="text-xs text-muted-foreground italic">
               No variables yet. Add one below.
