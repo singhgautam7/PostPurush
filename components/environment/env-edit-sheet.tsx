@@ -86,7 +86,7 @@ export function EnvEditSheet({ open, onOpenChange, envId }: EnvEditSheetProps) {
             value={env.description ?? ""}
             onChange={(e) => updateEnvironment(envId, { description: e.target.value })}
             placeholder="Add a description..."
-            className="text-sm text-foreground-muted border-0 bg-transparent px-0 h-auto focus-visible:ring-0"
+            className="text-sm text-foreground-muted border-0 bg-transparent px-2 h-auto focus-visible:ring-0"
           />
         </div>
 
