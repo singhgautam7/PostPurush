@@ -29,3 +29,31 @@ export const useResponseStore = create<ResponseState>((set) => ({
     setCurrentMeta: (currentMeta) =>
         set({ currentMeta }),
 }));
+
+// --- In-memory response cache per tab (not persisted across refreshes) ---
+
+const responseCache = new Map<string, { response: ApiResponse; meta: ResponseMetadata | null }>();
+
+/** Save the current active response into the cache for the given requestId. */
+export function cacheCurrentResponse(requestId: string) {
+    const { response, currentMeta } = useResponseStore.getState();
+    if (response) {
+        responseCache.set(requestId, { response, meta: currentMeta });
+    }
+}
+
+/** Restore a cached response for requestId into the active store. Returns true if found. */
+export function restoreResponseFromCache(requestId: string): boolean {
+    const cached = responseCache.get(requestId);
+    if (cached) {
+        useResponseStore.setState({ response: cached.response, currentMeta: cached.meta });
+        return true;
+    }
+    useResponseStore.setState({ response: null, currentMeta: null });
+    return false;
+}
+
+/** Remove a cached response (e.g. when closing a tab). */
+export function removeResponseFromCache(requestId: string) {
+    responseCache.delete(requestId);
+}

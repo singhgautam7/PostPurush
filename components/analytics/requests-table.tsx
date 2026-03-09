@@ -36,7 +36,7 @@ import {
 import { cn } from "@/lib/utils";
 import { formatBytes } from "@/utils/get-response-size";
 import { AnalyticsRecord, AnalyticsFilters } from "@/hooks/use-analytics";
-import { useNavigationStore } from "@/store/navigation-store";
+import { useRouter } from "next/navigation";
 import { RequestDetailModal } from "./request-detail-modal";
 
 type SortKey = "startTime" | "durationMs" | "statusCode";
@@ -108,10 +108,10 @@ export function RequestsTable({ filtered, filters }: RequestsTableProps) {
   const [selectedRecord, setSelectedRecord] = useState<AnalyticsRecord | null>(
     null
   );
-  const setActiveSection = useNavigationStore((s) => s.setActiveSection);
+  const router = useRouter();
 
   const repeatRequest = (record: AnalyticsRecord) => {
-    setActiveSection("collections");
+    router.push("/");
     setTimeout(() => {
       window.dispatchEvent(
         new CustomEvent("postpurush:open-request", {

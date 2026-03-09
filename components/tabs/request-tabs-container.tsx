@@ -2,12 +2,17 @@
 
 import { useTabStore } from "@/store/tab-store";
 import { useRequestStore } from "@/store/request-store";
-import { useResponseStore } from "@/store/response-store";
+import {
+  useResponseStore,
+  cacheCurrentResponse,
+  restoreResponseFromCache,
+  removeResponseFromCache,
+} from "@/store/response-store";
 import { loadRequests } from "@/lib/storage/storage-helpers";
 import { X, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   DndContext,
   closestCenter,
@@ -33,6 +38,7 @@ import { Button } from "@/components/ui/button";
 export function RequestTabsContainer() {
   const tabs = useTabStore((s) => s.tabs);
   const activeTabId = useTabStore((s) => s.activeTabId);
+  const hydrate = useTabStore((s) => s.hydrate);
   const openTab = useTabStore((s) => s.openTab);
   const closeTab = useTabStore((s) => s.closeTab);
   const setActiveTab = useTabStore((s) => s.setActiveTab);
@@ -43,7 +49,25 @@ export function RequestTabsContainer() {
 
   const [tabToClose, setTabToClose] = useState<string | null>(null);
 
+  // Restore persisted tabs from localStorage after mount (avoids hydration mismatch)
+  useEffect(() => {
+    hydrate();
+    // After hydration, load the active tab's request
+    const { tabs: restoredTabs, activeTabId: restoredActiveId } = useTabStore.getState();
+    if (restoredActiveId) {
+      const activeTab = restoredTabs.find((t) => t.id === restoredActiveId);
+      if (activeTab && !activeTab.requestId.startsWith("new-")) {
+        loadRequests().then((allRequests) => {
+          const req = allRequests.find((r) => r.id === activeTab.requestId);
+          if (req) loadRequest(req);
+        });
+      }
+    }
+  }, [hydrate, loadRequest]);
+
   const performClose = (id: string) => {
+    const closingTab = tabs.find((t) => t.id === id);
+    if (closingTab) removeResponseFromCache(closingTab.requestId);
     closeTab(id);
     setTabToClose(null);
     const active = useTabStore.getState().activeTabId;
@@ -82,6 +106,10 @@ export function RequestTabsContainer() {
   };
 
   const handleTabClick = async (tabId: string, requestId: string) => {
+    // Cache the response for the tab we're leaving
+    const currentTab = tabs.find((t) => t.id === activeTabId);
+    if (currentTab) cacheCurrentResponse(currentTab.requestId);
+
     setActiveTab(tabId);
     if (requestId.startsWith("new-")) {
       resetRequest();
@@ -90,7 +118,8 @@ export function RequestTabsContainer() {
       const req = allRequests.find(r => r.id === requestId);
       if (req) loadRequest(req);
     }
-    clearResponse();
+    // Restore cached response for the tab we're switching to, or clear
+    restoreResponseFromCache(requestId);
   };
 
   const handleNewTab = () => {

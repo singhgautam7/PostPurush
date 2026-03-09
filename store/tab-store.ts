@@ -10,6 +10,8 @@ export interface Tab {
 interface TabState {
     tabs: Tab[];
     activeTabId: string | null;
+    _hydrated: boolean;
+    hydrate: () => void;
     openTab: (requestId: string, title?: string) => void;
     closeTab: (tabId: string) => void;
     setActiveTab: (tabId: string) => void;
@@ -20,6 +22,25 @@ interface TabState {
 export const useTabStore = create<TabState>((set, get) => ({
     tabs: [],
     activeTabId: null,
+    _hydrated: false,
+
+    hydrate: () => {
+        if (get()._hydrated) return;
+        try {
+            const raw = localStorage.getItem("postpurush-open-tabs");
+            const activeTab = localStorage.getItem("postpurush-active-tab");
+            if (!raw) { set({ _hydrated: true }); return; }
+            const tabs: Tab[] = JSON.parse(raw);
+            if (!Array.isArray(tabs)) { set({ _hydrated: true }); return; }
+            set({
+                tabs,
+                activeTabId: activeTab && tabs.some((t) => t.id === activeTab) ? activeTab : tabs[0]?.id ?? null,
+                _hydrated: true,
+            });
+        } catch {
+            set({ _hydrated: true });
+        }
+    },
 
     openTab: (requestId, title = "Untitled Request") => {
         const { tabs } = get();
@@ -85,3 +106,16 @@ export const useTabStore = create<TabState>((set, get) => ({
             return { tabs: newTabs };
         }),
 }));
+
+// Persist tabs to localStorage on every state change (skip initial hydration write)
+if (typeof window !== "undefined") {
+    useTabStore.subscribe((state) => {
+        if (!state._hydrated) return;
+        localStorage.setItem("postpurush-open-tabs", JSON.stringify(state.tabs));
+        if (state.activeTabId) {
+            localStorage.setItem("postpurush-active-tab", state.activeTabId);
+        } else {
+            localStorage.removeItem("postpurush-active-tab");
+        }
+    });
+}

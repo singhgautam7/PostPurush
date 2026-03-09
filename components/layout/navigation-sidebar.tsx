@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Folder,
   FlaskConical,
   BookText,
-  Activity,
   BarChart3,
   Globe,
   HelpCircle,
@@ -15,20 +16,19 @@ import {
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { useNavigationStore, NavigationSection } from "@/store/navigation-store";
 
 interface NavItemProps {
   icon: React.ReactNode;
   label: string;
+  href: string;
   isActive?: boolean;
   collapsed?: boolean;
-  onClick?: () => void;
 }
 
-function NavItem({ icon, label, isActive, collapsed, onClick }: NavItemProps) {
-  const button = (
-    <button
-      onClick={onClick}
+function NavItem({ icon, label, href, isActive, collapsed }: NavItemProps) {
+  const link = (
+    <Link
+      href={href}
       className={cn(
         "w-full flex items-center cursor-pointer",
         "rounded-none text-sm transition-colors duration-100",
@@ -40,13 +40,13 @@ function NavItem({ icon, label, isActive, collapsed, onClick }: NavItemProps) {
     >
       <span className={cn("flex-shrink-0", isActive ? "text-foreground-subtle" : "text-foreground-nav")}>{icon}</span>
       {!collapsed && <span className="flex-1 text-left truncate">{label}</span>}
-    </button>
+    </Link>
   );
 
   if (collapsed) {
     return (
       <Tooltip delayDuration={0}>
-        <TooltipTrigger asChild>{button}</TooltipTrigger>
+        <TooltipTrigger asChild>{link}</TooltipTrigger>
         <TooltipContent side="right" sideOffset={8}>
           {label}
         </TooltipContent>
@@ -54,26 +54,28 @@ function NavItem({ icon, label, isActive, collapsed, onClick }: NavItemProps) {
     );
   }
 
-  return button;
+  return link;
 }
 
-const exploreItems: { id: NavigationSection; label: string; icon: React.ReactNode }[] = [
-  { id: "collections", label: "Collections", icon: <Folder size={15} /> },
-  { id: "env", label: "Environments", icon: <Globe size={15} /> },
-  { id: "analytics", label: "Analytics", icon: <BarChart3 size={15} /> },
-  { id: "testing", label: "API Testing", icon: <FlaskConical size={15} /> },
-  { id: "docs", label: "API Docs", icon: <BookText size={15} /> },
+const exploreItems = [
+  { href: "/", label: "Collections", icon: <Folder size={15} /> },
+  { href: "/environments", label: "Environments", icon: <Globe size={15} /> },
+  { href: "/analytics", label: "Analytics", icon: <BarChart3 size={15} /> },
+  { href: "/testing", label: "API Testing", icon: <FlaskConical size={15} /> },
+  { href: "/api-docs", label: "API Docs", icon: <BookText size={15} /> },
 ];
 
-const supportItems: { id: NavigationSection; label: string; icon: React.ReactNode }[] = [
-  { id: "help", label: "Help", icon: <HelpCircle size={15} /> },
-  { id: "settings", label: "Settings", icon: <Settings size={15} /> },
+const supportItems = [
+  { href: "/help", label: "Help", icon: <HelpCircle size={15} /> },
+  { href: "/settings", label: "Settings", icon: <Settings size={15} /> },
 ];
 
 export function NavigationSidebar() {
   const [collapsed, setCollapsed] = useState(false);
-  const activeSection = useNavigationStore((s) => s.activeSection);
-  const setActiveSection = useNavigationStore((s) => s.setActiveSection);
+  const pathname = usePathname();
+
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
     <aside
@@ -111,12 +113,12 @@ export function NavigationSidebar() {
         )}
         {exploreItems.map((item) => (
           <NavItem
-            key={item.id}
+            key={item.href}
             icon={item.icon}
             label={item.label}
-            isActive={activeSection === item.id}
+            href={item.href}
+            isActive={isActive(item.href)}
             collapsed={collapsed}
-            onClick={() => setActiveSection(item.id)}
           />
         ))}
 
@@ -130,12 +132,12 @@ export function NavigationSidebar() {
           )}
           {supportItems.map((item) => (
             <NavItem
-              key={item.id}
+              key={item.href}
               icon={item.icon}
               label={item.label}
-              isActive={activeSection === item.id}
+              href={item.href}
+              isActive={isActive(item.href)}
               collapsed={collapsed}
-              onClick={() => setActiveSection(item.id)}
             />
           ))}
         </div>

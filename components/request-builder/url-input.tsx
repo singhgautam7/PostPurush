@@ -1,7 +1,7 @@
 "use client";
 
 import { useRequestStore } from "@/store/request-store";
-import { useResponseStore } from "@/store/response-store";
+import { useResponseStore, cacheCurrentResponse } from "@/store/response-store";
 import { useEnvironmentStore } from "@/store/environment-store";
 import { sendRequest } from "@/lib/request/send-request";
 import { saveResponseMetadata } from "@/lib/storage/storage-helpers";
@@ -167,6 +167,7 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
       requestSnapshot: snapshot,
     };
     setCurrentMeta(meta);
+    cacheCurrentResponse(activeRequest.id);
     saveResponseMetadata(activeRequest.id, meta).catch(() => {});
   };
 
