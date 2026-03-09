@@ -189,3 +189,23 @@ export async function loadResponseMetadataFromDB(
     const db = await getDB();
     return (await db.get("responses_metadata", requestId)) ?? [];
 }
+
+export async function loadAllResponseMetadataFromDB(): Promise<
+    (ResponseMetadata & { requestId: string })[]
+> {
+    const db = await getDB();
+    const tx = db.transaction("responses_metadata", "readonly");
+    const store = tx.store;
+    let cursor = await store.openCursor();
+    const flat: (ResponseMetadata & { requestId: string })[] = [];
+    while (cursor) {
+        const requestId = cursor.key as string;
+        const records = cursor.value as ResponseMetadata[];
+        for (const r of records) {
+            flat.push({ ...r, requestId });
+        }
+        cursor = await cursor.continue();
+    }
+    flat.sort((a, b) => b.startTime - a.startTime);
+    return flat;
+}

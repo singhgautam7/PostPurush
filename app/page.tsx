@@ -4,6 +4,7 @@ import { MasterHeader } from "@/components/layout/master-header";
 import { NavigationSidebar } from "@/components/layout/navigation-sidebar";
 import { CollectionsView } from "@/features/collections/collections-view";
 import { EnvList } from "@/components/environment/env-list";
+import { AnalyticsView } from "@/components/analytics/analytics-view";
 import { WipPlaceholder } from "@/features/wip-placeholder";
 import { useNavigationStore } from "@/store/navigation-store";
 
@@ -29,6 +30,8 @@ export default function Home() {
             <CollectionsView />
           ) : activeSection === "env" ? (
             <EnvList />
+          ) : activeSection === "analytics" ? (
+            <AnalyticsView />
           ) : (
             <WipPlaceholder title={sectionTitles[activeSection] ?? activeSection} />
           )}

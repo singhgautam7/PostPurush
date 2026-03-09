@@ -5,7 +5,7 @@ import { useResponseStore } from "@/store/response-store";
 import { useEnvironmentStore } from "@/store/environment-store";
 import { sendRequest } from "@/lib/request/send-request";
 import { saveResponseMetadata } from "@/lib/storage/storage-helpers";
-import { ResponseMetadata } from "@/types/response-metadata";
+import { ResponseMetadata, RequestSnapshot } from "@/types/response-metadata";
 import { EnvironmentVariable } from "@/types/environment";
 import { saveRequest } from "@/lib/storage/storage-helpers";
 import { Button } from "@/components/ui/button";
@@ -130,6 +130,26 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
     const contentTypeHeader = Object.keys(result.response.headers).find(
       (k) => k.toLowerCase() === "content-type"
     );
+    const snapshot: RequestSnapshot = {
+      url: activeRequest.url,
+      resolvedUrl: result.resolvedUrl,
+      method: activeRequest.method,
+      params: activeRequest.params
+        .filter((p) => p.key && p.enabled !== false)
+        .map((p) => ({ key: p.key, value: p.value })),
+      headers: activeRequest.headers
+        .filter((h) => h.key && h.enabled !== false)
+        .map((h) => ({ key: h.key, value: h.value })),
+      bodyType: activeRequest.method === "GET" ? "none" : activeRequest.body.type,
+      bodyContent: activeRequest.method === "GET" ? "" : activeRequest.body.content,
+      formData:
+        activeRequest.method !== "GET" && activeRequest.body.type === "form"
+          ? activeRequest.body.formData
+              .filter((f) => f.key && f.enabled !== false)
+              .map((f) => ({ key: f.key, value: f.value }))
+          : undefined,
+    };
+
     const meta: ResponseMetadata = {
       id: crypto.randomUUID(),
       requestName: `${activeRequest.method} — ${activeRequest.name || "Untitled"}`,
@@ -144,6 +164,7 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
       endTime: result.endTime,
       envId: currentEnv?.id ?? null,
       envName: currentEnv?.name ?? null,
+      requestSnapshot: snapshot,
     };
     setCurrentMeta(meta);
     saveResponseMetadata(activeRequest.id, meta).catch(() => {});

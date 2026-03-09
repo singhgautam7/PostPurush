@@ -10,4 +10,5 @@ export {
     deleteFolderFromDB as deleteFolder,
     saveResponseMetadataToDB as saveResponseMetadata,
     loadResponseMetadataFromDB as loadResponseMetadata,
+    loadAllResponseMetadataFromDB as loadAllResponseMetadata,
 } from "./indexed-db";
