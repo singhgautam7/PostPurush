@@ -42,12 +42,10 @@ export function ResponsePanel() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2 }}
-        className="flex flex-col h-full"
+        className="flex flex-col h-full overflow-auto"
       >
         <ResponseMeta />
-        <div className="flex-1 overflow-hidden">
-          <ResponseTabs />
-        </div>
+        <ResponseTabs />
       </motion.div>
     </AnimatePresence>
   );

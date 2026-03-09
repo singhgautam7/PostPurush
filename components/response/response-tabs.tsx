@@ -20,7 +20,7 @@ export function ResponseTabs() {
   ];
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full flex flex-col">
       {/* Level 1 — Pill/Segment toggle */}
       <div className="px-4 py-2 shrink-0">
         <div className="bg-panel border border-border rounded-md p-0.5 inline-flex">
@@ -47,7 +47,7 @@ export function ResponseTabs() {
       </div>
 
       {/* Tab content */}
-      <div className="flex-1 overflow-hidden">
+      <div>
         {activeTab === "body" && <BodyView />}
         {activeTab === "headers" && <HeadersView />}
       </div>
