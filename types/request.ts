@@ -2,6 +2,11 @@ export interface KeyValuePair {
   key: string;
   value: string;
   enabled?: boolean;
+  description?: string;
+  type?: "string" | "number" | "boolean" | "float";
+  required?: boolean;
+  deprecated?: boolean;
+  sensitive?: boolean;
 }
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";

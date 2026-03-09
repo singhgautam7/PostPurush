@@ -2,7 +2,6 @@
 
 import { useEnvironmentStore } from "@/store/environment-store";
 import { EnvVariable } from "@/types/environment";
-import { EnvVariableRow } from "./env-variable-row";
 import { ColorPicker } from "./color-picker";
 import { IconPicker } from "./icon-picker";
 import { EnvIcon } from "./env-icon";
@@ -16,8 +15,8 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { KeyValueTable } from "@/components/shared/key-value-table";
+import { KeyValuePair } from "@/types/request";
 
 interface EnvEditSheetProps {
   open: boolean;
@@ -29,28 +28,41 @@ export function EnvEditSheet({ open, onOpenChange, envId }: EnvEditSheetProps) {
   const env = useEnvironmentStore((s) =>
     s.environments.find((e) => e.id === envId)
   );
-  const upsertVariable = useEnvironmentStore((s) => s.upsertVariable);
-  const deleteVariable = useEnvironmentStore((s) => s.deleteVariable);
   const updateEnvironment = useEnvironmentStore((s) => s.updateEnvironment);
 
   if (!env) return null;
 
   const tokens = getEnvColor(env.color);
 
-  const handleAdd = () => {
-    const newVar: EnvVariable = {
-      id: crypto.randomUUID(),
-      key: "",
-      value: "",
-      enabled: true,
-    };
-    upsertVariable(envId, newVar);
-    setTimeout(() => document.getElementById(`var-key-${newVar.id}`)?.focus(), 50);
+  const handleVariablesChange = (rows: KeyValuePair[]) => {
+    const variables: EnvVariable[] = rows.map((r, i) => ({
+      id: env.variables[i]?.id ?? crypto.randomUUID(),
+      key: r.key,
+      value: r.value,
+      enabled: r.enabled !== false,
+      description: r.description,
+      type: r.type,
+      required: r.required,
+      deprecated: r.deprecated,
+      sensitive: r.sensitive,
+    }));
+    updateEnvironment(envId, { variables });
   };
+
+  const rows: KeyValuePair[] = env.variables.map((v) => ({
+    key: v.key,
+    value: v.value,
+    enabled: v.enabled,
+    description: v.description,
+    type: v.type,
+    required: v.required,
+    deprecated: v.deprecated,
+    sensitive: v.sensitive,
+  }));
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-[520px] bg-card border-border/50 flex flex-col">
+      <SheetContent className="sm:max-w-[580px] bg-card border-border/50 flex flex-col">
         <SheetHeader>
           <SheetTitle>Edit — {env.name}</SheetTitle>
           <SheetDescription>Changes are saved automatically</SheetDescription>
@@ -90,40 +102,16 @@ export function EnvEditSheet({ open, onOpenChange, envId }: EnvEditSheetProps) {
           />
         </div>
 
-        <div className="flex-1 overflow-y-auto space-y-2 mt-2 px-4">
-          {env.variables.length === 0 && (
-            <p className="text-xs text-muted-foreground italic">
-              No variables yet. Add one below.
-            </p>
-          )}
-
-          {env.variables.length > 0 && (
-            <div className="grid grid-cols-[1fr_1fr_32px] gap-2 text-xs font-medium text-muted-foreground mb-1">
-              <span>Key</span>
-              <span>Value</span>
-              <span></span>
-            </div>
-          )}
-
-          {env.variables.map((v) => (
-            <EnvVariableRow
-              key={v.id}
-              variable={v}
-              onChange={(updated) => upsertVariable(envId, updated)}
-              onDelete={() => deleteVariable(envId, v.id)}
-              onAddNew={handleAdd}
-            />
-          ))}
-
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleAdd}
-            className="h-7 text-xs text-muted-foreground hover:text-foreground gap-1 mt-1"
-          >
-            <Plus className="h-3 w-3" />
-            Add Variable
-          </Button>
+        <div className="flex-1 overflow-y-auto mt-2 px-4">
+          <KeyValueTable
+            rows={rows}
+            onChange={handleVariablesChange}
+            keyPlaceholder="variable_name"
+            valuePlaceholder="value"
+            addLabel="Add Variable"
+            autoGuessType={true}
+            showDescription={true}
+          />
         </div>
       </SheetContent>
     </Sheet>

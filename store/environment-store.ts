@@ -20,7 +20,7 @@ interface EnvironmentState {
 
   // Environment CRUD
   createEnvironment: (name: string, description?: string, icon?: string | null, color?: string | null) => Promise<Environment>;
-  updateEnvironment: (id: string, updates: Partial<Pick<Environment, "name" | "description" | "icon" | "color">>) => Promise<void>;
+  updateEnvironment: (id: string, updates: Partial<Pick<Environment, "name" | "description" | "icon" | "color" | "variables">>) => Promise<void>;
   deleteEnvironment: (id: string) => Promise<void>;
   duplicateEnvironment: (id: string) => Promise<Environment | undefined>;
 
