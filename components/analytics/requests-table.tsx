@@ -31,10 +31,12 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Eye,
+  RotateCcw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatBytes } from "@/utils/get-response-size";
 import { AnalyticsRecord, AnalyticsFilters } from "@/hooks/use-analytics";
+import { useNavigationStore } from "@/store/navigation-store";
 import { RequestDetailModal } from "./request-detail-modal";
 
 type SortKey = "startTime" | "durationMs" | "statusCode";
@@ -106,6 +108,18 @@ export function RequestsTable({ filtered, filters }: RequestsTableProps) {
   const [selectedRecord, setSelectedRecord] = useState<AnalyticsRecord | null>(
     null
   );
+  const setActiveSection = useNavigationStore((s) => s.setActiveSection);
+
+  const repeatRequest = (record: AnalyticsRecord) => {
+    setActiveSection("collections");
+    setTimeout(() => {
+      window.dispatchEvent(
+        new CustomEvent("postpurush:open-request", {
+          detail: { requestId: record.requestId },
+        })
+      );
+    }, 50);
+  };
 
   const sorted = useMemo(
     () =>
@@ -131,8 +145,12 @@ export function RequestsTable({ filtered, filters }: RequestsTableProps) {
   };
 
   return (
-    <div className="flex flex-col flex-1 min-h-0">
-      <div className="flex-1 overflow-auto">
+    <div className="flex flex-col px-6 py-4">
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground-subtle mb-3">
+        Request History
+      </h3>
+      <div className="bg-panel border border-border rounded-lg overflow-hidden">
+        <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
@@ -180,7 +198,7 @@ export function RequestsTable({ filtered, filters }: RequestsTableProps) {
                   />
                 </span>
               </TableHead>
-              <TableHead className="w-12 text-xs" />
+              <TableHead className="w-24 text-xs" />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -245,23 +263,43 @@ export function RequestsTable({ filtered, filters }: RequestsTableProps) {
                   {formatTime(r.startTime)}
                 </TableCell>
                 <TableCell>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 opacity-0 group-hover/row:opacity-100 transition-opacity"
-                    onClick={() => setSelectedRecord(r)}
-                  >
-                    <Eye size={13} />
-                  </Button>
+                  <div className="flex items-center gap-1 opacity-0 group-hover/row:opacity-100 transition-opacity">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7"
+                          onClick={() => setSelectedRecord(r)}
+                        >
+                          <Eye size={13} />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="text-xs">View this request</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7"
+                          onClick={() => repeatRequest(r)}
+                        >
+                          <RotateCcw size={12} />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Repeat this request</TooltipContent>
+                    </Tooltip>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
-      </div>
+        </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between px-4 py-3 border-t border-border shrink-0">
+      <div className="flex items-center justify-between px-4 py-3 border-t border-border">
         <div className="flex items-center gap-2">
           <span className="text-xs text-foreground-muted">Rows per page:</span>
           <Select
@@ -329,6 +367,7 @@ export function RequestsTable({ filtered, filters }: RequestsTableProps) {
             <ChevronsRight size={13} />
           </Button>
         </div>
+      </div>
       </div>
 
       <RequestDetailModal

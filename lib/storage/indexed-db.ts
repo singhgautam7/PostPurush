@@ -190,6 +190,11 @@ export async function loadResponseMetadataFromDB(
     return (await db.get("responses_metadata", requestId)) ?? [];
 }
 
+export async function clearAllResponseMetadataFromDB(): Promise<void> {
+    const db = await getDB();
+    await db.clear("responses_metadata");
+}
+
 export async function loadAllResponseMetadataFromDB(): Promise<
     (ResponseMetadata & { requestId: string })[]
 > {

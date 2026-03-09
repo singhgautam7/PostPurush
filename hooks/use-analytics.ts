@@ -73,6 +73,28 @@ export function computeStats(records: AnalyticsRecord[]) {
   };
 }
 
+export interface SlowestEndpoint {
+  url: string;
+  avgDuration: number;
+  p95: number;
+  callCount: number;
+  errorRate: number;
+}
+
+export interface ErrorRateEntry {
+  url: string;
+  fullUrl: string;
+  errorRate: number;
+  total: number;
+}
+
+export interface TrendPoint {
+  time: string;
+  timestamp: number;
+  url: string;
+  duration: number;
+}
+
 export function useAnalytics() {
   const [allRecords, setAllRecords] = useState<AnalyticsRecord[]>([]);
   const [filters, setFilters] = useState<AnalyticsFilters>(defaultFilters);
@@ -134,6 +156,97 @@ export function useAnalytics() {
 
   const clearFilters = useCallback(() => setFilters(defaultFilters), []);
 
+  // Slowest endpoints
+  const slowestEndpoints = useMemo<SlowestEndpoint[]>(() => {
+    const byUrl: Record<string, number[]> = {};
+    const errorsByUrl: Record<string, { errors: number; total: number }> = {};
+    filtered.forEach((r) => {
+      if (!byUrl[r.resolvedUrl]) byUrl[r.resolvedUrl] = [];
+      byUrl[r.resolvedUrl].push(r.durationMs);
+      if (!errorsByUrl[r.resolvedUrl])
+        errorsByUrl[r.resolvedUrl] = { errors: 0, total: 0 };
+      errorsByUrl[r.resolvedUrl].total++;
+      if (r.statusCode >= 400 || r.statusCode === 0)
+        errorsByUrl[r.resolvedUrl].errors++;
+    });
+    return Object.entries(byUrl)
+      .map(([url, durations]) => {
+        const sorted = [...durations].sort((a, b) => a - b);
+        const avg = Math.round(
+          durations.reduce((s, d) => s + d, 0) / durations.length
+        );
+        const p95 =
+          sorted[Math.floor(sorted.length * 0.95)] ??
+          sorted[sorted.length - 1] ??
+          0;
+        const { errors, total } = errorsByUrl[url];
+        return {
+          url,
+          avgDuration: avg,
+          p95,
+          callCount: durations.length,
+          errorRate: Math.round((errors / total) * 100),
+        };
+      })
+      .sort((a, b) => b.avgDuration - a.avgDuration)
+      .slice(0, 5);
+  }, [filtered]);
+
+  // Error rate by endpoint
+  const errorRateData = useMemo<ErrorRateEntry[]>(() => {
+    const byUrl: Record<
+      string,
+      { total: number; errors: number; url: string }
+    > = {};
+    filtered.forEach((r) => {
+      if (!byUrl[r.resolvedUrl])
+        byUrl[r.resolvedUrl] = { total: 0, errors: 0, url: r.resolvedUrl };
+      byUrl[r.resolvedUrl].total++;
+      if (r.statusCode >= 400 || r.statusCode === 0)
+        byUrl[r.resolvedUrl].errors++;
+    });
+    return Object.values(byUrl)
+      .map((d) => ({
+        url: d.url.replace(/^https?:\/\/[^/]+/, "") || "/",
+        fullUrl: d.url,
+        errorRate: d.total > 0 ? Math.round((d.errors / d.total) * 100) : 0,
+        total: d.total,
+      }))
+      .filter((d) => d.total > 0)
+      .sort((a, b) => b.errorRate - a.errorRate)
+      .slice(0, 6);
+  }, [filtered]);
+
+  // Endpoint trend data (response time over time, top 5 endpoints)
+  const endpointTrendData = useMemo(() => {
+    const urlCounts = filtered.reduce(
+      (acc, r) => {
+        acc[r.resolvedUrl] = (acc[r.resolvedUrl] ?? 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+    const top5Urls = Object.entries(urlCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([url]) => url);
+
+    const points: TrendPoint[] = filtered
+      .filter((r) => top5Urls.includes(r.resolvedUrl))
+      .sort((a, b) => a.startTime - b.startTime)
+      .map((r) => ({
+        time: new Date(r.startTime).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        timestamp: r.startTime,
+        url: r.resolvedUrl,
+        duration: r.durationMs,
+      }));
+
+    return { points, top5Urls };
+  }, [filtered]);
+
   return {
     allRecords,
     filtered,
@@ -145,5 +258,8 @@ export function useAnalytics() {
     uniqueEnvNames,
     hasActiveFilters,
     clearFilters,
+    slowestEndpoints,
+    errorRateData,
+    endpointTrendData,
   };
 }

@@ -1,7 +1,6 @@
 "use client";
 
-import { Search, X } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -10,7 +9,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AnalyticsFilters } from "@/hooks/use-analytics";
+import { AnalyticsFilters, AnalyticsRecord } from "@/hooks/use-analytics";
+import { SearchWithSuggestions } from "./search-with-suggestions";
+import { ExportCSVButton } from "./export-csv-button";
+import { ClearHistoryButton } from "./clear-history-button";
 
 interface FilterBarProps {
   filters: AnalyticsFilters;
@@ -20,6 +22,9 @@ interface FilterBarProps {
   clearFilters: () => void;
   filteredCount: number;
   totalCount: number;
+  allRecords: AnalyticsRecord[];
+  filtered: AnalyticsRecord[];
+  onCleared: () => void;
 }
 
 export function FilterBar({
@@ -30,23 +35,17 @@ export function FilterBar({
   clearFilters,
   filteredCount,
   totalCount,
+  allRecords,
+  filtered,
+  onCleared,
 }: FilterBarProps) {
   return (
-    <div className="flex items-center gap-2 flex-wrap px-6 py-3 border-b border-border">
-      <div className="relative">
-        <Search
-          size={13}
-          className="absolute left-2.5 top-1/2 -translate-y-1/2 text-foreground-subtle"
-        />
-        <Input
-          placeholder="Search requests..."
-          value={filters.search}
-          onChange={(e) =>
-            setFilters((f) => ({ ...f, search: e.target.value }))
-          }
-          className="pl-8 h-8 w-52 text-xs"
-        />
-      </div>
+    <div className="sticky top-0 z-10 bg-background border-b border-border flex items-center gap-2 flex-wrap px-6 py-3">
+      <SearchWithSuggestions
+        allRecords={allRecords}
+        filters={filters}
+        setFilters={setFilters}
+      />
 
       <Select
         value={filters.method ?? "all"}
@@ -128,6 +127,11 @@ export function FilterBar({
           {filteredCount} of {totalCount} entries
         </span>
       )}
+
+      <div className="flex-1" />
+
+      <ExportCSVButton filtered={filtered} />
+      <ClearHistoryButton onCleared={onCleared} />
     </div>
   );
 }

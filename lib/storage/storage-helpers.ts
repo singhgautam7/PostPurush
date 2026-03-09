@@ -11,4 +11,5 @@ export {
     saveResponseMetadataToDB as saveResponseMetadata,
     loadResponseMetadataFromDB as loadResponseMetadata,
     loadAllResponseMetadataFromDB as loadAllResponseMetadata,
+    clearAllResponseMetadataFromDB as clearAllResponseMetadata,
 } from "./indexed-db";
