@@ -61,8 +61,8 @@ const exploreItems = [
   { href: "/", label: "Collections", icon: <Folder size={15} /> },
   { href: "/environments", label: "Environments", icon: <Globe size={15} /> },
   { href: "/analytics", label: "Analytics", icon: <BarChart3 size={15} /> },
-  { href: "/testing", label: "API Testing", icon: <FlaskConical size={15} /> },
-  { href: "/api-docs", label: "API Docs", icon: <BookText size={15} /> },
+  { href: "/api-docs", label: "Create API Docs", icon: <BookText size={15} /> },
+  { href: "/testing", label: "Test your APIs", icon: <FlaskConical size={15} /> },
 ];
 
 const supportItems = [
