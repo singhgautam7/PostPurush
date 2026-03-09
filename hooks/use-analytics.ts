@@ -52,6 +52,7 @@ export function computeStats(records: AnalyticsRecord[]) {
     "4xx": records.filter((r) => r.statusCode >= 400 && r.statusCode < 500)
       .length,
     "5xx": records.filter((r) => r.statusCode >= 500).length,
+    "ERR": records.filter((r) => r.statusCode === 0).length,
   };
   const p95Duration = (() => {
     if (!total) return 0;

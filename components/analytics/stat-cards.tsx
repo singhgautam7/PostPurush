@@ -135,23 +135,35 @@ export function StatCards({ stats, filters, setFilters }: StatCardsProps) {
           ))}
         {Object.entries(stats.statusCounts)
           .filter(([, v]) => v > 0)
-          .map(([cat, count]) => (
-            <span
-              key={cat}
-              className={cn(
-                "px-2 py-0.5 rounded text-xs font-mono",
-                cat === "2xx"
-                  ? "bg-emerald-500/15 text-emerald-400"
-                  : cat === "3xx"
-                    ? "bg-blue-500/15 text-blue-400"
-                    : cat === "4xx"
-                      ? "bg-amber-500/15 text-amber-400"
-                      : "bg-red-500/15 text-red-400"
-              )}
-            >
-              {cat}: {count}
-            </span>
-          ))}
+          .map(([cat, count]) => {
+            const filterKey = cat.toLowerCase();
+            const isActive = filters.statusCategory === filterKey;
+            const colorMap: Record<string, { active: string; inactive: string }> = {
+              "2xx": { active: "bg-emerald-500 text-white", inactive: "bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25" },
+              "3xx": { active: "bg-blue-500 text-white", inactive: "bg-blue-500/15 text-blue-400 hover:bg-blue-500/25" },
+              "4xx": { active: "bg-amber-500 text-white", inactive: "bg-amber-500/15 text-amber-400 hover:bg-amber-500/25" },
+              "5xx": { active: "bg-red-500 text-white", inactive: "bg-red-500/15 text-red-400 hover:bg-red-500/25" },
+              "ERR": { active: "bg-red-500 text-white", inactive: "bg-red-500/15 text-red-400 hover:bg-red-500/25" },
+            };
+            const colors = colorMap[cat] ?? colorMap["ERR"];
+            return (
+              <button
+                key={cat}
+                onClick={() =>
+                  setFilters((f) => ({
+                    ...f,
+                    statusCategory: f.statusCategory === filterKey ? null : filterKey,
+                  }))
+                }
+                className={cn(
+                  "px-2 py-0.5 rounded text-xs font-mono transition-colors cursor-pointer",
+                  isActive ? colors.active : colors.inactive
+                )}
+              >
+                {cat}: {count}
+              </button>
+            );
+          })}
       </div>
     </div>
   );
