@@ -31,10 +31,11 @@ interface CodeViewerProps {
   className?: string;
   editable?: boolean;
   showCopy?: boolean;
+  minHeight?: string;
   onChange?: (value: string) => void;
 }
 
-export function CodeViewer({ code, language, className, editable = false, showCopy = true, onChange }: CodeViewerProps) {
+export function CodeViewer({ code, language, className, editable = false, showCopy = true, minHeight, onChange }: CodeViewerProps) {
   const [copied, setCopied] = useState(false);
   const { mode } = useTheme();
   const cmTheme = mode === "dark" ? vscodeDark : githubLight;
@@ -96,7 +97,7 @@ export function CodeViewer({ code, language, className, editable = false, showCo
           style={{
             fontSize: "13px",
             fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-            minHeight: editable ? "100%" : "200px",
+            minHeight: minHeight ?? (editable ? "100%" : "200px"),
           }}
         />
       </div>

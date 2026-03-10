@@ -205,13 +205,13 @@ export function KeyValueTable({
             <div className="flex items-center gap-0.5">
               {/* Inline badges */}
               {row.required && (
-                <span className="text-[9px] px-1 py-0.5 rounded bg-blue-500/20 text-blue-400 dark:text-blue-300 font-semibold">
-                  REQ
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent/15 text-accent font-medium">
+                  Required
                 </span>
               )}
               {row.deprecated && (
-                <span className="text-[9px] px-1 py-0.5 rounded bg-amber-500/15 text-amber-400 font-medium">
-                  DEP
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 font-medium">
+                  Deprecated
                 </span>
               )}
               {row.sensitive && (
