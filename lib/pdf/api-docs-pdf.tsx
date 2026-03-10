@@ -8,6 +8,7 @@ import {
 import type { SavedRequest, KeyValuePair } from "@/types/request";
 import type { DocsGroup } from "@/lib/docs-builder";
 import { sanitizePdfText } from "./sanitize-text";
+import { generateCode, type CodeLanguage } from "@/lib/codegen/generate-code";
 
 /* ------------------------------------------------------------------ */
 /*  Colors                                                             */
@@ -307,11 +308,13 @@ function EndpointBlock({
   colors,
   styles,
   isLast,
+  includedLanguages,
 }: {
   request: SavedRequest;
   colors: PdfColors;
   styles: ReturnType<typeof makeStyles>;
   isLast: boolean;
+  includedLanguages: CodeLanguage[];
 }) {
   const visibleParams = request.params.filter((p) => p.key.trim());
   const visibleHeaders = request.headers.filter((h) => h.key.trim());
@@ -383,6 +386,35 @@ function EndpointBlock({
       {hasBodyContent && (
         <BodySection request={request} colors={colors} styles={styles} />
       )}
+
+      {/* Code snippets */}
+      {includedLanguages.length > 0 && (
+        <View style={{ marginTop: 14 }}>
+          <Text style={{ ...styles.sectionLabel, color: colors.muted }}>CODE SNIPPETS</Text>
+          {includedLanguages.map((lang, i) => {
+            const code = generateCode(request, lang);
+            return (
+              <View key={lang} style={{ marginTop: i === 0 ? 6 : 10 }}>
+                {/* Language label */}
+                <View style={{ backgroundColor: colors.border, paddingHorizontal: 8,
+                               paddingVertical: 3, borderTopLeftRadius: 4, borderTopRightRadius: 4 }}>
+                  <Text style={{ fontSize: 8, fontWeight: "bold", color: colors.gray }}>
+                    {lang.toUpperCase()}
+                  </Text>
+                </View>
+                {/* Code block */}
+                <View style={{ backgroundColor: colors.codeBg, padding: 10,
+                               borderBottomLeftRadius: 4, borderBottomRightRadius: 4 }}>
+                  <Text style={{ fontFamily: "Courier", fontSize: 7.5,
+                                 color: colors.black, lineHeight: 1.7 }}>
+                    {sanitizePdfText(code)}
+                  </Text>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      )}
     </View>
   );
 }
@@ -394,9 +426,12 @@ function EndpointBlock({
 interface ApiDocsPdfProps {
   groups: DocsGroup[];
   accent: string;
+  title: string;
+  summary: string | null;
+  includedLanguages: CodeLanguage[];
 }
 
-export function ApiDocsPdf({ groups, accent }: ApiDocsPdfProps) {
+export function ApiDocsPdf({ groups, accent, title, summary, includedLanguages }: ApiDocsPdfProps) {
   const colors = makePdfColors(accent);
   const styles = makeStyles(colors);
 
@@ -421,15 +456,23 @@ export function ApiDocsPdf({ groups, accent }: ApiDocsPdfProps) {
             paddingHorizontal: 48,
           }}
         >
-          <Text style={styles.coverTitle}>API Documentation</Text>
-          <Text style={styles.coverSubtitle}>
+          <Text style={styles.coverTitle}>{sanitizePdfText(title)}</Text>
+
+          {summary && (
+            <Text style={{ ...styles.body, marginTop: 10, fontSize: 11, lineHeight: 1.6 }}>
+              {sanitizePdfText(summary)}
+            </Text>
+          )}
+
+          <Text style={{ ...styles.coverSubtitle, marginTop: summary ? 16 : 8 }}>
             {`Generated with PostPurush · ${new Date().toLocaleDateString(
               "en-US",
               { year: "numeric", month: "long", day: "numeric" }
             )}`}
           </Text>
-          <Text style={{ ...styles.muted, marginTop: 8 }}>
-            {`${totalEndpoints} endpoint${totalEndpoints !== 1 ? "s" : ""} across ${groups.length} section${groups.length !== 1 ? "s" : ""}`}
+          <Text style={{ ...styles.muted, marginTop: 4 }}>
+             {`${totalEndpoints} endpoint${totalEndpoints !== 1 ? "s" : ""} across ${groups.length} section${groups.length !== 1 ? "s" : ""}`}
+             {includedLanguages.length > 0 && ` · Code: ${includedLanguages.map(l => l.toUpperCase()).join(", ")}`}
           </Text>
         </View>
 
@@ -505,6 +548,7 @@ export function ApiDocsPdf({ groups, accent }: ApiDocsPdfProps) {
               colors={colors}
               styles={styles}
               isLast={ri === group.requests.length - 1}
+              includedLanguages={includedLanguages}
             />
           ))}
 

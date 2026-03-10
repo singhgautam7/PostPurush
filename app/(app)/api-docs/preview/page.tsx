@@ -18,9 +18,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import {
-  ChevronLeft,
   ChevronDown,
-  Download,
   Folder,
   AlertTriangle,
   Loader2,
@@ -30,6 +28,7 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import { ExportPdfButton } from "@/components/api-docs/export-pdf-button";
 
 /* ------------------------------------------------------------------ */
 /*  Method badge colors (shared with sidebar navigator)                */
@@ -190,32 +189,6 @@ export default function ApiDocsPreviewPage() {
       )
     );
 
-  const handleExportPdf = async () => {
-    setExporting(true);
-    try {
-      const { pdf } = await import("@react-pdf/renderer");
-      const { ApiDocsPdf } = await import("@/lib/pdf/api-docs-pdf");
-      const { getAccentColorForPdf, safeAccentForPdf } = await import(
-        "@/lib/pdf/get-accent-color"
-      );
-      const accent = safeAccentForPdf(getAccentColorForPdf());
-      const blob = await pdf(
-        <ApiDocsPdf groups={groups} accent={accent} />
-      ).toBlob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `api-docs-${Date.now()}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error("PDF export failed", err);
-      toast.error("PDF export failed. Please try again.");
-    } finally {
-      setExporting(false);
-    }
-  };
-
   const handleSidebarNavigate = (folderId: string, requestId?: string) => {
     const targetId = requestId
       ? `endpoint-${requestId}`
@@ -276,15 +249,6 @@ export default function ApiDocsPreviewPage() {
               Contents
             </TooltipContent>
           </Tooltip>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.back()}
-            className="gap-1.5 cursor-pointer"
-          >
-            <ChevronLeft size={14} /> Back
-          </Button>
-          <div className="h-4 w-px bg-border" />
           <h1 className="text-base font-semibold text-foreground">
             API Documentation Preview
           </h1>
@@ -325,23 +289,11 @@ export default function ApiDocsPreviewPage() {
               </TooltipContent>
             </Tooltip>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1.5 cursor-pointer"
-            onClick={handleExportPdf}
-            disabled={exporting}
-          >
-            {exporting ? (
-              <>
-                <Loader2 size={13} className="animate-spin" /> Generating...
-              </>
-            ) : (
-              <>
-                <Download size={13} /> Export PDF
-              </>
-            )}
-          </Button>
+          <ExportPdfButton
+            groups={groups}
+            docTitle="API Documentation"
+            docSummary={null}
+          />
         </div>
       </div>
 

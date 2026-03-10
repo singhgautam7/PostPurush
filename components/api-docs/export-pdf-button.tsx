@@ -7,14 +7,14 @@ import {
 } from "@/lib/codegen/generate-code";
 import type { DocsGroup } from "@/lib/docs-builder";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
-import { Download, Loader2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
+import { ChevronDown, Download, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface ExportPdfButtonProps {
@@ -88,33 +88,26 @@ export function ExportPdfButton({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          variant="default"
           size="sm"
           className="gap-1.5 cursor-pointer"
-          disabled={exporting}
         >
-          {exporting ? (
-            <>
-              <Loader2 size={13} className="animate-spin" /> Generating...
-            </>
-          ) : (
-            <>
-              <Download size={13} /> Export PDF
-            </>
-          )}
+          Export PDF <ChevronDown size={13} />
         </Button>
       </PopoverTrigger>
 
       <PopoverContent side="bottom" align="end" className="w-72 p-4">
+        {/* Header */}
         <div className="mb-3">
           <p className="text-sm font-semibold text-foreground">
-            Export as PDF
+            Include code snippets
           </p>
           <p className="text-xs text-foreground-muted mt-0.5">
             Choose which code snippets to include
           </p>
         </div>
 
+        {/* Language checkboxes */}
         <div className="space-y-1 mb-4">
           {supportedLanguages.map((lang) => (
             <label
@@ -136,6 +129,7 @@ export function ExportPdfButton({
           ))}
         </div>
 
+        {/* Estimated pages */}
         <p className="text-[11px] text-foreground-subtle mb-3">
           ~{estimatedPages} pages
           {selectedLangs.size === 0 && " · No code snippets included"}
@@ -143,12 +137,23 @@ export function ExportPdfButton({
 
         <Separator className="mb-3" />
 
+        {/* Generate button */}
         <Button
           className="w-full gap-1.5 cursor-pointer"
           size="sm"
+          disabled={exporting}
           onClick={handleExport}
         >
-          <Download size={13} /> Generate PDF
+          {exporting ? (
+            <>
+              <Loader2 size={13} className="animate-spin" /> Generating...
+            </>
+          ) : (
+            <>
+              <Download size={13} /> Generate PDF
+            </>
+          )
+        }
         </Button>
       </PopoverContent>
     </Popover>
