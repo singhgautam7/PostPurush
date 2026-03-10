@@ -186,9 +186,9 @@ export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequ
           ref={setNodeRef}
           {...(isEditing ? {} : { ...attributes, ...listeners })}
           onClick={handleOpen}
-          style={{ paddingLeft: `${depth * 12 + 8}px` }}
+          style={{ paddingLeft: `${depth * 10 + 6}px` }}
           className={cn(
-            "group flex items-center h-7 cursor-pointer hover:bg-panel/50 rounded-sm text-sm transition-colors pe-2 select-none",
+            "group flex items-center h-6 cursor-pointer hover:bg-panel/50 rounded-sm text-xs transition-colors pe-1 select-none",
             isActive && "bg-raised text-foreground hover:bg-raised",
             isDragging && "opacity-50",
             isOver && "bg-raised/60 ring-1 ring-inset ring-border-subtle"
@@ -210,7 +210,7 @@ export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequ
                 ? <FolderOpen className="h-4 w-4 text-foreground-muted" />
                 : <FolderIcon className="h-4 w-4 text-foreground-muted" />
             ) : (
-              <span className={cn("text-[9px] font-mono font-bold", item.request ? methodColors[item.request.method] : "")}>
+              <span className={cn("text-[8px] font-mono font-bold", item.request ? methodColors[item.request.method] : "")}>
                 {item.request?.method.substring(0, 3)}
               </span>
             )}

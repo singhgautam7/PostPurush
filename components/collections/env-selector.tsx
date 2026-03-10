@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useEnvironmentStore } from "@/store/environment-store";
 import { useRouter } from "next/navigation";
 import { EnvVariable } from "@/types/environment";
-import { EnvVariableRow } from "@/components/environment/env-variable-row";
+import { KeyValueTable } from "@/components/shared/key-value-table";
+import { KeyValuePair } from "@/types/request";
 import {
   Select,
   SelectContent,
@@ -23,7 +24,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { Settings, Globe, Plus } from "lucide-react";
+import { Settings, Globe } from "lucide-react";
 import { EnvIcon } from "@/components/environment/env-icon";
 import { getEnvColor } from "@/lib/env-presets";
 
@@ -32,8 +33,7 @@ export function EnvSelector() {
   const activeEnvId = useEnvironmentStore((s) => s.activeEnvId);
   const setActiveEnvId = useEnvironmentStore((s) => s.setActiveEnvId);
   const activeEnv = useEnvironmentStore((s) => s.activeEnv);
-  const upsertVariable = useEnvironmentStore((s) => s.upsertVariable);
-  const deleteVariable = useEnvironmentStore((s) => s.deleteVariable);
+  const updateEnvironment = useEnvironmentStore((s) => s.updateEnvironment);
   const router = useRouter();
 
   const [manageOpen, setManageOpen] = useState(false);
@@ -41,17 +41,34 @@ export function EnvSelector() {
   const currentEnv = activeEnv();
   const hasEnvs = environments.length > 0;
 
-  const handleAddVariable = () => {
-    if (!activeEnvId) return;
-    const newVar: EnvVariable = {
-      id: crypto.randomUUID(),
-      key: "",
-      value: "",
-      enabled: true,
-    };
-    upsertVariable(activeEnvId, newVar);
-    setTimeout(() => document.getElementById(`var-key-${newVar.id}`)?.focus(), 50);
+  const handleVariablesChange = (rows: KeyValuePair[]) => {
+    if (!activeEnvId || !currentEnv) return;
+    const variables: EnvVariable[] = rows.map((r, i) => ({
+      id: currentEnv.variables[i]?.id ?? crypto.randomUUID(),
+      key: r.key,
+      value: r.value,
+      enabled: r.enabled !== false,
+      description: r.description,
+      type: r.type,
+      required: r.required,
+      deprecated: r.deprecated,
+      sensitive: r.sensitive,
+    }));
+    updateEnvironment(activeEnvId, { variables });
   };
+
+  const envRows: KeyValuePair[] = currentEnv
+    ? currentEnv.variables.map((v) => ({
+        key: v.key,
+        value: v.value,
+        enabled: v.enabled,
+        description: v.description,
+        type: v.type,
+        required: v.required,
+        deprecated: v.deprecated,
+        sensitive: v.sensitive,
+      }))
+    : [];
 
   return (
     <div className="px-3 py-2 border-b border-border flex items-center gap-1.5">
@@ -154,7 +171,7 @@ export function EnvSelector() {
       {/* Quick edit modal */}
       {currentEnv && (
         <Dialog open={manageOpen} onOpenChange={setManageOpen}>
-          <DialogContent className="sm:max-w-[520px] bg-card border-border/50">
+          <DialogContent className="sm:max-w-[580px] bg-card border-border/50">
             <DialogHeader>
               <DialogTitle>Manage — {currentEnv.name}</DialogTitle>
               <DialogDescription>
@@ -162,40 +179,16 @@ export function EnvSelector() {
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-2 max-h-[400px] overflow-y-auto px-4">
-              {currentEnv.variables.length === 0 && (
-                <p className="text-xs text-muted-foreground italic">
-                  No variables yet. Add one below.
-                </p>
-              )}
-
-              {currentEnv.variables.length > 0 && (
-                <div className="grid grid-cols-[1fr_1fr_32px] gap-2 text-xs font-medium text-muted-foreground mb-1">
-                  <span>Key</span>
-                  <span>Value</span>
-                  <span></span>
-                </div>
-              )}
-
-              {currentEnv.variables.map((v) => (
-                <EnvVariableRow
-                  key={v.id}
-                  variable={v}
-                  onChange={(updated) => upsertVariable(activeEnvId!, updated)}
-                  onDelete={() => deleteVariable(activeEnvId!, v.id)}
-                  onAddNew={handleAddVariable}
-                />
-              ))}
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleAddVariable}
-                className="h-7 text-xs text-muted-foreground hover:text-foreground gap-1 mt-1"
-              >
-                <Plus className="h-3 w-3" />
-                Add Variable
-              </Button>
+            <div className="max-h-[400px] overflow-y-auto px-4">
+              <KeyValueTable
+                rows={envRows}
+                onChange={handleVariablesChange}
+                keyPlaceholder="variable_name"
+                valuePlaceholder="value"
+                addLabel="Add Variable"
+                autoGuessType={true}
+                showDescription={true}
+              />
             </div>
 
             <DialogFooter className="flex items-center justify-end sm:justify-end">

@@ -136,17 +136,17 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
       method: activeRequest.method,
       params: activeRequest.params
         .filter((p) => p.key && p.enabled !== false)
-        .map((p) => ({ key: p.key, value: p.value })),
+        .map((p) => ({ key: p.key, value: p.sensitive ? "[SENSITIVE]" : p.value })),
       headers: activeRequest.headers
         .filter((h) => h.key && h.enabled !== false)
-        .map((h) => ({ key: h.key, value: h.value })),
+        .map((h) => ({ key: h.key, value: h.sensitive ? "[SENSITIVE]" : h.value })),
       bodyType: activeRequest.method === "GET" ? "none" : activeRequest.body.type,
       bodyContent: activeRequest.method === "GET" ? "" : activeRequest.body.content,
       formData:
         activeRequest.method !== "GET" && activeRequest.body.type === "form"
           ? activeRequest.body.formData
               .filter((f) => f.key && f.enabled !== false)
-              .map((f) => ({ key: f.key, value: f.value }))
+              .map((f) => ({ key: f.key, value: f.sensitive ? "[SENSITIVE]" : f.value }))
           : undefined,
     };
 
