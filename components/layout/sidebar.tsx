@@ -1,9 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRequestStore } from "@/store/request-store";
-import { useEnvironmentStore } from "@/store/environment-store";
-import { loadRequests, loadFolders } from "@/lib/storage/storage-helpers";
 import { TreeView } from "@/components/sidebar/tree-view";
 import { EnvSelector } from "@/components/collections/env-selector";
 import { CollapsibleSection } from "@/components/collections/collapsible-section";
@@ -13,20 +10,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Plus, FolderPlus } from "lucide-react";
 
 export function Sidebar() {
-  const setSavedRequests = useRequestStore((s) => s.setSavedRequests);
-  const setFolders = useRequestStore((s) => s.setFolders);
-  const initEnv = useEnvironmentStore((s) => s.init);
-
-  useEffect(() => {
-    const init = async () => {
-      const folders = await loadFolders();
-      setFolders(folders);
-      const requests = await loadRequests();
-      setSavedRequests(requests);
-      await initEnv();
-    };
-    init();
-  }, [setSavedRequests, setFolders, initEnv]);
 
   const handleNewRequest = () => {
     window.dispatchEvent(new CustomEvent("trigger-new-request", { detail: "root" }));
