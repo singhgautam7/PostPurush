@@ -170,7 +170,7 @@ export default function ApiDocsPage() {
         <Button
           disabled={selectedIds.size === 0}
           onClick={handleNext}
-          className="gap-1.5"
+          className="gap-1.5 cursor-pointer"
         >
           Next <ChevronRight size={14} />
         </Button>

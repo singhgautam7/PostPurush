@@ -1,9 +1,27 @@
 "use client";
 
+import { useEffect } from "react";
 import { MasterHeader } from "@/components/layout/master-header";
 import { NavigationSidebar } from "@/components/layout/navigation-sidebar";
+import { useRequestStore } from "@/store/request-store";
+import { useEnvironmentStore } from "@/store/environment-store";
+import { loadRequests, loadFolders } from "@/lib/storage/storage-helpers";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
+  const setSavedRequests = useRequestStore((s) => s.setSavedRequests);
+  const setFolders = useRequestStore((s) => s.setFolders);
+  const initEnv = useEnvironmentStore((s) => s.init);
+
+  useEffect(() => {
+    const init = async () => {
+      const folders = await loadFolders();
+      setFolders(folders);
+      const requests = await loadRequests();
+      setSavedRequests(requests);
+      await initEnv();
+    };
+    init();
+  }, [setSavedRequests, setFolders, initEnv]);
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-background">
       <MasterHeader />
