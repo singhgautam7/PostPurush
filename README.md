@@ -27,8 +27,6 @@ A powerful, dark-themed API testing client and documentation generator built wit
 - Visualizations for response time trends and error rates per endpoint powered by Recharts.
 - Slowest endpoints tracking and error breakdowns by status code.
 
-![Analytics Dashboard](./public/screenshots/analytics.png)
-
 ### 5. Automated API Documentation
 - Built-in generator to create beautiful, print-ready PDF documentation directly from your collections.
 - Select specific folders or requests to include in the docs.
@@ -63,7 +61,7 @@ Make sure you have Node.js and a package manager installed. We recommend using `
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/your-username/postpurush.git
+git clone https://github.com/singhgautam7/PostPurush.git
 cd postpurush
 ```
 
