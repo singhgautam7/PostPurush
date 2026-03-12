@@ -22,8 +22,8 @@ Built with Next.js App Router and Tailwind CSS.
 ### API Documentation Generator
 ![Docs](./docs/how-to/assets/14-doc-export-pdf.png)
 
-<!-- ### Themes
-![Themes](./docs/how-to/assets/03-home-select-theme.png) -->
+### Multiple Themes
+![Themes](./docs/how-to/assets/15-multiple-themes-doc.png)
 
 
 ## 🧠 Architecture Highlights
