@@ -1,8 +1,34 @@
 # PostPurush
+A modern API client for testing, analyzing, and documenting APIs — which sits entirely in the browser.
+Built with Next.js App Router and Tailwind CSS.
 
-A powerful, dark-themed API testing client and documentation generator built with Next.js App Router and Tailwind CSS. PostPurush is designed for modern developers who need an integrated, fast, and beautiful environment to test APIs, manage environments, analyze performance, and generate beautiful PDF documentation.
 
-![Request Builder](./public/screenshots/collections.png)
+## 🖼 Screenshots
+
+### Collections
+![Collections](./docs/how-to/assets/05-response.png)
+
+### Themes
+![Themes](./docs/how-to/assets/03-home-select-theme.png)
+
+### Analytics Dashboard
+![Analytics](./docs/how-to/assets/09-analytocs.png)
+
+### Environments
+![Environments](./docs/how-to/assets/08-env-edit.png)
+
+### API Documentation Generator
+![Docs](./docs/how-to/assets/14-doc-export-pdf.png)
+
+
+## 🧠 Architecture Highlights
+
+- **Local-First Design** – All data is stored in IndexedDB. No backend required.
+- **Modular Feature Architecture** – Each major feature (Collections, Environments, Analytics, Docs) is isolated into independent modules.
+- **Optimized Rendering** – React + Zustand ensures fast UI updates even with large collections.
+- **CodeMirror Integration** – Used for both request editing and response viewing.
+- **Client-Side PDF Generation** – Documentation is generated directly in the browser using React PDF.
+
 
 ## 🚀 Features
 
@@ -87,4 +113,3 @@ yarn dev
 Navigate to [http://localhost:3000](http://localhost:3000) in your browser. The app runs completely locally and stores all its data within your browser's IndexedDB.
 
 ---
-*Built with Next.js.*
