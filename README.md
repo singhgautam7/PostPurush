@@ -78,6 +78,11 @@ yarn dev
 Navigate to [http://localhost:3000](http://localhost:3000) in your browser.
 The app runs completely locally and stores all its data within your browser's IndexedDB.
 
+## Understand Each Section
+1. [Collections](./docs/how-to/collections.md)
+2. [Environments](./docs/how-to/environments.md)
+3. [Analytics](./docs/how-to/analytics.md)
+4. [Create API Docs](./docs/how-to/create-api-docs.md)
 
 ## 📄 License
 
