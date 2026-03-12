@@ -1,3 +1,8 @@
+![Next.js](https://img.shields.io/badge/Next.js-14-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Local First](https://img.shields.io/badge/local--first-yes-purple)
+
 # PostPurush
 A modern API client for testing, analyzing, and documenting APIs — which sits entirely in the browser.
 Built with Next.js App Router and Tailwind CSS.
@@ -8,9 +13,6 @@ Built with Next.js App Router and Tailwind CSS.
 ### Collections
 ![Collections](./docs/how-to/assets/05-response.png)
 
-### Themes
-![Themes](./docs/how-to/assets/03-home-select-theme.png)
-
 ### Analytics Dashboard
 ![Analytics](./docs/how-to/assets/09-analytocs.png)
 
@@ -20,56 +22,19 @@ Built with Next.js App Router and Tailwind CSS.
 ### API Documentation Generator
 ![Docs](./docs/how-to/assets/14-doc-export-pdf.png)
 
+<!-- ### Themes
+![Themes](./docs/how-to/assets/03-home-select-theme.png) -->
+
 
 ## 🧠 Architecture Highlights
 
 - **Local-First Design** – All data is stored in IndexedDB. No backend required.
+- **No Accounts Required** – No sign-ups, no tracking, no external servers.
 - **Modular Feature Architecture** – Each major feature (Collections, Environments, Analytics, Docs) is isolated into independent modules.
-- **Optimized Rendering** – React + Zustand ensures fast UI updates even with large collections.
-- **CodeMirror Integration** – Used for both request editing and response viewing.
-- **Client-Side PDF Generation** – Documentation is generated directly in the browser using React PDF.
+- **Optimized Rendering** – Next.js + Zustand ensures fast UI updates even with large collections.
 
-
-## 🚀 Features
-
-### 1. Interactive Request Builder
-- Full support for standard HTTP methods (GET, POST, PUT, DELETE, PATCH, etc.).
-- Dynamic management of **Query Parameters**, **Headers**, and **Request Bodies** (JSON, Form Data, Raw).
-- Multi-tab interface allowing users to work on multiple requests simultaneously without losing state.
-- Split-pane layout with syntax-highlighted response viewers (Pretty, Raw) powered by CodeMirror.
-
-### 2. Collection & Folder Management
-- Organize requests into a nested, drag-and-drop enabled hierarchy.
-- Ability to create, rename, and manage request groups for better workflow organization.
-- Dedicated Collections sidebar.
-
-### 3. Environment Variables
-- Manage and toggle between multiple environments (e.g., Local, Staging, Production).
-- Define variables as Key-Value pairs and use them across request URLs, headers, and bodies seamlessly.
-
-### 4. Comprehensive Analytics Dashboard
-- Real-time tracking of **Total Requests**, **Success Rates**, and **Error Counts**.
-- Deep performance metrics including **Average Duration** and **P95 Latency**.
-- Visualizations for response time trends and error rates per endpoint powered by Recharts.
-- Slowest endpoints tracking and error breakdowns by status code.
-
-### 5. Automated API Documentation
-- Built-in generator to create beautiful, print-ready PDF documentation directly from your collections.
-- Select specific folders or requests to include in the docs.
-- Automatically extracts and formats parameters, headers, and body schemas.
-- Add custom titles and summaries to the PDF cover page.
-
-### 6. Code Snippet Generation
-- Easily export requests into ready-to-run code snippets.
-- Include these snippets automatically in the exported API Documentation PDFs.
-- Supported languages:
-  - **cURL**
-  - **Python**
-  - **JavaScript**
-  - **Go**
 
 ## 🛠 Tech Stack
-
 - **Framework**: Next.js 14+ (App Router), React, TypeScript
 - **Styling**: Tailwind CSS, Shadcn UI, Radix UI Primitives
 - **State Management**: Zustand
@@ -83,7 +48,7 @@ Built with Next.js App Router and Tailwind CSS.
 ## 💻 Getting Started
 
 ### Prerequisites
-Make sure you have Node.js and a package manager installed. We recommend using `bun` for the fastest installation and build times.
+Make sure you have Node.js and a package manager installed. I used `bun` for my setup.
 
 ### 1. Clone the repository
 ```bash
@@ -110,6 +75,11 @@ yarn dev
 ```
 
 ### 4. Open the App
-Navigate to [http://localhost:3000](http://localhost:3000) in your browser. The app runs completely locally and stores all its data within your browser's IndexedDB.
+Navigate to [http://localhost:3000](http://localhost:3000) in your browser.
+The app runs completely locally and stores all its data within your browser's IndexedDB.
 
----
+
+## 📄 License
+
+This project is licensed under the **MIT License**.
+See the [LICENSE](./LICENSE) file for details.
