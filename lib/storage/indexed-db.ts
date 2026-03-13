@@ -116,9 +116,23 @@ async function migrateV3ToV4() {
 
 // === Requests ===
 
+function stripTransientFields(request: SavedRequest): SavedRequest {
+    const stripRevealed = (pairs: typeof request.params) =>
+        pairs.map(({ _revealed, ...rest }) => rest);
+    return {
+        ...request,
+        params: stripRevealed(request.params),
+        headers: stripRevealed(request.headers),
+        body: {
+            ...request.body,
+            formData: stripRevealed(request.body.formData),
+        },
+    };
+}
+
 export async function saveRequestToDB(request: SavedRequest): Promise<void> {
     const db = await getDB();
-    await db.put("requests", request);
+    await db.put("requests", stripTransientFields(request));
 }
 
 export async function loadRequestsFromDB(): Promise<SavedRequest[]> {

@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Trash2, MoreHorizontal, Lock } from "lucide-react";
+import { Plus, Trash2, MoreHorizontal, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 function guessType(value: string): KeyValuePair["type"] {
@@ -103,22 +103,14 @@ export function KeyValueTable({
     }
   };
 
-  // Determine grid columns based on enabled features
-  const hasIndicators = rows.some(
-    (r) => r.required || r.deprecated || r.sensitive
-  );
-  const actionsWidth = showActions ? (hasIndicators ? "80px" : "36px") : "0px";
-  const descWidth = showDescription ? "1fr" : "0px";
-
+  // Fixed grid columns — no layout shift regardless of metadata state
   const gridCols = showDescription
     ? showActions
-      ? `1fr 1.2fr 1fr ${actionsWidth} 32px`
-      : `1fr 1.2fr 1fr 32px`
+      ? `1fr 1.2fr 1fr 28px 28px`
+      : `1fr 1.2fr 1fr 28px`
     : showActions
-      ? `1fr 1fr ${actionsWidth} 32px`
-      : `1fr 1fr 32px`;
-
-  const headerGridCols = gridCols;
+      ? `1fr 1fr 28px 28px`
+      : `1fr 1fr 28px`;
 
   return (
     <div className="space-y-1.5">
@@ -126,7 +118,7 @@ export function KeyValueTable({
       {rows.length > 0 && (
         <div
           className="grid gap-2 text-[10px] font-medium text-muted-foreground mb-0.5 px-0.5"
-          style={{ gridTemplateColumns: headerGridCols }}
+          style={{ gridTemplateColumns: gridCols }}
         >
           <span>Key</span>
           <span>Value</span>
@@ -165,27 +157,40 @@ export function KeyValueTable({
             )}
           />
 
-          {/* Value input */}
-          {row.sensitive ? (
-            <Input
-              type="password"
-              value={row.value}
-              onChange={(e) => updateRow(index, { value: e.target.value })}
-              onKeyDown={(e) => handleKeyDown(e, index)}
-              onBlur={() => handleValueBlur(index)}
-              placeholder={valuePlaceholder}
-              className="h-8 bg-muted/30 border-border/30 text-sm font-mono"
-            />
-          ) : (
-            <VariableInput
-              value={row.value}
-              onChange={(val) => updateRow(index, { value: val })}
-              onKeyDown={(e) => handleKeyDown(e, index)}
-              onBlur={() => handleValueBlur(index)}
-              placeholder={valuePlaceholder}
-              className="h-8 bg-muted/30 border-border/30 text-sm font-mono"
-            />
-          )}
+          {/* Value input with eye toggle for sensitive */}
+          <div className="relative flex-1">
+            {row.sensitive && !row._revealed ? (
+              <Input
+                type="password"
+                value={row.value}
+                onChange={(e) => updateRow(index, { value: e.target.value })}
+                onKeyDown={(e) => handleKeyDown(e, index)}
+                onBlur={() => handleValueBlur(index)}
+                placeholder={valuePlaceholder}
+                className={cn("h-8 bg-muted/30 border-border/30 text-sm font-mono", row.sensitive && "pr-7")}
+              />
+            ) : (
+              <VariableInput
+                value={row.value}
+                onChange={(val) => updateRow(index, { value: val })}
+                onKeyDown={(e) => handleKeyDown(e, index)}
+                onBlur={() => handleValueBlur(index)}
+                placeholder={valuePlaceholder}
+                className={cn("h-8 bg-muted/30 border-border/30 text-sm font-mono", row.sensitive && "pr-7")}
+              />
+            )}
+            {row.sensitive && (
+              <button
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => updateRow(index, { _revealed: !row._revealed })}
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 text-foreground-subtle hover:text-foreground transition-colors"
+                tabIndex={-1}
+              >
+                {row._revealed ? <EyeOff size={12} /> : <Eye size={12} />}
+              </button>
+            )}
+          </div>
 
           {/* Description input */}
           {showDescription && (
@@ -200,31 +205,15 @@ export function KeyValueTable({
             />
           )}
 
-          {/* Actions: badges + popover */}
+          {/* Actions: three-dot popover with dot indicator */}
           {showActions && (
-            <div className="flex items-center gap-0.5">
-              {/* Inline badges */}
-              {row.required && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent/15 text-accent font-medium">
-                  Required
-                </span>
-              )}
-              {row.deprecated && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 font-medium">
-                  Deprecated
-                </span>
-              )}
-              {row.sensitive && (
-                <Lock size={9} className="text-foreground-subtle" />
-              )}
-
-              {/* Three-dot popover */}
+            <div className="relative shrink-0">
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-7 w-7 text-foreground-subtle hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="h-7 w-7 text-foreground-subtle hover:text-foreground"
                   >
                     <MoreHorizontal size={13} />
                   </Button>
@@ -303,6 +292,9 @@ export function KeyValueTable({
                   </div>
                 </PopoverContent>
               </Popover>
+              {(row.required || row.deprecated || row.sensitive || (row.type && row.type !== "string")) && (
+                <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-primary-action pointer-events-none" />
+              )}
             </div>
           )}
 

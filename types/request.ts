@@ -7,6 +7,7 @@ export interface KeyValuePair {
   required?: boolean;
   deprecated?: boolean;
   sensitive?: boolean;
+  _revealed?: boolean; // UI only — not saved to storage
 }
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
