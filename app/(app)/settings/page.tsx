@@ -77,6 +77,10 @@ const LS_KEYS = {
 
 // ─────────────────────────────────────────────────────────────────
 export default function SettingsPage() {
+  // Avoid hydration mismatch for client-only state (theme, dates, localStorage)
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   // === Appearance ===
   const { theme, mode, setTheme, setMode } = useTheme();
 
@@ -295,8 +299,7 @@ export default function SettingsPage() {
 
   // === Render helpers ===
   const sizeEntry = SIZE_MAP.find((s) => s.level === collectionSize)!;
-  const now = Date.now();
-  const oneHourAgo = now - 3600_000;
+  const [oneHourAgo] = useState(() => Date.now() - 3600_000);
 
   // Build import summary
   const importSummary: string[] = [];
@@ -354,7 +357,7 @@ export default function SettingsPage() {
                 onClick={() => setTheme(t.id)}
                 className={cn(
                   "flex flex-col items-center gap-1.5 p-2 rounded-lg transition-all",
-                  theme === t.id
+                  mounted && theme === t.id
                     ? "ring-2 ring-primary-action bg-raised"
                     : "hover:bg-raised/50"
                 )}
@@ -362,8 +365,9 @@ export default function SettingsPage() {
                 <div
                   className="w-8 h-8 rounded-md border border-border"
                   style={{
-                    backgroundColor:
-                      mode === "dark" ? t.accentColor : t.accentColorLight,
+                    backgroundColor: mounted
+                      ? mode === "dark" ? t.accentColor : t.accentColorLight
+                      : undefined,
                   }}
                 />
                 <span className="text-[10px] text-foreground-muted truncate w-full text-center">
@@ -381,24 +385,26 @@ export default function SettingsPage() {
           </label>
           <div className="flex gap-2">
             <Button
-              variant={mode === "light" ? "default" : "outline"}
+              variant={mounted && mode === "light" ? "default" : "outline"}
               size="sm"
               onClick={() => setMode("light")}
               className={cn(
                 "gap-1.5 text-xs",
-                mode === "light" &&
+                mounted &&
+                  mode === "light" &&
                   "bg-primary-action text-primary-action-fg hover:bg-primary-action/85"
               )}
             >
               <Sun size={14} /> Light
             </Button>
             <Button
-              variant={mode === "dark" ? "default" : "outline"}
+              variant={mounted && mode === "dark" ? "default" : "outline"}
               size="sm"
               onClick={() => setMode("dark")}
               className={cn(
                 "gap-1.5 text-xs",
-                mode === "dark" &&
+                mounted &&
+                  mode === "dark" &&
                   "bg-primary-action text-primary-action-fg hover:bg-primary-action/85"
               )}
             >
