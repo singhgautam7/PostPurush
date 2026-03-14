@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useSyncExternalStore } from "react";
+import { useState, useEffect, useRef, useCallback, useSyncExternalStore } from "react";
 import { useTheme } from "@/hooks/use-theme";
 import { THEMES } from "@/lib/themes";
 import { KeyValuePair } from "@/types/request";
@@ -99,29 +99,20 @@ export default function SettingsPage() {
   };
 
   // === Request Defaults ===
-  const [defaultTimeout, setDefaultTimeout] = useState(() => {
-    if (typeof window === 'undefined') return 30000;
+  const [defaultTimeout, setDefaultTimeout] = useState(30000);
+  const [defaultHeaders, setDefaultHeaders] = useState<KeyValuePair[]>([{ key: "", value: "" }]);
+
+  useEffect(() => {
     try {
       const raw = localStorage.getItem(LS_KEYS.requestDefaults);
       if (raw) {
         const data = JSON.parse(raw);
-        if (typeof data.timeout === "number") return data.timeout;
-      }
-    } catch {}
-    return 30000;
-  });
-  const [defaultHeaders, setDefaultHeaders] = useState<KeyValuePair[]>(() => {
-    if (typeof window === 'undefined') return [{ key: "", value: "" }];
-    try {
-      const raw = localStorage.getItem(LS_KEYS.requestDefaults);
-      if (raw) {
-        const data = JSON.parse(raw);
+        if (typeof data.timeout === "number") setDefaultTimeout(data.timeout);
         if (Array.isArray(data.headers) && data.headers.length > 0)
-          return [...data.headers, { key: "", value: "" }];
+          setDefaultHeaders(data.headers);
       }
     } catch {}
-    return [{ key: "", value: "" }];
-  });
+  }, []);
 
   const saveRequestDefaults = useCallback(
     (timeout: number, headers: KeyValuePair[]) => {
