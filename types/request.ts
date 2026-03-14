@@ -29,6 +29,7 @@ export interface SavedRequest {
   params: KeyValuePair[];
   headers: KeyValuePair[];
   body: RequestBody;
+  timeout?: number;
   parentId?: string;
   createdAt: number;
   updatedAt: number;

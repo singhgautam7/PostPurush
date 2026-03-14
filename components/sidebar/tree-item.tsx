@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ChevronRight, ChevronDown, Folder as FolderIcon, FolderOpen, Trash2, Edit2, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useCollectionSize, SIDEBAR_SIZES, METHOD_SIZE_CLASSES } from "@/hooks/use-collection-size";
 import { SidebarItemActions } from "./sidebar-item-actions";
 import { Input } from "@/components/ui/input";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
@@ -53,6 +54,7 @@ export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequ
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(item.name);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const collectionSize = useCollectionSize();
 
   const updateSavedRequest = useRequestStore((s) => s.updateSavedRequest);
   const removeSavedRequest = useRequestStore((s) => s.removeSavedRequest);
@@ -210,7 +212,7 @@ export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequ
                 ? <FolderOpen className="h-4 w-4 text-foreground-muted" />
                 : <FolderIcon className="h-4 w-4 text-foreground-muted" />
             ) : (
-              <span className={cn("text-[8px] font-mono font-bold", item.request ? methodColors[item.request.method] : "")}>
+              <span className={cn("font-mono font-bold", METHOD_SIZE_CLASSES[collectionSize] ?? "text-[8px]", item.request ? methodColors[item.request.method] : "")}>
                 {item.request?.method.substring(0, 3)}
               </span>
             )}
@@ -232,7 +234,7 @@ export function TreeItem({ item, depth, isOpen, onToggle, onNewFolder, onNewRequ
                 onClick={(e) => e.stopPropagation()}
               />
             ) : (
-              <span className={cn("truncate block", isActive && "text-foreground font-medium")}>{item.name}</span>
+              <span className={cn("truncate block", SIDEBAR_SIZES[collectionSize] ?? "text-xs", isActive && "text-foreground font-medium")}>{item.name}</span>
             )}
           </div>
 

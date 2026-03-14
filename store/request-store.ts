@@ -27,19 +27,42 @@ interface RequestState {
     setDirty: (dirty: boolean) => void;
 }
 
-const createDefaultRequest = (): SavedRequest => ({
-    id: crypto.randomUUID(),
-    name: "Untitled Request",
-    description: "",
-    method: "GET",
-    url: "",
-    params: [{ key: "", value: "" }],
-    headers: [{ key: "", value: "" }],
-    body: { type: "json", content: "", formData: [{ key: "", value: "" }] },
-    parentId: undefined,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-});
+export const createDefaultRequest = (): SavedRequest => {
+    let timeout: number | undefined;
+    let defaultHeaders: KeyValuePair[] = [];
+
+    if (typeof window !== "undefined") {
+        try {
+            const raw = localStorage.getItem("postpurush-request-defaults");
+            if (raw) {
+                const defaults = JSON.parse(raw);
+                if (typeof defaults.timeout === "number") timeout = defaults.timeout;
+                if (Array.isArray(defaults.headers)) {
+                    defaultHeaders = defaults.headers.filter(
+                        (h: KeyValuePair) => h.key
+                    );
+                }
+            }
+        } catch {
+            // ignore malformed JSON
+        }
+    }
+
+    return {
+        id: crypto.randomUUID(),
+        name: "Untitled Request",
+        description: "",
+        method: "GET",
+        url: "",
+        params: [{ key: "", value: "" }],
+        headers: [...defaultHeaders, { key: "", value: "" }],
+        body: { type: "json", content: "", formData: [{ key: "", value: "" }] },
+        timeout,
+        parentId: undefined,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+    };
+};
 
 export const useRequestStore = create<RequestState>((set) => ({
     activeRequest: createDefaultRequest(),

@@ -38,6 +38,7 @@ import { formatBytes } from "@/utils/get-response-size";
 import { AnalyticsRecord, AnalyticsFilters } from "@/hooks/use-analytics";
 import { useRouter } from "next/navigation";
 import { RequestDetailModal } from "./request-detail-modal";
+import { formatTimestamp } from "@/lib/format-time";
 
 type SortKey = "startTime" | "durationMs" | "statusCode";
 
@@ -65,16 +66,6 @@ function durationColor(ms: number): string {
   if (ms < 200) return "text-emerald-400";
   if (ms < 1000) return "text-amber-400";
   return "text-red-400";
-}
-
-function formatTime(ts: number): string {
-  return new Date(ts).toLocaleString([], {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
 }
 
 function SortIcon({
@@ -260,7 +251,7 @@ export function RequestsTable({ filtered, filters }: RequestsTableProps) {
                   {r.envName ?? "\u2014"}
                 </TableCell>
                 <TableCell className="text-xs text-foreground-muted">
-                  {formatTime(r.startTime)}
+                  {formatTimestamp(r.startTime)}
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1 opacity-0 group-hover/row:opacity-100 transition-opacity">

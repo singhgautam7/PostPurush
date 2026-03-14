@@ -3,6 +3,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
+import { useCollectionSize, TAB_SIZES } from "@/hooks/use-collection-size";
 import { X } from "lucide-react";
 
 interface SortableTabProps {
@@ -24,6 +25,8 @@ export function SortableTab({
   onClick,
   onClose,
 }: SortableTabProps) {
+  const collectionSize = useCollectionSize();
+
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
     data: {
@@ -56,7 +59,7 @@ export function SortableTab({
       )}
     >
       <div className="flex items-center gap-2 truncate">
-        <span className={cn("truncate text-xs select-none", isDirty && "italic")}>
+        <span className={cn("truncate select-none", TAB_SIZES[collectionSize] ?? "text-xs", isDirty && "italic")}>
           {title}
         </span>
         {isDirty && (
