@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useCollectionSize, TAB_SIZES, CONTENT_SIZES } from "@/hooks/use-collection-size";
 import { detectResponseType } from "@/lib/utils/detect-response-type";
 import { CodeViewer } from "@/components/code/code-viewer";
 
@@ -12,6 +13,7 @@ export function BodyView() {
   const response = useResponseStore((s) => s.response);
   const [viewMode, setViewMode] = useState<"pretty" | "raw">("pretty");
   const [copied, setCopied] = useState(false);
+  const collectionSize = useCollectionSize();
 
   if (!response) return null;
 
@@ -55,7 +57,7 @@ export function BodyView() {
               key={mode}
               onClick={() => setViewMode(mode)}
               className={cn(
-                "px-3 py-1.5 text-xs font-medium capitalize transition-all border-b-2 -mb-px",
+                `px-3 py-1.5 ${TAB_SIZES[collectionSize] ?? "text-xs"} font-medium capitalize transition-all border-b-2 -mb-px`,
                 viewMode === mode
                   ? "text-foreground border-foreground-muted"
                   : "text-foreground-subtle border-transparent hover:text-foreground-muted"
@@ -95,7 +97,7 @@ export function BodyView() {
         ) : viewMode === "pretty" && responseType === "html" ? (
           <CodeViewer code={displayBody} language="html" showCopy={false} className="border-none rounded-none" />
         ) : (
-          <div className="p-4 font-mono text-sm leading-relaxed text-foreground-muted">
+          <div className={`p-4 font-mono ${CONTENT_SIZES[collectionSize] ?? "text-sm"} leading-relaxed text-foreground-muted`}>
             <pre className="whitespace-pre font-mono">
               {displayBody}
             </pre>

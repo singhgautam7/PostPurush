@@ -15,6 +15,7 @@ import { Send, Save, Code } from "lucide-react";
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useTabStore } from "@/store/tab-store";
 import { useVariableSuggestions } from "@/hooks/use-variable-suggestions";
+import { useCollectionSize, CONTENT_SIZES } from "@/hooks/use-collection-size";
 import { hasInvalidVariables } from "@/lib/request/replace-variables";
 import { toast } from "sonner";
 
@@ -50,6 +51,9 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
   const setActiveTab = useTabStore((s) => s.setActiveTab);
   const resetRequest = useRequestStore((s) => s.resetRequest);
   const clearResponse = useResponseStore((s) => s.clearResponse);
+
+  const collectionSize = useCollectionSize();
+  const textSizeCls = CONTENT_SIZES[collectionSize] ?? "text-sm";
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const mirrorRef = useRef<HTMLDivElement>(null);
@@ -303,7 +307,7 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
           <div
             ref={mirrorRef}
             aria-hidden="true"
-            className="absolute inset-0 z-[1] pointer-events-none min-h-9 max-h-[88px] overflow-hidden px-3 font-mono text-sm text-foreground leading-[22px] py-[7px] border border-transparent rounded-md whitespace-pre-wrap"
+            className={`absolute inset-0 z-[1] pointer-events-none min-h-9 max-h-[88px] overflow-hidden px-3 font-mono ${textSizeCls} text-foreground leading-[22px] py-[7px] border border-transparent rounded-md whitespace-pre-wrap`}
             style={{ wordBreak: "break-all" }}
             dangerouslySetInnerHTML={{ __html: highlightedHtml + "\u200b" }}
           />
@@ -322,7 +326,7 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
           onScroll={syncScroll}
           placeholder="e.g. https://api.example.com/endpoint"
           rows={1}
-          className={`relative z-0 w-full min-h-9 max-h-[88px] resize-none rounded-md border border-border-subtle px-3 font-mono text-sm leading-[22px] py-[7px] focus:outline-none focus:ring-2 focus:ring-border focus:border-border overflow-hidden placeholder:text-foreground-subtle ${
+          className={`relative z-0 w-full min-h-9 max-h-[88px] resize-none rounded-md border border-border-subtle px-3 font-mono ${textSizeCls} leading-[22px] py-[7px] focus:outline-none focus:ring-2 focus:ring-border focus:border-border overflow-hidden placeholder:text-foreground-subtle ${
             hasVariableTokens ? "text-transparent caret-foreground" : "bg-panel text-foreground"
           }`}
           style={hasVariableTokens ? { background: "transparent" } : undefined}

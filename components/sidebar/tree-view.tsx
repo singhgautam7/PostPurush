@@ -6,6 +6,7 @@ import { useRequestStore } from "@/store/request-store";
 import { useTabStore } from "@/store/tab-store";
 import { useResponseStore, restoreResponseFromCache } from "@/store/response-store";
 import { TreeItem } from "./tree-item";
+import { createDefaultRequest } from "@/store/request-store";
 import { saveFolder, saveRequest } from "@/lib/storage/storage-helpers";
 import {
   DndContext,
@@ -103,18 +104,8 @@ export function TreeView() {
   const clearResponse = useResponseStore((s) => s.clearResponse);
 
   const handleNewRequest = async (parentId?: string) => {
-    const req: SavedRequest = {
-      id: crypto.randomUUID(),
-      name: "Untitled Request",
-      method: "GET",
-      url: "",
-      params: [{ key: "", value: "" }],
-      headers: [{ key: "", value: "" }],
-      body: { type: "json", content: "", formData: [{ key: "", value: "" }] },
-      parentId,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    };
+    const req = createDefaultRequest();
+    req.parentId = parentId;
     await saveRequest(req);
     addSavedRequest(req);
     if (parentId) setOpenFolders(prev => new Set(prev).add(parentId));

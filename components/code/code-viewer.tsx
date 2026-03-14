@@ -13,6 +13,7 @@ import { python } from "@codemirror/lang-python";
 import { go } from "@codemirror/lang-go";
 import { EditorView } from "@codemirror/view";
 import { useTheme } from "@/hooks/use-theme";
+import { useCollectionSize, CODE_FONT_PX } from "@/hooks/use-collection-size";
 import { useEnvironmentStore } from "@/store/environment-store";
 import { variableHighlight } from "@/lib/codemirror-variable-highlight";
 
@@ -38,6 +39,7 @@ interface CodeViewerProps {
 export function CodeViewer({ code, language, className, editable = false, showCopy = true, minHeight, onChange }: CodeViewerProps) {
   const [copied, setCopied] = useState(false);
   const { mode } = useTheme();
+  const collectionSize = useCollectionSize();
   const cmTheme = mode === "dark" ? vscodeDark : githubLight;
   const activeEnvFn = useEnvironmentStore((s) => s.activeEnv);
   const activeEnvId = useEnvironmentStore((s) => s.activeEnvId);
@@ -95,7 +97,7 @@ export function CodeViewer({ code, language, className, editable = false, showCo
             highlightActiveLineGutter: editable,
           }}
           style={{
-            fontSize: "13px",
+            fontSize: `${CODE_FONT_PX[collectionSize] ?? 13}px`,
             fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
             minHeight: minHeight ?? (editable ? "100%" : "200px"),
           }}

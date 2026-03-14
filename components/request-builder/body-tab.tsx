@@ -3,6 +3,7 @@
 import { useRequestStore } from "@/store/request-store";
 import { BodyType } from "@/types/request";
 import { cn } from "@/lib/utils";
+import { useCollectionSize, TAB_SIZES } from "@/hooks/use-collection-size";
 import { BodyKeyValue } from "./body-keyvalue";
 import { CodeViewer } from "@/components/code/code-viewer";
 
@@ -10,6 +11,7 @@ export function BodyTab() {
   const body = useRequestStore((s) => s.activeRequest.body);
   const method = useRequestStore((s) => s.activeRequest.method);
   const setBody = useRequestStore((s) => s.setBody);
+  const collectionSize = useCollectionSize();
 
   if (method === "GET") {
     return (
@@ -34,7 +36,7 @@ export function BodyTab() {
             key={bt.value}
             onClick={() => setBody({ ...body, type: bt.value })}
             className={cn(
-              "px-3 py-2 text-xs font-medium transition-all border-b-2 -mb-px",
+              `px-3 py-2 ${TAB_SIZES[collectionSize] ?? "text-xs"} font-medium transition-all border-b-2 -mb-px`,
               body.type === bt.value
                 ? "text-foreground border-foreground-muted"
                 : "text-foreground-subtle border-transparent hover:text-foreground-muted"

@@ -100,10 +100,10 @@ async function migrateV3ToV4() {
     migrated = true;
     const db = await getDB();
     try {
-        const oldEnv = await db.get("environments", "default" as any);
+        const oldEnv = await db.get("environments", "default");
         if (oldEnv) {
             const oldData = oldEnv as unknown as { id: string; variables: EnvironmentVariable[] };
-            await db.delete("environments", "default" as any);
+            await db.delete("environments", "default");
             if (oldData.variables?.length) {
                 const validVars = oldData.variables.filter((v) => v.key);
                 if (validVars.length > 0) {
@@ -265,4 +265,99 @@ export async function deleteTestRunFromDB(id: string): Promise<void> {
 export async function clearAllTestRunsFromDB(): Promise<void> {
     const db = await getDB();
     await db.clear("test_runs");
+}
+
+// === Import / Export helpers ===
+export async function clearAndImportRequests(requests: SavedRequest[]): Promise<void> {
+    const db = await getDB();
+    const tx = db.transaction("requests", "readwrite");
+    await tx.store.clear();
+    for (const r of requests) {
+        await tx.store.put(r);
+    }
+    await tx.done;
+}
+
+export async function clearAndImportFolders(folders: Folder[]): Promise<void> {
+    const db = await getDB();
+    const tx = db.transaction("folders", "readwrite");
+    await tx.store.clear();
+    for (const f of folders) {
+        await tx.store.put(f);
+    }
+    await tx.done;
+}
+
+export async function clearAndImportEnvironments(envs: Environment[]): Promise<void> {
+    const db = await getDB();
+    const tx = db.transaction("environments", "readwrite");
+    await tx.store.clear();
+    for (const e of envs) {
+        await tx.store.put(e);
+    }
+    await tx.done;
+}
+
+export async function loadAllResponseMetadataRawFromDB(): Promise<Map<string, ResponseMetadata[]>> {
+    const db = await getDB();
+    const tx = db.transaction("responses_metadata", "readonly");
+    const store = tx.store;
+    let cursor = await store.openCursor();
+    const map = new Map<string, ResponseMetadata[]>();
+    while (cursor) {
+        map.set(cursor.key as string, cursor.value as ResponseMetadata[]);
+        cursor = await cursor.continue();
+    }
+    return map;
+}
+
+export async function clearAndImportResponseMetadata(data: Map<string, ResponseMetadata[]>): Promise<void> {
+    const db = await getDB();
+    const tx = db.transaction("responses_metadata", "readwrite");
+    await tx.store.clear();
+    for (const [key, records] of data) {
+        await tx.store.put(records, key);
+    }
+    await tx.done;
+}
+
+export async function clearAndImportTestRuns(runs: TestRun[]): Promise<void> {
+    const db = await getDB();
+    const tx = db.transaction("test_runs", "readwrite");
+    await tx.store.clear();
+    for (const r of runs) {
+        await tx.store.put(r);
+    }
+    await tx.done;
+}
+
+export async function clearAllRequestsFromDB(): Promise<void> {
+    const db = await getDB();
+    await db.clear("requests");
+}
+
+export async function clearAllFoldersFromDB(): Promise<void> {
+    const db = await getDB();
+    await db.clear("folders");
+}
+
+export async function clearAllEnvironmentsFromDB(): Promise<void> {
+    const db = await getDB();
+    await db.clear("environments");
+}
+
+export async function clearAllStores(): Promise<void> {
+    const db = await getDB();
+    const tx = db.transaction(
+        ["requests", "folders", "environments", "responses_metadata", "test_runs"],
+        "readwrite"
+    );
+    await Promise.all([
+        tx.objectStore("requests").clear(),
+        tx.objectStore("folders").clear(),
+        tx.objectStore("environments").clear(),
+        tx.objectStore("responses_metadata").clear(),
+        tx.objectStore("test_runs").clear(),
+    ]);
+    await tx.done;
 }

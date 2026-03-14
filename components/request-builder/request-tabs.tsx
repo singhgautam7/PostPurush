@@ -5,6 +5,7 @@ import { HeadersTab } from "./headers-tab";
 import { BodyTab } from "./body-tab";
 import { useRequestStore } from "@/store/request-store";
 import { cn } from "@/lib/utils";
+import { useCollectionSize, TAB_SIZES } from "@/hooks/use-collection-size";
 import { useState } from "react";
 
 type TabValue = "params" | "headers" | "body";
@@ -14,6 +15,7 @@ export function RequestTabs() {
   const headers = useRequestStore((s) => s.activeRequest.headers);
   const [activeTab, setActiveTab] = useState<TabValue>("params");
 
+  const collectionSize = useCollectionSize();
   const activeParamCount = params.filter((p) => p.key).length;
   const activeHeaderCount = headers.filter((h) => h.key).length;
 
@@ -33,7 +35,7 @@ export function RequestTabs() {
               key={tab.value}
               onClick={() => setActiveTab(tab.value)}
               className={cn(
-                "px-3 py-1 text-xs rounded-md font-medium transition-all flex items-center gap-1.5",
+                `px-3 py-1 ${TAB_SIZES[collectionSize] ?? "text-xs"} rounded-md font-medium transition-all flex items-center gap-1.5`,
                 activeTab === tab.value
                   ? "bg-raised text-foreground shadow-sm"
                   : "text-foreground-subtle hover:bg-raised/50 hover:text-foreground-muted"

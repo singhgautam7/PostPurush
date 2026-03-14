@@ -112,7 +112,8 @@ export async function sendRequest(
 
     try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 30000);
+        const timeoutMs = request.timeout ?? 30000;
+        const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
         const response = await fetch(finalUrl, {
             method: request.method,
@@ -165,7 +166,8 @@ export async function sendRequest(
 
         let errorMessage = "An unknown error occurred.";
         if (err instanceof DOMException && err.name === "AbortError") {
-            errorMessage = "Request timed out after 30 seconds.";
+            const timeoutSec = ((request.timeout ?? 30000) / 1000).toFixed(0);
+            errorMessage = `Request timed out after ${timeoutSec} seconds.`;
         } else if (err instanceof TypeError) {
             errorMessage = `Network error: ${err.message}. Check the URL and your connection.`;
         } else if (err instanceof Error) {

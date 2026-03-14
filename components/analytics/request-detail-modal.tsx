@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { formatBytes } from "@/utils/get-response-size";
 import { AnalyticsRecord } from "@/hooks/use-analytics";
+import { formatTimestamp } from "@/lib/format-time";
 
 const methodColors: Record<string, string> = {
   GET: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
@@ -41,16 +42,6 @@ function StatusBadge({ code }: { code: number }) {
       {code}
     </Badge>
   );
-}
-
-function formatTime(ts: number): string {
-  return new Date(ts).toLocaleString([], {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
 }
 
 interface RequestDetailModalProps {
@@ -186,12 +177,12 @@ export function RequestDetailModal({
               <div>
                 <span className="text-foreground-subtle">Start: </span>
                 <span className="font-mono">
-                  {formatTime(record.startTime)}
+                  {formatTimestamp(record.startTime)}
                 </span>
               </div>
               <div>
                 <span className="text-foreground-subtle">End: </span>
-                <span className="font-mono">{formatTime(record.endTime)}</span>
+                <span className="font-mono">{formatTimestamp(record.endTime)}</span>
               </div>
             </div>
           </section>

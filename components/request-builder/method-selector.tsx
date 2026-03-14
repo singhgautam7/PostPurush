@@ -2,6 +2,7 @@
 
 import { HttpMethod } from "@/types/request";
 import { useRequestStore } from "@/store/request-store";
+import { useCollectionSize, CONTENT_SIZES } from "@/hooks/use-collection-size";
 import {
   Select,
   SelectContent,
@@ -21,12 +22,14 @@ const methods: { value: HttpMethod; color: string }[] = [
 export function MethodSelector() {
   const method = useRequestStore((s) => s.activeRequest.method);
   const setMethod = useRequestStore((s) => s.setMethod);
+  const collectionSize = useCollectionSize();
+  const textCls = CONTENT_SIZES[collectionSize] ?? "text-sm";
 
   const currentMethod = methods.find((m) => m.value === method);
 
   return (
     <Select value={method} onValueChange={(v) => setMethod(v as HttpMethod)}>
-      <SelectTrigger className="w-[100px] h-9 bg-panel border-border-subtle font-mono font-semibold text-sm rounded-lg">
+      <SelectTrigger className={`w-[100px] h-9 bg-panel border-border-subtle font-mono font-semibold ${textCls} rounded-lg`}>
         <SelectValue>
           <span className={currentMethod?.color}>{method}</span>
         </SelectValue>
