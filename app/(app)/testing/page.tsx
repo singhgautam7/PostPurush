@@ -1,7 +1,7 @@
 "use client";
 
-import { WipPlaceholder } from "@/features/wip-placeholder";
+import { TestingView } from "@/components/testing/testing-view";
 
 export default function TestingPage() {
-  return <WipPlaceholder title="API Testing" />;
+  return <TestingView />;
 }

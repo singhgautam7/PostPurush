@@ -2,6 +2,7 @@ import { openDB, DBSchema, IDBPDatabase } from "idb";
 import { SavedRequest, Folder } from "@/types/request";
 import { Environment, EnvironmentVariable } from "@/types/environment";
 import { ResponseMetadata } from "@/types/response-metadata";
+import { TestRun } from "@/types/testing";
 
 interface PostPurushDB extends DBSchema {
     requests: {
@@ -22,13 +23,18 @@ interface PostPurushDB extends DBSchema {
         key: string;
         value: ResponseMetadata[];
     };
+    test_runs: {
+        key: string;
+        value: TestRun;
+        indexes: { "by-start-time": number };
+    };
 }
 
 let dbPromise: Promise<IDBPDatabase<PostPurushDB>> | null = null;
 
 function getDB() {
     if (!dbPromise) {
-        dbPromise = openDB<PostPurushDB>("postpurush-db", 5, {
+        dbPromise = openDB<PostPurushDB>("postpurush-db", 6, {
             upgrade(db, oldVersion, _newVersion, transaction) {
                 if (oldVersion < 1) {
                     const requestStore = db.createObjectStore("requests", {
@@ -70,6 +76,15 @@ function getDB() {
                 if (oldVersion < 5) {
                     if (!db.objectStoreNames.contains("responses_metadata")) {
                         db.createObjectStore("responses_metadata");
+                    }
+                }
+
+                if (oldVersion < 6) {
+                    if (!db.objectStoreNames.contains("test_runs")) {
+                        const testRunStore = db.createObjectStore("test_runs", {
+                            keyPath: "id",
+                        });
+                        testRunStore.createIndex("by-start-time", "startTime");
                     }
                 }
             },
@@ -227,4 +242,27 @@ export async function loadAllResponseMetadataFromDB(): Promise<
     }
     flat.sort((a, b) => b.startTime - a.startTime);
     return flat;
+}
+
+// === Test Runs ===
+
+export async function saveTestRunToDB(run: TestRun): Promise<void> {
+    const db = await getDB();
+    await db.put("test_runs", run);
+}
+
+export async function loadAllTestRunsFromDB(): Promise<TestRun[]> {
+    const db = await getDB();
+    const runs = await db.getAllFromIndex("test_runs", "by-start-time");
+    return runs.reverse();
+}
+
+export async function deleteTestRunFromDB(id: string): Promise<void> {
+    const db = await getDB();
+    await db.delete("test_runs", id);
+}
+
+export async function clearAllTestRunsFromDB(): Promise<void> {
+    const db = await getDB();
+    await db.clear("test_runs");
 }

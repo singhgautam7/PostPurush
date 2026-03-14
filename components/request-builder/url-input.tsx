@@ -285,7 +285,11 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
   }, []);
 
   useEffect(() => {
-    if (textareaRef.current) autoResize(textareaRef.current);
+    if (textareaRef.current) {
+      requestAnimationFrame(() => {
+        if (textareaRef.current) autoResize(textareaRef.current);
+      });
+    }
   }, [activeRequest.url]);
 
   return (
