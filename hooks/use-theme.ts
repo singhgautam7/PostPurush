@@ -26,8 +26,6 @@ export function useTheme() {
   useEffect(() => {
     const savedTheme = (localStorage.getItem(STORAGE_KEY_THEME) as ThemeId) || DEFAULT_THEME;
     const savedMode = (localStorage.getItem(STORAGE_KEY_MODE) as ThemeMode) || DEFAULT_MODE;
-    setThemeState(savedTheme);
-    setModeState(savedMode);
 
     // Re-apply to DOM — hydration may have reverted ThemeScript's changes
     document.documentElement.setAttribute('data-theme', savedTheme);

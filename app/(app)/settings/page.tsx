@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useSyncExternalStore } from "react";
 import { useTheme } from "@/hooks/use-theme";
 import { THEMES } from "@/lib/themes";
 import { KeyValuePair } from "@/types/request";
@@ -78,18 +78,18 @@ const LS_KEYS = {
 // ─────────────────────────────────────────────────────────────────
 export default function SettingsPage() {
   // Avoid hydration mismatch for client-only state (theme, dates, localStorage)
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const subscribe = useCallback(() => () => {}, []);
+  const mounted = useSyncExternalStore(subscribe, () => true, () => false);
 
   // === Appearance ===
   const { theme, mode, setTheme, setMode } = useTheme();
 
   // === Collection Text Size ===
-  const [collectionSize, setCollectionSize] = useState(3);
-  useEffect(() => {
+  const [collectionSize, setCollectionSize] = useState(() => {
+    if (typeof window === 'undefined') return 3;
     const stored = localStorage.getItem(LS_KEYS.collectionSize);
-    if (stored) setCollectionSize(Number(stored));
-  }, []);
+    return stored ? Number(stored) : 3;
+  });
 
   const handleSizeChange = (val: number[]) => {
     const v = val[0];
@@ -99,24 +99,29 @@ export default function SettingsPage() {
   };
 
   // === Request Defaults ===
-  const [defaultTimeout, setDefaultTimeout] = useState(30000);
-  const [defaultHeaders, setDefaultHeaders] = useState<KeyValuePair[]>([
-    { key: "", value: "" },
-  ]);
-
-  useEffect(() => {
+  const [defaultTimeout, setDefaultTimeout] = useState(() => {
+    if (typeof window === 'undefined') return 30000;
     try {
       const raw = localStorage.getItem(LS_KEYS.requestDefaults);
       if (raw) {
         const data = JSON.parse(raw);
-        if (typeof data.timeout === "number") setDefaultTimeout(data.timeout);
-        if (Array.isArray(data.headers) && data.headers.length > 0)
-          setDefaultHeaders([...data.headers, { key: "", value: "" }]);
+        if (typeof data.timeout === "number") return data.timeout;
       }
-    } catch {
-      /* ignore */
-    }
-  }, []);
+    } catch {}
+    return 30000;
+  });
+  const [defaultHeaders, setDefaultHeaders] = useState<KeyValuePair[]>(() => {
+    if (typeof window === 'undefined') return [{ key: "", value: "" }];
+    try {
+      const raw = localStorage.getItem(LS_KEYS.requestDefaults);
+      if (raw) {
+        const data = JSON.parse(raw);
+        if (Array.isArray(data.headers) && data.headers.length > 0)
+          return [...data.headers, { key: "", value: "" }];
+      }
+    } catch {}
+    return [{ key: "", value: "" }];
+  });
 
   const saveRequestDefaults = useCallback(
     (timeout: number, headers: KeyValuePair[]) => {
@@ -141,13 +146,10 @@ export default function SettingsPage() {
   };
 
   // === Date & Time Format ===
-  const [timeFormat, setTimeFormat] = useState<"relative" | "absolute">(
-    "relative"
-  );
-  useEffect(() => {
-    const stored = localStorage.getItem(LS_KEYS.timeFormat);
-    if (stored === "absolute") setTimeFormat("absolute");
-  }, []);
+  const [timeFormat, setTimeFormat] = useState<"relative" | "absolute">(() => {
+    if (typeof window === 'undefined') return "relative";
+    return localStorage.getItem(LS_KEYS.timeFormat) === "absolute" ? "absolute" : "relative";
+  });
 
   const handleTimeFormatChange = (val: string) => {
     const v = val as "relative" | "absolute";
