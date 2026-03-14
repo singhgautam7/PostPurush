@@ -14,51 +14,26 @@ import {
 } from "lucide-react";
 import { HowToAccordion } from "@/components/about/how-to-accordion";
 
-/* ── Icon helpers ──────────────────────────────────── */
-
-const ICON_GUESS: Record<
-  string,
-  { icon: string; title?: string }
-> = {
-  collections: { icon: "FolderOpen" },
-  environments: { icon: "Globe" },
-  analytics: { icon: "BarChart2" },
-  "create-api-docs": { icon: "FileText" },
-  testing: { icon: "FlaskConical" },
-  settings: { icon: "Settings" },
-};
-
-function guessIcon(filename: string): string {
-  const stem = filename.replace(/\.md$/, "");
-  return ICON_GUESS[stem]?.icon ?? "FileText";
-}
-
-function titleFromFilename(filename: string): string {
-  const stem = filename.replace(/\.md$/, "");
-  if (ICON_GUESS[stem]?.title) return ICON_GUESS[stem].title!;
-  return stem
-    .split("-")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
-}
-
 /* ── Auto-discover how-to sections ────────────────── */
-
-const SECTION_ORDER = ["collections", "environments", "analytics", "create-api-docs"];
 
 function loadHowToSections() {
   const dir = path.join(process.cwd(), "docs", "how-to");
+
+  // Load config
+  let config: Record<string, { icon?: string; order?: number; title?: string }> = {};
+  try {
+    config = JSON.parse(fs.readFileSync(path.join(dir, "config.json"), "utf-8"));
+  } catch {}
+
   let files: string[] = [];
   try {
     files = fs
       .readdirSync(dir)
       .filter((f) => f.endsWith(".md"))
       .sort((a, b) => {
-        const stemA = a.replace(/\.md$/, "");
-        const stemB = b.replace(/\.md$/, "");
-        const idxA = SECTION_ORDER.indexOf(stemA);
-        const idxB = SECTION_ORDER.indexOf(stemB);
-        return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB);
+        const orderA = config[a]?.order ?? Infinity;
+        const orderB = config[b]?.order ?? Infinity;
+        return orderA - orderB;
       });
   } catch {
     return [];
@@ -66,10 +41,15 @@ function loadHowToSections() {
 
   return files.map((file) => {
     const raw = fs.readFileSync(path.join(dir, file), "utf-8");
+    const entry = config[file];
+    const stem = file.replace(/\.md$/, "");
+    const title = entry?.title
+      ?? stem.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+
     return {
       file,
-      title: titleFromFilename(file),
-      icon: guessIcon(file),
+      title,
+      icon: entry?.icon ?? "FileText",
       markdown: raw.replace(/\.\/(assets\/)/g, "/how-to-assets/"),
     };
   });

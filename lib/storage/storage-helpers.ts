@@ -12,4 +12,8 @@ export {
     loadResponseMetadataFromDB as loadResponseMetadata,
     loadAllResponseMetadataFromDB as loadAllResponseMetadata,
     clearAllResponseMetadataFromDB as clearAllResponseMetadata,
+    saveTestRunToDB as saveTestRun,
+    loadAllTestRunsFromDB as loadAllTestRuns,
+    deleteTestRunFromDB as deleteTestRun,
+    clearAllTestRunsFromDB as clearAllTestRuns,
 } from "./indexed-db";

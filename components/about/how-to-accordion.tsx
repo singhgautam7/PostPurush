@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
@@ -34,18 +34,41 @@ interface HowToSection {
 }
 
 export function HowToAccordion({ sections }: { sections: HowToSection[] }) {
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [openIds, setOpenIds] = useState<Set<string>>(new Set());
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  const toggle = useCallback((file: string) => {
+    setOpenIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(file)) {
+        next.delete(file);
+      } else {
+        next.add(file);
+        // Scroll into view after DOM updates
+        requestAnimationFrame(() => {
+          sectionRefs.current[file]?.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+          });
+        });
+      }
+      return next;
+    });
+  }, []);
 
   return (
     <div className="border border-border rounded-lg divide-y divide-border overflow-hidden">
       {sections.map((section) => {
-        const isOpen = openId === section.file;
+        const isOpen = openIds.has(section.file);
         const Icon = ICON_MAP[section.icon] ?? FileText;
 
         return (
-          <div key={section.file}>
+          <div
+            key={section.file}
+            ref={(el) => { sectionRefs.current[section.file] = el; }}
+          >
             <button
-              onClick={() => setOpenId(isOpen ? null : section.file)}
+              onClick={() => toggle(section.file)}
               className="w-full flex items-center gap-3 px-4 py-3.5 text-left
                          hover:bg-raised/50 transition-colors cursor-pointer"
             >

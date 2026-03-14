@@ -1,0 +1,7 @@
+{
+  "collections.md":     { "icon": "FolderOpen",   "order": 1, "title": "Collections"  },
+  "environments.md":    { "icon": "Globe",        "order": 2, "title": "Environments"  },
+  "analytics.md":       { "icon": "BarChart2",    "order": 3, "title": "Analytics"  },
+  "create-api-docs.md": { "icon": "FileText",     "order": 4, "title": "Create API Docs"  },
+  "test-apis.md":       { "icon": "FlaskConical", "order": 5, "title": "Test Your APIs" }
+}
