@@ -95,6 +95,9 @@ The monitor displays:
 
 # Test History
 
+![testing-history-1](./assets/17-testing-history.png)
+![testing-history-2](./assets/18-testing-history-view.png)
+
 All completed test runs are saved automatically.
 
 - View past results by opening the history side panel

@@ -1,9 +1,23 @@
 "use client";
 
-import { useState } from "react";
-import { Eye, Trash2, Clock } from "lucide-react";
+import { useState, useMemo } from "react";
+import {
+  Eye,
+  Trash2,
+  Clock,
+  X,
+  ChevronUp,
+  ChevronDown,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -23,8 +37,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
-import { TestRun, TestType } from "@/types/testing";
+import { TestRun, TestType, TestStatus } from "@/types/testing";
 import { TestResultSheet } from "./test-result-sheet";
+import { TestHistorySearch } from "./test-history-search";
 
 const methodColors: Record<string, string> = {
   GET: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
@@ -41,16 +56,108 @@ const testTypeLabels: Record<TestType, string> = {
   uptime: "Uptime",
 };
 
+interface TestHistoryFilters {
+  search: string;
+  testType: TestType | null;
+  status: TestStatus | null;
+  requestId: string | null;
+}
+
+const defaultFilters: TestHistoryFilters = {
+  search: "",
+  testType: null,
+  status: null,
+  requestId: null,
+};
+
+type SortKey = "startTime" | "duration" | "status";
+
+function SortIcon({
+  column,
+  sortBy,
+  sortDir,
+}: {
+  column: SortKey;
+  sortBy: SortKey;
+  sortDir: "asc" | "desc";
+}) {
+  if (sortBy !== column)
+    return (
+      <ChevronDown size={12} className="opacity-0 group-hover:opacity-30" />
+    );
+  return sortDir === "desc" ? (
+    <ChevronDown size={12} />
+  ) : (
+    <ChevronUp size={12} />
+  );
+}
+
 interface TestHistoryProps {
   history: TestRun[];
   onDelete: (id: string) => void;
   onClearAll: () => void;
 }
 
-export function TestHistory({ history, onDelete, onClearAll }: TestHistoryProps) {
+export function TestHistory({
+  history,
+  onDelete,
+  onClearAll,
+}: TestHistoryProps) {
   const [clearOpen, setClearOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [viewRun, setViewRun] = useState<TestRun | null>(null);
+  const [filters, setFilters] = useState<TestHistoryFilters>(defaultFilters);
+  const [sortBy, setSortBy] = useState<SortKey>("startTime");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+
+  const hasActiveFilters =
+    filters.search !== "" ||
+    filters.testType !== null ||
+    filters.status !== null ||
+    filters.requestId !== null;
+
+  const clearFilters = () => setFilters(defaultFilters);
+
+  const toggleSort = (key: SortKey) => {
+    if (sortBy === key) {
+      setSortDir((d) => (d === "desc" ? "asc" : "desc"));
+    } else {
+      setSortBy(key);
+      setSortDir("desc");
+    }
+  };
+
+  const filtered = useMemo(() => {
+    return history.filter((run) => {
+      if (filters.testType && run.testType !== filters.testType) return false;
+      if (filters.status && run.status !== filters.status) return false;
+      if (filters.requestId && run.requestId !== filters.requestId)
+        return false;
+      if (filters.search) {
+        const q = filters.search.toLowerCase();
+        if (
+          !run.requestName.toLowerCase().includes(q) &&
+          !run.requestUrl.toLowerCase().includes(q)
+        )
+          return false;
+      }
+      return true;
+    });
+  }, [history, filters]);
+
+  const sorted = useMemo(() => {
+    return [...filtered].sort((a, b) => {
+      let cmp = 0;
+      if (sortBy === "startTime") {
+        cmp = a.startTime - b.startTime;
+      } else if (sortBy === "duration") {
+        cmp = a.endTime - a.startTime - (b.endTime - b.startTime);
+      } else if (sortBy === "status") {
+        cmp = a.status.localeCompare(b.status);
+      }
+      return sortDir === "desc" ? -cmp : cmp;
+    });
+  }, [filtered, sortBy, sortDir]);
 
   if (history.length === 0) {
     return (
@@ -64,7 +171,84 @@ export function TestHistory({ history, onDelete, onClearAll }: TestHistoryProps)
   return (
     <>
       <div className="space-y-3">
-        <div className="flex justify-end">
+        {/* Filter bar */}
+        <div className="sticky top-0 z-10 bg-background border-b border-border flex items-center gap-2 flex-wrap px-0 py-3">
+          <TestHistorySearch
+            history={history}
+            search={filters.search}
+            onSelect={(name, id) =>
+              setFilters((f) => ({ ...f, search: name, requestId: id }))
+            }
+            onChange={(value) =>
+              setFilters((f) => ({
+                ...f,
+                search: value,
+                requestId: null,
+              }))
+            }
+          />
+
+          <Select
+            value={filters.testType ?? "all"}
+            onValueChange={(v) =>
+              setFilters((f) => ({
+                ...f,
+                testType: v === "all" ? null : (v as TestType),
+              }))
+            }
+          >
+            <SelectTrigger className="h-8 w-28 text-xs">
+              <SelectValue placeholder="Test Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="assertion">Assertion</SelectItem>
+              <SelectItem value="load">Load</SelectItem>
+              <SelectItem value="rate-limit">Rate Limit</SelectItem>
+              <SelectItem value="uptime">Uptime</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={filters.status ?? "all"}
+            onValueChange={(v) =>
+              setFilters((f) => ({
+                ...f,
+                status: v === "all" ? null : (v as TestStatus),
+              }))
+            }
+          >
+            <SelectTrigger className="h-8 w-28 text-xs">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="pass">Pass</SelectItem>
+              <SelectItem value="fail">Fail</SelectItem>
+              <SelectItem value="error">Error</SelectItem>
+              <SelectItem value="complete">Complete</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {hasActiveFilters && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 text-xs text-foreground-muted"
+              onClick={clearFilters}
+            >
+              <X size={12} className="mr-1" /> Clear
+            </Button>
+          )}
+
+          {hasActiveFilters && (
+            <span className="text-xs text-foreground-subtle">
+              {filtered.length} of {history.length} entries
+            </span>
+          )}
+
+          <div className="flex-1" />
+
           <Button
             variant="ghost"
             size="sm"
@@ -79,16 +263,52 @@ export function TestHistory({ history, onDelete, onClearAll }: TestHistoryProps)
           <Table>
             <TableHeader>
               <TableRow className="border-border hover:bg-transparent">
-                <TableHead className="text-xs h-8">Date/Time</TableHead>
+                <TableHead
+                  className="text-xs h-8 cursor-pointer group"
+                  onClick={() => toggleSort("startTime")}
+                >
+                  <span className="flex items-center gap-1">
+                    Date/Time
+                    <SortIcon
+                      column="startTime"
+                      sortBy={sortBy}
+                      sortDir={sortDir}
+                    />
+                  </span>
+                </TableHead>
                 <TableHead className="text-xs h-8">Request</TableHead>
                 <TableHead className="text-xs h-8">Test Type</TableHead>
-                <TableHead className="text-xs h-8">Status</TableHead>
-                <TableHead className="text-xs h-8">Duration</TableHead>
+                <TableHead
+                  className="text-xs h-8 cursor-pointer group"
+                  onClick={() => toggleSort("status")}
+                >
+                  <span className="flex items-center gap-1">
+                    Status
+                    <SortIcon
+                      column="status"
+                      sortBy={sortBy}
+                      sortDir={sortDir}
+                    />
+                  </span>
+                </TableHead>
+                <TableHead
+                  className="text-xs h-8 cursor-pointer group"
+                  onClick={() => toggleSort("duration")}
+                >
+                  <span className="flex items-center gap-1">
+                    Duration
+                    <SortIcon
+                      column="duration"
+                      sortBy={sortBy}
+                      sortDir={sortDir}
+                    />
+                  </span>
+                </TableHead>
                 <TableHead className="text-xs h-8 w-20">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {history.map((run) => (
+              {sorted.map((run) => (
                 <TableRow key={run.id} className="border-border">
                   <TableCell className="text-xs text-foreground-muted py-2">
                     {new Date(run.startTime).toLocaleString()}
@@ -190,7 +410,10 @@ export function TestHistory({ history, onDelete, onClearAll }: TestHistoryProps)
         </AlertDialogContent>
       </AlertDialog>
 
-      <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+      <AlertDialog
+        open={!!deleteId}
+        onOpenChange={(open) => !open && setDeleteId(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete test run?</AlertDialogTitle>

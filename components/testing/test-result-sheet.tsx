@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import {
   TestRun,
+  TestType,
   AssertionResults,
   LoadResults,
   RateLimitResults,
@@ -20,6 +21,13 @@ import { AssertionResultsView } from "./assertion-test";
 import { LoadResultsView } from "./load-test";
 import { RateLimitResultsView } from "./rate-limit-test";
 import { UptimeResultsView } from "./uptime-test";
+
+const testTypeLabels: Record<TestType, string> = {
+  assertion: "Assertion Test",
+  load: "Load Test",
+  "rate-limit": "Rate Limit Test",
+  uptime: "Uptime Monitor",
+};
 
 const methodColors: Record<string, string> = {
   GET: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
@@ -63,6 +71,14 @@ export function TestResultSheet({ run, onClose }: TestResultSheetProps) {
                   {Math.round((run.endTime - run.startTime) / 1000)}s
                 </span>
               </SheetDescription>
+              <div className="mt-2">
+                <Badge
+                  variant="outline"
+                  className="text-[10px] bg-raised border-border text-foreground-muted"
+                >
+                  {testTypeLabels[run.testType]} Details
+                </Badge>
+              </div>
             </SheetHeader>
 
             <div className="mt-6 px-6">
