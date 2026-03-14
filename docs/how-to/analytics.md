@@ -1,9 +1,8 @@
 ﻿# Analytics
 
+![analytics](./assets/09-analytics.png)
+
 The **Analytics** section provides insights into API request performance and usage patterns.
-
-Refer to the Analytics screenshots to understand the layout and metrics.
-
 Analytics are generated automatically based on requests executed within the application.
 
 ---
@@ -27,6 +26,7 @@ These metrics provide a quick overview of API behavior.
 
 # Filters
 
+![doc-filter](./assets/11-analytics-filters.png)
 Users can filter analytics data using the filter controls at the top.
 
 Available filters include:
@@ -103,6 +103,7 @@ Users can quickly review historical request activity.
 
 # Request Detail View
 
+![analytics-view-req](./assets/10-analytics-fetch-req.png)
 Hovering on the request reveals an "eye" icon, on clicking of which a
 
 The detail panel displays:
@@ -125,12 +126,3 @@ This view helps analyze individual request behavior.
 - Users can also clear request history if needed.
 
 ---
-
-# Design Goals
-
-The Analytics system aims to provide:
-
-- Immediate performance visibility
-- Historical request tracking
-- Endpoint performance comparison
-- Data export for deeper analysis

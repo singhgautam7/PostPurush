@@ -1,9 +1,8 @@
 ﻿# Create API Documentation
 
+![api-doc](./assets/13-doc-preview.png)
+
 The **Create API Docs** section allows users to generate structured API documentation directly from saved requests.
-
-Refer to the documentation screenshots for the workflow.
-
 This feature converts request definitions into readable documentation.
 
 ---
@@ -20,6 +19,7 @@ The documentation generation process consists of three steps:
 
 # Selecting Requests
 
+![doc-select-req](./assets/12-create-doc.png)
 The first step is selecting the requests to include.
 
 Requests are displayed grouped by folder.
@@ -76,16 +76,7 @@ Each endpoint section provides a structured layout similar to professional API d
 # Code Snippets
 
 Documentation includes code examples for supported languages.
-
 Users can choose which languages to include.
-
-Supported languages include:
-
-- cURL
-- Python
-- JavaScript
-- Go
-
 Each snippet demonstrates how to execute the request programmatically.
 
 ---
@@ -106,23 +97,5 @@ The generated PDF contains:
 - Request examples
 - Code samples
 
+[Here](./assets/sample-exported-api-doc.pdf) is an example of the exported API document.
 ---
-
-# Use Cases
-
-The documentation generator is useful for:
-
-- Sharing API details with team members
-- Creating quick reference documentation
-- Exporting API specifications for external use
-
----
-
-# Design Goals
-
-The Create API Docs feature focuses on:
-
-- Automated documentation generation
-- Minimal manual input
-- Clear endpoint presentation
-- Easy sharing through PDF export

@@ -2,7 +2,7 @@
 
 The **Collections** section is the primary workspace for interacting with APIs. It allows users to organize requests, execute them, inspect responses, and export code examples.
 
-Refer to the Collections screenshots for the visual layout and interaction flow.
+![collection-image](./assets/05-response.png)
 
 ---
 
@@ -22,10 +22,8 @@ This sidebar provides navigation across the application:
 
 Additional items:
 
-- **Help**
-- **Settings**
-
-The currently active section is highlighted.
+- About
+- Settings
 
 ---
 
@@ -52,6 +50,8 @@ The sidebar is **resizable** but not collapsible.
 ---
 
 # Environment Selector
+
+![env-selector](./assets/04-hit-request.png)
 
 At the top of the request sidebar, an **Environment Selector** is available.
 
@@ -116,11 +116,11 @@ The input expands automatically for longer URLs.
 
 The request editor is divided into sections:
 
-- **Params**
-- **Headers**
-- **Body**
+- Params
+- Headers
+- Body
 
-Each section allows structured editing of request data.
+Each section allows structured editing of request data along with the support of environment variables.
 
 ---
 
@@ -188,10 +188,10 @@ The response panel appears below the request builder.
 
 Displayed information includes:
 
-- **HTTP status code**
-- **Response time**
-- **Response size**
-- **Content type**
+- HTTP status code
+- Response time
+- Response size
+- Content type
 
 ---
 
@@ -199,8 +199,8 @@ Displayed information includes:
 
 Users can inspect responses through multiple views:
 
-- **Body**
-- **Headers**
+- Body
+- Headers
 
 Body supports two modes:
 
@@ -219,12 +219,7 @@ JSON responses include:
 
 Requests can be exported into multiple programming languages.
 
-The **Export Code** modal supports:
-
-- cURL
-- Python
-- JavaScript
-- Go
+![code-export](./assets/06-export-req-code.png)
 
 Code snippets are automatically generated based on the current request configuration.
 
@@ -232,6 +227,7 @@ Code snippets are automatically generated based on the current request configura
 
 # Add Testing APIs
 
+![testing-api](./assets/02-home-import-extras.png)
 At the bottom of the sidebar, the **Add Testing APIs** option is available.
 
 This feature:
@@ -248,13 +244,7 @@ The testing APIs are useful for:
 
 ---
 
-# Key Design Principles
+# Theme selector
 
-The Collections interface is designed for:
-
-- High information density
-- Rapid iteration of API calls
-- Minimal friction when editing requests
-- Immediate response inspection
-
-The layout is intentionally similar to professional developer tools such as Postman and code editors.
+There is a global theme selector on the top-right section of the screen (available on header of each page) which enables you to choose between different colors, and dark mode and light mode.
+![theme-selector](./assets/03-home-select-theme.png)

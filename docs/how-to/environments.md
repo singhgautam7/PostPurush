@@ -4,6 +4,7 @@ The **Environments** section allows users to manage reusable variables that can 
 
 Refer to the Environments screenshots for the layout and editing interface.
 
+![environment](./assets/07-env.png)
 ---
 
 # Purpose of Environments
@@ -54,6 +55,8 @@ Creating an environment allows:
 ---
 
 # Environment Editor
+
+![env-edit](./assets/08-env-edit.png)
 
 Selecting an environment opens the **Environment Editor panel**.
 
@@ -129,20 +132,6 @@ Authorization: Bearer {{token}}
 # Automatic Updates
 
 The environment editor saves changes automatically.
-
 There is no manual save step required.
 
-This ensures:
-
-- Faster workflow
-- Reduced configuration friction
-
 ---
-
-# Design Goals
-
-The Environments feature is designed to:
-
-- Simplify API configuration across multiple environments
-- Reduce duplication in requests
-- Provide a clear visual representation of configuration contexts

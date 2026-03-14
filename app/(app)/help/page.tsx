@@ -1,7 +1,5 @@
-"use client";
-
-import { WipPlaceholder } from "@/features/wip-placeholder";
+import { redirect } from "next/navigation";
 
 export default function HelpPage() {
-  return <WipPlaceholder title="Help" />;
+  redirect("/about");
 }

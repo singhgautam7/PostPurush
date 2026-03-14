@@ -9,7 +9,7 @@ import {
   BookText,
   BarChart3,
   Globe,
-  HelpCircle,
+  Info,
   Settings,
   PanelLeftClose,
   PanelLeftOpen,
@@ -66,7 +66,7 @@ const exploreItems = [
 ];
 
 const supportItems = [
-  { href: "/help", label: "Help", icon: <HelpCircle size={15} /> },
+  { href: "/about", label: "About", icon: <Info size={15} /> },
   { href: "/settings", label: "Settings", icon: <Settings size={15} /> },
 ];
 
