@@ -100,10 +100,10 @@ async function migrateV3ToV4() {
     migrated = true;
     const db = await getDB();
     try {
-        const oldEnv = await db.get("environments", "default" as any);
+        const oldEnv = await db.get("environments", "default");
         if (oldEnv) {
             const oldData = oldEnv as unknown as { id: string; variables: EnvironmentVariable[] };
-            await db.delete("environments", "default" as any);
+            await db.delete("environments", "default");
             if (oldData.variables?.length) {
                 const validVars = oldData.variables.filter((v) => v.key);
                 if (validVars.length > 0) {
