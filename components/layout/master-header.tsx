@@ -1,6 +1,7 @@
 "use client";
 
 import { Menu, Zap } from "lucide-react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemePicker } from "@/components/theme/theme-picker";
 import { useIsMobile } from "@/hooks/use-is-mobile";
@@ -22,10 +23,12 @@ export function MasterHeader() {
             <Menu size={18} />
           </button>
         )}
-        <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary-action">
-          <Zap className="h-4 w-4 text-primary-action-fg" />
-        </div>
-        <span className="text-sm font-bold tracking-tight text-foreground">PostPurush</span>
+        <Link href="/" className="flex items-center gap-2 cursor-pointer">
+          <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary-action">
+            <Zap className="h-4 w-4 text-primary-action-fg" />
+          </div>
+          <span className="text-sm font-bold tracking-tight text-foreground">PostPurush</span>
+        </Link>
       </div>
 
       {/* Right — Global controls */}
