@@ -23,7 +23,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     init();
   }, [setSavedRequests, setFolders, initEnv]);
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-background">
+    <div className="flex flex-col flex-1 overflow-hidden bg-background">
       <MasterHeader />
       <div className="flex flex-1 overflow-hidden">
         <NavigationSidebar />

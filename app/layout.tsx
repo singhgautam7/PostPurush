@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeScript } from "@/components/theme/theme-script";
 import { Toaster } from "sonner";
+import { DemoBanner } from "@/components/layout/demo-banner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,8 +33,9 @@ export default function RootLayout({
         <ThemeScript />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col h-screen overflow-hidden`}
       >
+        <DemoBanner />
         <TooltipProvider>{children}</TooltipProvider>
         <Toaster
           position="top-right"
