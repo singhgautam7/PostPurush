@@ -55,7 +55,7 @@ export function MobileBottomNav() {
               href={item.href}
               className={cn(
                 "flex flex-col items-center gap-0.5 px-3 py-1.5 text-[10px] transition-colors",
-                active ? "text-primary-action" : "text-foreground-muted"
+                active ? "text-primary-action bg-raised rounded-lg" : "text-foreground-muted"
               )}
             >
               <Icon size={20} />
@@ -67,7 +67,7 @@ export function MobileBottomNav() {
           onClick={() => setMoreOpen(true)}
           className={cn(
             "flex flex-col items-center gap-0.5 px-3 py-1.5 text-[10px] transition-colors cursor-pointer",
-            isMoreActive ? "text-primary-action" : "text-foreground-muted"
+            isMoreActive ? "text-primary-action bg-raised rounded-lg" : "text-foreground-muted"
           )}
         >
           <MoreHorizontal size={20} />

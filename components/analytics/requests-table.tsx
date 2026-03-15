@@ -290,34 +290,36 @@ export function RequestsTable({ filtered, filters }: RequestsTableProps) {
         </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between px-4 py-3 border-t border-border">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-foreground-muted">Rows per page:</span>
-          <Select
-            value={String(pageSize)}
-            onValueChange={(v) => {
-              setPageSize(Number(v));
-              setPage(1);
-            }}
-          >
-            <SelectTrigger className="h-7 w-16 text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {[10, 25, 50, 100].map((n) => (
-                <SelectItem key={n} value={String(n)}>
-                  {n}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between px-4 py-3 border-t border-border">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 mr-4">
+            <span className="text-xs text-foreground-muted">Rows per page:</span>
+            <Select
+              value={String(pageSize)}
+              onValueChange={(v) => {
+                setPageSize(Number(v));
+                setPage(1);
+              }}
+            >
+              <SelectTrigger className="h-7 w-16 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[10, 25, 50, 100].map((n) => (
+                  <SelectItem key={n} value={String(n)}>
+                    {n}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <span className="text-xs text-foreground-muted">
             {sorted.length === 0
               ? "0 entries"
               : `${(page - 1) * pageSize + 1}\u2013${Math.min(page * pageSize, sorted.length)} of ${sorted.length}`}
           </span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center justify-center md:justify-end gap-1">
           <Button
             variant="ghost"
             size="icon"
