@@ -319,7 +319,7 @@ export default function SettingsPage() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="max-w-2xl mx-auto px-8 py-10 space-y-6">
+      <div className="max-w-2xl mx-auto px-4 md:px-8 py-10 space-y-6">
       <div>
         <h1 className="text-xl font-semibold text-foreground">Settings</h1>
         <p className="text-sm text-foreground-muted mt-1">
@@ -343,7 +343,7 @@ export default function SettingsPage() {
           <label className="text-xs font-medium text-foreground-muted block mb-2">
             Theme
           </label>
-          <div className="grid grid-cols-6 gap-3">
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
             {THEMES.map((t) => (
               <button
                 key={t.id}
@@ -496,7 +496,7 @@ export default function SettingsPage() {
           </p>
         </div>
 
-        <div className="space-y-1">
+        <div className="space-y-1 overflow-x-auto">
           <label className="text-xs font-medium text-foreground-muted">
             Default Headers
           </label>
@@ -734,7 +734,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Reset everything */}
-        <div className="flex items-center justify-between py-2 border-t border-red-500/20 pt-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 py-2 border-t border-red-500/20 pt-4">
           <div>
             <p className="text-sm font-medium text-foreground">
               Reset Everything

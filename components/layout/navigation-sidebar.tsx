@@ -80,7 +80,7 @@ export function NavigationSidebar() {
   return (
     <aside
       className={cn(
-        "flex-shrink-0 flex flex-col h-full bg-sidebar-bg border-r border-border transition-all duration-200",
+        "flex-shrink-0 hidden md:flex flex-col h-full bg-sidebar-bg border-r border-border transition-all duration-200",
         collapsed ? "w-14" : "w-[210px]"
       )}
     >

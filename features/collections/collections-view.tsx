@@ -19,7 +19,14 @@ import {
   AlertDialogFooter,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { AlertTriangle } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
+import { AlertTriangle, GripVertical } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
 export function CollectionsView() {
   const openTab = useTabStore((s) => s.openTab);
@@ -27,6 +34,14 @@ export function CollectionsView() {
   const loadRequest = useRequestStore((s) => s.loadRequest);
   const activeRequest = useRequestStore((s) => s.activeRequest);
   const [missingRequestWarning, setMissingRequestWarning] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const isMobile = useIsMobile();
+
+  useEffect(() => {
+    const toggleHandler = () => setSidebarOpen((v) => !v);
+    window.addEventListener("postpurush:toggle-sidebar", toggleHandler);
+    return () => window.removeEventListener("postpurush:toggle-sidebar", toggleHandler);
+  }, []);
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -40,13 +55,14 @@ export function CollectionsView() {
       openTab(requestId, request.name);
       loadRequest(request);
       restoreResponseFromCache(requestId);
+      setSidebarOpen(false);
     };
     window.addEventListener("postpurush:open-request", handler);
     return () => window.removeEventListener("postpurush:open-request", handler);
   }, [savedRequests, openTab, loadRequest, activeRequest.id]);
 
   return (
-    <div className="flex h-full overflow-hidden bg-background">
+    <div className="flex flex-col h-full overflow-hidden bg-background">
       <AlertDialog open={missingRequestWarning} onOpenChange={setMissingRequestWarning}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -67,24 +83,44 @@ export function CollectionsView() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <PanelGroup orientation="horizontal">
-        {/* Collections Sidebar */}
-        <Panel
-          defaultSize={210}
-          minSize={140}
-          maxSize="50vw"
-          className="bg-background overflow-hidden"
-        >
-          <Sidebar />
-        </Panel>
+      {/* Mobile sidebar sheet */}
+      {isMobile && (
+        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+          <SheetContent side="left" className="w-[80vw] max-w-[320px] p-0 overflow-y-auto" showCloseButton={false}>
+            <VisuallyHidden><SheetTitle>Collections</SheetTitle></VisuallyHidden>
+            <Sidebar />
+          </SheetContent>
+        </Sheet>
+      )}
 
-        <PanelResizeHandle className="w-[3px] bg-border hover:bg-raised transition-colors cursor-col-resize" />
+      {/* Desktop: PanelGroup layout */}
+      {!isMobile && (
+        <div className="flex flex-1 overflow-hidden">
+          <PanelGroup orientation="horizontal">
+            <Panel
+              defaultSize={210}
+              minSize={140}
+              maxSize="50vw"
+              className="bg-background overflow-hidden"
+            >
+              <Sidebar />
+            </Panel>
+            <PanelResizeHandle className="w-[6px] bg-border hover:bg-primary-action/50 data-[separator=active]:bg-primary-action transition-colors cursor-col-resize flex items-center justify-center group">
+              <GripVertical size={12} className="text-foreground-subtle group-hover:text-foreground-muted group-data-[separator=active]:text-primary-action-fg" />
+            </PanelResizeHandle>
+            <Panel minSize={300} className="bg-background relative">
+              <Workspace />
+            </Panel>
+          </PanelGroup>
+        </div>
+      )}
 
-        {/* Main Workspace */}
-        <Panel minSize={300} className="bg-background relative">
+      {/* Mobile: workspace takes full width */}
+      {isMobile && (
+        <div className="flex-1 overflow-hidden">
           <Workspace />
-        </Panel>
-      </PanelGroup>
+        </div>
+      )}
     </div>
   );
 }

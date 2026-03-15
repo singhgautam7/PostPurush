@@ -26,9 +26,11 @@ import {
   ChevronsUpDown,
   PanelLeft,
   X,
+  Info,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ExportPdfButton } from "@/components/api-docs/export-pdf-button";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
 /* ------------------------------------------------------------------ */
 /*  Method badge colors (shared with sidebar navigator)                */
@@ -133,6 +135,7 @@ export default function ApiDocsPreviewPage() {
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     try {
@@ -232,7 +235,7 @@ export default function ApiDocsPreviewPage() {
   return (
     <div className="flex flex-col h-full">
       {/* Sticky header */}
-      <div className="flex items-center justify-between px-8 py-4 border-b border-border sticky top-0 bg-background z-30 shrink-0">
+      <div className="hidden md:flex items-center justify-between px-4 md:px-8 py-4 border-b border-border sticky top-0 bg-background z-30 shrink-0">
         <div className="flex items-center gap-3">
           <Tooltip>
             <TooltipTrigger asChild>
@@ -297,71 +300,92 @@ export default function ApiDocsPreviewPage() {
         </div>
       </div>
 
-      {/* Body with sidebar overlay */}
-      <div className="relative flex-1 overflow-hidden">
-        {/* Sidebar drawer */}
-        {sidebarOpen && (
-          <>
-            <div
-              className="absolute inset-0 z-10 bg-background/60 backdrop-blur-sm"
-              onClick={() => setSidebarOpen(false)}
+      {/* Mobile: info banner + PDF export only */}
+      {isMobile && (
+        <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
+          <div className="flex items-start gap-2 p-3 bg-accent/10 border border-accent/20 rounded-lg text-xs text-foreground-muted">
+            <Info size={14} className="text-accent mt-0.5 shrink-0" />
+            <span>
+              The interactive preview is optimized for desktop. You can still export your documentation as a PDF.
+            </span>
+          </div>
+          <div className="flex justify-center">
+            <ExportPdfButton
+              groups={groups}
+              docTitle="API Documentation"
+              docSummary={null}
             />
-            <div className="absolute left-0 top-0 h-full w-64 z-20 bg-panel border-r border-border flex flex-col shadow-xl animate-in slide-in-from-left duration-200">
-              <SidebarNavigator
-                groups={groups}
-                openGroups={openGroups}
-                onNavigate={handleSidebarNavigate}
-                onClose={() => setSidebarOpen(false)}
-              />
-            </div>
-          </>
-        )}
-
-        {/* Main scrollable content */}
-        <div className="h-full overflow-y-auto">
-          {groups.map((group) => {
-            const key = group.folderId ?? "ungrouped";
-            return (
-              <Collapsible
-                key={key}
-                open={openGroups[key]}
-                onOpenChange={(v) =>
-                  setOpenGroups((prev) => ({ ...prev, [key]: v }))
-                }
-                className="group/collapsible"
-              >
-                <CollapsibleTrigger
-                  id={`folder-${key}`}
-                  className="w-full flex items-center gap-3 px-8 py-4 border-b border-border hover:bg-raised/30 sticky top-0 z-[5] bg-background transition-colors cursor-pointer"
-                >
-                  <div className="flex items-center gap-2 flex-1">
-                    <Folder size={15} className="text-accent" />
-                    <h2 className="text-sm font-semibold text-foreground">
-                      {group.folderName}
-                    </h2>
-                    <span className="text-xs text-foreground-subtle">
-                      {group.requests.length} endpoint
-                      {group.requests.length !== 1 ? "s" : ""}
-                    </span>
-                  </div>
-                  <ChevronDown
-                    size={13}
-                    className="text-foreground-subtle group-data-[state=open]/collapsible:rotate-180 transition-transform"
-                  />
-                </CollapsibleTrigger>
-
-                <CollapsibleContent>
-                  {group.requests.map((request) => (
-                    <div key={request.id} id={`endpoint-${request.id}`}>
-                      <EndpointCard request={request} />
-                    </div>
-                  ))}
-                </CollapsibleContent>
-              </Collapsible>
-            );
-          })}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Desktop: Body with sidebar overlay */}
+      {!isMobile && (
+        <div className="relative flex-1 overflow-hidden">
+          {/* Sidebar drawer */}
+          {sidebarOpen && (
+            <>
+              <div
+                className="absolute inset-0 z-10 bg-background/60 backdrop-blur-sm"
+                onClick={() => setSidebarOpen(false)}
+              />
+              <div className="absolute left-0 top-0 h-full w-64 z-20 bg-panel border-r border-border flex flex-col shadow-xl animate-in slide-in-from-left duration-200">
+                <SidebarNavigator
+                  groups={groups}
+                  openGroups={openGroups}
+                  onNavigate={handleSidebarNavigate}
+                  onClose={() => setSidebarOpen(false)}
+                />
+              </div>
+            </>
+          )}
+
+          {/* Main scrollable content */}
+          <div className="h-full overflow-y-auto">
+            {groups.map((group) => {
+              const key = group.folderId ?? "ungrouped";
+              return (
+                <Collapsible
+                  key={key}
+                  open={openGroups[key]}
+                  onOpenChange={(v) =>
+                    setOpenGroups((prev) => ({ ...prev, [key]: v }))
+                  }
+                  className="group/collapsible"
+                >
+                  <CollapsibleTrigger
+                    id={`folder-${key}`}
+                    className="w-full flex items-center gap-3 px-4 md:px-8 py-4 border-b border-border hover:bg-raised/30 sticky top-0 z-[5] bg-background transition-colors cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2 flex-1">
+                      <Folder size={15} className="text-accent" />
+                      <h2 className="text-sm font-semibold text-foreground">
+                        {group.folderName}
+                      </h2>
+                      <span className="text-xs text-foreground-subtle">
+                        {group.requests.length} endpoint
+                        {group.requests.length !== 1 ? "s" : ""}
+                      </span>
+                    </div>
+                    <ChevronDown
+                      size={13}
+                      className="text-foreground-subtle group-data-[state=open]/collapsible:rotate-180 transition-transform"
+                    />
+                  </CollapsibleTrigger>
+
+                  <CollapsibleContent>
+                    {group.requests.map((request) => (
+                      <div key={request.id} id={`endpoint-${request.id}`}>
+                        <EndpointCard request={request} />
+                      </div>
+                    ))}
+                  </CollapsibleContent>
+                </Collapsible>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

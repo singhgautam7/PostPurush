@@ -259,8 +259,8 @@ export function TestHistory({
           </Button>
         </div>
 
-        <div className="border border-border rounded-lg overflow-hidden">
-          <Table>
+        <div className="border border-border rounded-lg overflow-hidden overflow-x-auto">
+          <Table className="min-w-[600px]">
             <TableHeader>
               <TableRow className="border-border hover:bg-transparent">
                 <TableHead

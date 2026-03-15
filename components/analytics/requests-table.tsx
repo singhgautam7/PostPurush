@@ -136,7 +136,7 @@ export function RequestsTable({ filtered, filters }: RequestsTableProps) {
   };
 
   return (
-    <div className="flex flex-col px-6 py-4">
+    <div className="flex flex-col px-4 md:px-6 py-4">
       <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground-subtle mb-3">
         Request History
       </h3>
@@ -147,7 +147,7 @@ export function RequestsTable({ filtered, filters }: RequestsTableProps) {
             <TableRow className="hover:bg-transparent">
               <TableHead className="w-20 text-xs">Method</TableHead>
               <TableHead className="text-xs">Request</TableHead>
-              <TableHead className="text-xs max-w-[240px]">URL</TableHead>
+              <TableHead className="text-xs max-w-[240px] hidden md:table-cell">URL</TableHead>
               <TableHead
                 className="w-20 text-xs cursor-pointer group"
                 onClick={() => toggleSort("statusCode")}
@@ -174,8 +174,8 @@ export function RequestsTable({ filtered, filters }: RequestsTableProps) {
                   />
                 </span>
               </TableHead>
-              <TableHead className="w-20 text-xs">Size</TableHead>
-              <TableHead className="w-24 text-xs">Env</TableHead>
+              <TableHead className="w-20 text-xs hidden md:table-cell">Size</TableHead>
+              <TableHead className="w-24 text-xs hidden md:table-cell">Env</TableHead>
               <TableHead
                 className="w-36 text-xs cursor-pointer group"
                 onClick={() => toggleSort("startTime")}
@@ -210,7 +210,7 @@ export function RequestsTable({ filtered, filters }: RequestsTableProps) {
                 <TableCell className="text-sm font-medium text-foreground truncate max-w-[200px]">
                   {r.requestName}
                 </TableCell>
-                <TableCell className="max-w-[240px]">
+                <TableCell className="max-w-[240px] hidden md:table-cell">
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <span className="text-xs font-mono text-foreground-muted truncate block">
@@ -244,17 +244,17 @@ export function RequestsTable({ filtered, filters }: RequestsTableProps) {
                 >
                   {r.durationMs}ms
                 </TableCell>
-                <TableCell className="text-xs font-mono text-foreground-muted">
+                <TableCell className="text-xs font-mono text-foreground-muted hidden md:table-cell">
                   {formatBytes(r.responseSizeBytes)}
                 </TableCell>
-                <TableCell className="text-xs text-foreground-muted">
+                <TableCell className="text-xs text-foreground-muted hidden md:table-cell">
                   {r.envName ?? "\u2014"}
                 </TableCell>
                 <TableCell className="text-xs text-foreground-muted">
                   {formatTimestamp(r.startTime)}
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-1 opacity-0 group-hover/row:opacity-100 transition-opacity">
+                  <div className="flex items-center gap-1">
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
