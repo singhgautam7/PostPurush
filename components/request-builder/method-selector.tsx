@@ -19,7 +19,7 @@ const methods: { value: HttpMethod; color: string }[] = [
   { value: "DELETE", color: "text-red-400" },
 ];
 
-export function MethodSelector() {
+export function MethodSelector({ compact }: { compact?: boolean }) {
   const method = useRequestStore((s) => s.activeRequest.method);
   const setMethod = useRequestStore((s) => s.setMethod);
   const collectionSize = useCollectionSize();
@@ -29,7 +29,7 @@ export function MethodSelector() {
 
   return (
     <Select value={method} onValueChange={(v) => setMethod(v as HttpMethod)}>
-      <SelectTrigger className={`w-[100px] h-9 bg-panel border-border-subtle font-mono font-semibold ${textCls} rounded-lg`}>
+      <SelectTrigger className={`${compact ? "w-[72px]" : "w-[100px]"} h-9 bg-panel border-border-subtle font-mono font-semibold ${textCls} rounded-lg`}>
         <SelectValue>
           <span className={currentMethod?.color}>{method}</span>
         </SelectValue>

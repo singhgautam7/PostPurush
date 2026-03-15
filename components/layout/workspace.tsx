@@ -6,6 +6,7 @@ import { RequestTabsContainer } from "@/components/tabs/request-tabs-container";
 import { useTabStore } from "@/store/tab-store";
 import { EmptyState } from "@/components/workspace/empty-state";
 import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from "react-resizable-panels";
+import { GripHorizontal } from "lucide-react";
 
 export function Workspace() {
   const tabs = useTabStore((s) => s.tabs);
@@ -28,7 +29,9 @@ export function Workspace() {
               </div>
             </Panel>
 
-            <PanelResizeHandle className="h-[3px] bg-border hover:bg-raised transition-colors cursor-row-resize" />
+            <PanelResizeHandle className="h-[6px] bg-border hover:bg-primary-action/50 data-[separator=active]:bg-primary-action transition-colors cursor-row-resize flex items-center justify-center group">
+              <GripHorizontal size={12} className="text-foreground-subtle group-hover:text-foreground-muted group-data-[separator=active]:text-primary-action-fg" />
+            </PanelResizeHandle>
 
             {/* Response Panel — no inner card border */}
             <Panel defaultSize={55} minSize={20}>

@@ -11,13 +11,28 @@ import { saveRequest } from "@/lib/storage/storage-helpers";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { MethodSelector } from "./method-selector";
-import { Send, Save, Code } from "lucide-react";
+import { Send, Save, Code, MoreHorizontal } from "lucide-react";
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useTabStore } from "@/store/tab-store";
 import { useVariableSuggestions } from "@/hooks/use-variable-suggestions";
 import { useCollectionSize, CONTENT_SIZES } from "@/hooks/use-collection-size";
 import { hasInvalidVariables } from "@/lib/request/replace-variables";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-is-mobile";
+import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface UrlInputProps {
   onCodeExport: () => void;
@@ -54,6 +69,9 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
 
   const collectionSize = useCollectionSize();
   const textSizeCls = CONTENT_SIZES[collectionSize] ?? "text-sm";
+  const isMobile = useIsMobile();
+  const [urlDialogOpen, setUrlDialogOpen] = useState(false);
+  const [urlDraft, setUrlDraft] = useState("");
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const mirrorRef = useRef<HTMLDivElement>(null);
@@ -296,118 +314,219 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
     }
   }, [activeRequest.url]);
 
-  return (
-    <div className="flex items-start gap-2 overflow-hidden">
-      <div className="shrink-0">
-        <MethodSelector />
-      </div>
-      <div className="relative flex-1 min-w-0">
-        {/* Mirror div — underneath textarea, renders {{var}} tokens in color */}
-        {hasVariableTokens && (
-          <div
-            ref={mirrorRef}
-            aria-hidden="true"
-            className={`absolute inset-0 z-[1] pointer-events-none min-h-9 max-h-[88px] overflow-hidden px-3 font-mono ${textSizeCls} text-foreground leading-[22px] py-[7px] border border-transparent rounded-md whitespace-pre-wrap`}
-            style={{ wordBreak: "break-all" }}
-            dangerouslySetInnerHTML={{ __html: highlightedHtml + "\u200b" }}
-          />
-        )}
-        {/* Textarea — bg-transparent when mirror is active so colored spans show through */}
-        <textarea
-          ref={textareaRef}
-          value={activeRequest.url}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          onKeyUp={(e) => {
-            const pos = (e.target as HTMLTextAreaElement).selectionStart ?? 0;
-            setCursorPos(pos);
-          }}
-          onClick={(e) => setCursorPos((e.target as HTMLTextAreaElement).selectionStart ?? 0)}
-          onScroll={syncScroll}
-          placeholder="e.g. https://api.example.com/endpoint"
-          rows={1}
-          className={`relative z-0 w-full min-h-9 max-h-[88px] resize-none rounded-md border border-border-subtle px-3 font-mono ${textSizeCls} leading-[22px] py-[7px] focus:outline-none focus:ring-2 focus:ring-border focus:border-border overflow-hidden placeholder:text-foreground-subtle ${
-            hasVariableTokens ? "text-transparent caret-foreground" : "bg-panel text-foreground"
-          }`}
-          style={hasVariableTokens ? { background: "transparent" } : undefined}
-          spellCheck={false}
+  /* ── Desktop URL textarea ────────────────────────────────── */
+  const desktopUrlInput = (
+    <div className="relative flex-1 min-w-0">
+      {hasVariableTokens && (
+        <div
+          ref={mirrorRef}
+          aria-hidden="true"
+          className={`absolute inset-0 z-[1] pointer-events-none min-h-9 max-h-[88px] overflow-hidden px-3 font-mono ${textSizeCls} text-foreground leading-[22px] py-[7px] border border-transparent rounded-md whitespace-pre-wrap`}
+          style={{ wordBreak: "break-all" }}
+          dangerouslySetInnerHTML={{ __html: highlightedHtml + "\u200b" }}
         />
-        {showSuggestions && suggestions.length > 0 && (
-          <div className="absolute z-50 top-full left-0 mt-1 w-72 bg-panel border border-border rounded-lg shadow-xl overflow-hidden">
-            {suggestions.map((v, i) => (
-              <button
-                key={v.id}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  applySuggestion(v.key);
-                }}
-                className={`w-full flex items-center gap-3 px-3 py-2 text-xs text-left transition-colors ${
-                  i === selectedIndex ? "bg-raised" : "hover:bg-raised/50"
-                }`}
-              >
-                <span className="font-mono text-blue-400">
-                  {v.key}
-                </span>
-                <span className="text-foreground-subtle truncate">
-                  {v.value}
-                </span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="flex items-center gap-2 shrink-0">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span>
-              <Button
-                onClick={handleSend}
-                disabled={loading || !activeRequest.url || hasAnyInvalidVar}
-                className="h-9 gap-2 bg-primary-action text-primary-action-fg hover:bg-primary-action/85 font-medium shadow-none transition-all duration-200"
-              >
-                <Send className="h-4 w-4" />
-                {loading ? "Sending..." : "Send"}
-              </Button>
-            </span>
-          </TooltipTrigger>
-          <TooltipContent>
-            {hasAnyInvalidVar
-              ? "Fix unresolved variable references before sending"
-              : "Send Request (Enter)"}
-          </TooltipContent>
-        </Tooltip>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              id="save-btn-trigger"
-              onClick={handleSave}
-              disabled={saving || !activeRequest.url}
-              variant="outline"
-              size="icon"
-              className="h-9 w-9 bg-panel border-border-subtle text-foreground-muted hover:text-foreground hover:bg-raised"
+      )}
+      <textarea
+        ref={textareaRef}
+        value={activeRequest.url}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        onKeyUp={(e) => {
+          const pos = (e.target as HTMLTextAreaElement).selectionStart ?? 0;
+          setCursorPos(pos);
+        }}
+        onClick={(e) => setCursorPos((e.target as HTMLTextAreaElement).selectionStart ?? 0)}
+        onScroll={syncScroll}
+        placeholder="e.g. https://api.example.com/endpoint"
+        rows={1}
+        className={`relative z-0 w-full min-h-9 max-h-[88px] resize-none rounded-md border border-border-subtle px-3 font-mono ${textSizeCls} leading-[22px] py-[7px] focus:outline-none focus:ring-2 focus:ring-border focus:border-border overflow-hidden placeholder:text-foreground-subtle ${
+          hasVariableTokens ? "text-transparent caret-foreground" : "bg-panel text-foreground"
+        }`}
+        style={hasVariableTokens ? { background: "transparent" } : undefined}
+        spellCheck={false}
+      />
+      {showSuggestions && suggestions.length > 0 && (
+        <div className="absolute z-50 top-full left-0 mt-1 w-72 bg-panel border border-border rounded-lg shadow-xl overflow-hidden">
+          {suggestions.map((v, i) => (
+            <button
+              key={v.id}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                applySuggestion(v.key);
+              }}
+              className={`w-full flex items-center gap-3 px-3 py-2 text-xs text-left transition-colors ${
+                i === selectedIndex ? "bg-raised" : "hover:bg-raised/50"
+              }`}
             >
-              <Save className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Save Request</TooltipContent>
-        </Tooltip>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              onClick={onCodeExport}
-              variant="outline"
-              size="icon"
-              className="h-9 w-9 bg-panel border-border-subtle text-foreground-muted hover:text-foreground hover:bg-raised"
-            >
-              <Code className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Generate Code Snippet</TooltipContent>
-        </Tooltip>
-      </div>
+              <span className="font-mono text-blue-400">
+                {v.key}
+              </span>
+              <span className="text-foreground-subtle truncate">
+                {v.value}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
+  );
+
+  /* ── Mobile URL (read-only tap target) ─────────────────── */
+  const mobileUrlInput = (
+    <button
+      type="button"
+      onClick={() => {
+        setUrlDraft(activeRequest.url);
+        setUrlDialogOpen(true);
+      }}
+      className={`flex-1 min-w-0 h-9 rounded-md border border-border-subtle bg-panel px-3 text-left font-mono ${textSizeCls} text-foreground truncate cursor-pointer`}
+    >
+      {activeRequest.url || (
+        <span className="text-foreground-subtle">Enter URL...</span>
+      )}
+    </button>
+  );
+
+  /* ── Hidden save button (programmatic trigger target) ──── */
+  const hiddenSaveBtn = (
+    <button id="save-btn-trigger" onClick={handleSave} className="hidden" />
+  );
+
+  return (
+    <>
+      <div className="flex items-start gap-1.5 md:gap-2 overflow-hidden">
+        <div className="shrink-0">
+          <MethodSelector compact={isMobile} />
+        </div>
+
+        {isMobile ? mobileUrlInput : desktopUrlInput}
+
+        {/* Action buttons */}
+        <div className="flex items-center gap-1 md:gap-2 shrink-0">
+          {/* Send */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span>
+                <Button
+                  onClick={handleSend}
+                  disabled={loading || !activeRequest.url || hasAnyInvalidVar}
+                  className={cn(
+                    "h-9 gap-2 bg-primary-action text-primary-action-fg hover:bg-primary-action/85 font-medium shadow-none transition-all duration-200",
+                    isMobile && "w-9"
+                  )}
+                  size={isMobile ? "icon" : "default"}
+                >
+                  <Send className="h-4 w-4" />
+                  {!isMobile && (loading ? "Sending..." : "Send")}
+                </Button>
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              {hasAnyInvalidVar
+                ? "Fix unresolved variable references before sending"
+                : "Send Request (Enter)"}
+            </TooltipContent>
+          </Tooltip>
+
+          {/* Desktop: Save + Code export buttons */}
+          {!isMobile && (
+            <>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    id="save-btn-trigger"
+                    onClick={handleSave}
+                    disabled={saving || !activeRequest.url}
+                    variant="outline"
+                    size="icon"
+                    className="h-9 w-9 bg-panel border-border-subtle text-foreground-muted hover:text-foreground hover:bg-raised"
+                  >
+                    <Save className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Save Request</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={onCodeExport}
+                    variant="outline"
+                    size="icon"
+                    className="h-9 w-9 bg-panel border-border-subtle text-foreground-muted hover:text-foreground hover:bg-raised"
+                  >
+                    <Code className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Generate Code Snippet</TooltipContent>
+              </Tooltip>
+            </>
+          )}
+
+          {/* Mobile: Save + Code in dropdown */}
+          {isMobile && (
+            <>
+              {hiddenSaveBtn}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-9 w-9 bg-panel border-border-subtle text-foreground-muted"
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={handleSave}
+                    disabled={saving || !activeRequest.url}
+                  >
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Request
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={onCodeExport}>
+                    <Code className="h-4 w-4 mr-2" />
+                    Generate Code
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile URL edit dialog */}
+      <Dialog open={urlDialogOpen} onOpenChange={setUrlDialogOpen}>
+        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Edit URL</DialogTitle>
+          </DialogHeader>
+          <textarea
+            value={urlDraft}
+            onChange={(e) => setUrlDraft(e.target.value)}
+            placeholder="e.g. https://api.example.com/endpoint"
+            rows={4}
+            autoFocus
+            className="w-full resize-none rounded-md border border-border-subtle bg-panel px-3 py-2 font-mono text-sm text-foreground placeholder:text-foreground-subtle focus:outline-none focus:ring-2 focus:ring-border"
+            spellCheck={false}
+          />
+          <DialogFooter className="flex-row gap-2 justify-end">
+            <Button variant="outline" onClick={() => setUrlDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-primary-action text-primary-action-fg hover:bg-primary-action/85"
+              onClick={() => {
+                setUrl(urlDraft);
+                setUrlDialogOpen(false);
+              }}
+            >
+              Done
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

@@ -141,7 +141,7 @@ export default function AboutPage() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="max-w-3xl mx-auto px-8 py-10 space-y-12">
+      <div className="max-w-3xl mx-auto px-4 md:px-8 py-10 space-y-12">
       {/* Page header */}
       <div>
         <h1 className="text-2xl font-bold text-foreground">

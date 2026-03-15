@@ -182,7 +182,7 @@ export function TestingView() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="max-w-5xl mx-auto px-8 py-6 space-y-6">
+      <div className="max-w-5xl mx-auto px-4 md:px-8 py-6 space-y-6">
         <div>
           <h1 className="text-lg font-semibold text-foreground">API Testing</h1>
           <p className="text-xs text-foreground-subtle mt-1">

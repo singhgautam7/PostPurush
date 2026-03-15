@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { KeyValueTable } from "@/components/shared/key-value-table";
 import { KeyValuePair } from "@/types/request";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
 interface EnvEditSheetProps {
   open: boolean;
@@ -25,6 +26,7 @@ interface EnvEditSheetProps {
 }
 
 export function EnvEditSheet({ open, onOpenChange, envId }: EnvEditSheetProps) {
+  const isMobile = useIsMobile();
   const env = useEnvironmentStore((s) =>
     s.environments.find((e) => e.id === envId)
   );
@@ -62,7 +64,7 @@ export function EnvEditSheet({ open, onOpenChange, envId }: EnvEditSheetProps) {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-[580px] bg-card border-border/50 flex flex-col">
+      <SheetContent side={isMobile ? "bottom" : "right"} className={cn("bg-card border-border/50 flex flex-col", isMobile ? "max-h-[85vh]" : "sm:max-w-[580px]")}>
         <SheetHeader>
           <SheetTitle>Edit — {env.name}</SheetTitle>
           <SheetDescription>Changes are saved automatically</SheetDescription>
@@ -102,7 +104,7 @@ export function EnvEditSheet({ open, onOpenChange, envId }: EnvEditSheetProps) {
           />
         </div>
 
-        <div className="flex-1 overflow-y-auto mt-2 px-4">
+        <div className="flex-1 overflow-y-auto mt-2 px-4 overflow-x-auto">
           <KeyValueTable
             rows={rows}
             onChange={handleVariablesChange}

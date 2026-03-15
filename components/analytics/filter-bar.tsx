@@ -40,7 +40,7 @@ export function FilterBar({
   onCleared,
 }: FilterBarProps) {
   return (
-    <div className="sticky top-0 z-10 bg-background border-b border-border flex items-center gap-2 flex-wrap px-6 py-3">
+    <div className="sticky top-0 z-10 bg-background border-b border-border flex items-center gap-2 flex-wrap px-4 md:px-6 py-3">
       <SearchWithSuggestions
         allRecords={allRecords}
         filters={filters}

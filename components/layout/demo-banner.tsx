@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { AlertTriangle, X, Copy, Check, Github } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -55,6 +56,7 @@ function CodeBlock({ code }: { code: string }) {
 export function DemoBanner() {
   const [dismissed, setDismissed] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_IS_DEMO !== "true") return;
@@ -72,22 +74,30 @@ export function DemoBanner() {
 
   return (
     <>
-      <div className="sticky top-0 z-50 flex items-center justify-between gap-3 bg-accent px-4 py-2 text-accent-foreground text-sm">
+      <div className="sticky top-0 z-50 flex items-center justify-between gap-2 md:gap-3 bg-accent px-3 md:px-4 py-2 text-accent-foreground text-xs md:text-sm">
         <div className="flex items-center gap-2 min-w-0 flex-wrap">
           <AlertTriangle className="h-4 w-4 shrink-0" />
-          <span className="font-semibold whitespace-nowrap">
-            You&apos;re viewing the live demo.
-          </span>
-          <span className="text-accent-foreground/70">
-            It is recommended that you use this platform on your machine after cloning it.
-            Data is stored locally in your browser and won&apos;t sync across
-            devices.
-          </span>
+          {isMobile ? (
+            <span className="text-accent-foreground/70">
+              PostPurush works best on desktop. Data is stored locally and won&apos;t sync across devices.
+            </span>
+          ) : (
+            <>
+              <span className="font-semibold whitespace-nowrap">
+                You&apos;re viewing the live demo.
+              </span>
+              <span className="text-accent-foreground/70">
+                It is recommended that you use this platform on your machine after cloning it.
+                Data is stored locally in your browser and won&apos;t sync across
+                devices.
+              </span>
+            </>
+          )}
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => setModalOpen(true)}
-            className="underline underline-offset-2 font-medium hover:text-accent-foreground/70 whitespace-nowrap cursor-pointer"
+            className="hidden md:inline underline underline-offset-2 font-medium hover:text-accent-foreground/70 whitespace-nowrap cursor-pointer"
           >
             Clone &amp; run locally &rarr;
           </button>

@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Plus, Trash2, MoreHorizontal, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
 function guessType(value: string): KeyValuePair["type"] {
   if (value === "true" || value === "false") return "boolean";
@@ -54,6 +55,8 @@ export function KeyValueTable({
   sensitiveByDefault,
   extraActions,
 }: KeyValueTableProps) {
+  const isMobile = useIsMobile();
+  const effectiveShowDescription = showDescription && !isMobile;
   const keyRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
   const updateRow = useCallback(
@@ -104,7 +107,7 @@ export function KeyValueTable({
   };
 
   // Fixed grid columns — no layout shift regardless of metadata state
-  const gridCols = showDescription
+  const gridCols = effectiveShowDescription
     ? showActions
       ? `1fr 1.2fr 1fr 28px 28px`
       : `1fr 1.2fr 1fr 28px`
@@ -113,16 +116,16 @@ export function KeyValueTable({
       : `1fr 1fr 28px`;
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-1.5 overflow-x-auto">
       {/* Header */}
       {rows.length > 0 && (
         <div
-          className="grid gap-2 text-[10px] font-medium text-muted-foreground mb-0.5 px-0.5"
+          className="grid gap-2 text-[10px] font-medium text-muted-foreground mb-0.5 px-0.5 min-w-0"
           style={{ gridTemplateColumns: gridCols }}
         >
           <span>Key</span>
           <span>Value</span>
-          {showDescription && <span>Description</span>}
+          {effectiveShowDescription && <span>Description</span>}
           {showActions && <span></span>}
           <span></span>
         </div>
@@ -138,7 +141,7 @@ export function KeyValueTable({
       {rows.map((row, index) => (
         <div
           key={index}
-          className="group grid gap-2 items-center"
+          className="group grid gap-2 items-center min-w-0"
           style={{ gridTemplateColumns: gridCols }}
         >
           {/* Key input */}
@@ -192,8 +195,8 @@ export function KeyValueTable({
             )}
           </div>
 
-          {/* Description input */}
-          {showDescription && (
+          {/* Description input — hidden on mobile */}
+          {effectiveShowDescription && (
             <Input
               value={row.description ?? ""}
               onChange={(e) =>
@@ -303,7 +306,7 @@ export function KeyValueTable({
             variant="ghost"
             size="icon"
             onClick={() => removeRow(index)}
-            className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+            className="h-8 w-8 text-muted-foreground hover:text-destructive"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </Button>

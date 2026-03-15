@@ -2,6 +2,7 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Local First](https://img.shields.io/badge/local--first-yes-purple)
+![Mobile Friendly](https://img.shields.io/badge/Mobile_Friendly-Yes-orange)
 
 # PostPurush
 A modern API client for testing, analyzing, and documenting APIs — which sits entirely in the browser.

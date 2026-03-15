@@ -9,12 +9,12 @@ interface SlowestEndpointsProps {
 
 export function SlowestEndpoints({ endpoints }: SlowestEndpointsProps) {
   return (
-    <div className="px-6 py-4">
+    <div className="px-4 md:px-6 py-4">
       <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground-subtle mb-3">
         Slowest Endpoints
       </h3>
-      <div className="bg-panel border border-border rounded-lg overflow-hidden">
-        <table className="w-full text-xs">
+      <div className="bg-panel border border-border rounded-lg overflow-hidden overflow-x-auto">
+        <table className="w-full text-xs min-w-[500px]">
           <thead>
             <tr className="border-b border-border">
               <th className="text-left px-4 py-2 text-foreground-subtle font-medium w-6">

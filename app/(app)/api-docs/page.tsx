@@ -102,7 +102,7 @@ export default function ApiDocsPage() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="px-8 py-6 border-b border-border shrink-0">
+      <div className="px-4 md:px-8 py-6 border-b border-border shrink-0">
         <h1 className="text-2xl font-semibold text-foreground">
           Create API Documentation
         </h1>
@@ -151,7 +151,7 @@ export default function ApiDocsPage() {
       </div>
 
       {/* Sticky bottom bar */}
-      <div className="shrink-0 sticky bottom-0 border-t border-border bg-background px-8 py-4 flex items-center justify-between">
+      <div className="shrink-0 sticky bottom-0 border-t border-border bg-background px-4 md:px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-xs text-foreground-muted">
             {selectedIds.size > 0
