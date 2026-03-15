@@ -9,8 +9,9 @@ import {
   removeResponseFromCache,
 } from "@/store/response-store";
 import { loadRequests } from "@/lib/storage/storage-helpers";
-import { X, Plus } from "lucide-react";
+import { X, Plus, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
 import { useState, useEffect } from "react";
 import {
@@ -47,6 +48,7 @@ export function RequestTabsContainer() {
   const resetRequest = useRequestStore((s) => s.resetRequest);
   const clearResponse = useResponseStore((s) => s.clearResponse);
 
+  const isMobile = useIsMobile();
   const [tabToClose, setTabToClose] = useState<string | null>(null);
 
   // Restore persisted tabs from localStorage after mount (avoids hydration mismatch)
@@ -144,7 +146,17 @@ export function RequestTabsContainer() {
   if (tabs.length === 0) {
     return (
       <div className="flex h-9 items-center justify-between border-b border-border bg-background px-2 leading-none">
-        <div className="text-xs text-foreground-subtle px-2">No open tabs</div>
+        <div className="flex items-center">
+          {isMobile && (
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent("postpurush:toggle-sidebar"))}
+              className="flex items-center justify-center p-2 text-foreground-muted hover:text-foreground transition-colors cursor-pointer"
+            >
+              <Menu size={18} />
+            </button>
+          )}
+          <div className="text-xs text-foreground-subtle px-2">No open tabs</div>
+        </div>
         <button
           onClick={handleNewTab}
           className="p-1.5 text-foreground-subtle hover:text-foreground-muted hover:bg-panel rounded-md transition-colors"
@@ -156,7 +168,15 @@ export function RequestTabsContainer() {
   }
 
   return (
-    <div className="flex h-9 items-center border-b border-border bg-background pl-2 leading-none">
+    <div className={cn("flex h-9 items-center border-b border-border bg-background leading-none", isMobile ? "pl-0" : "pl-2")}>
+      {isMobile && (
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent("postpurush:toggle-sidebar"))}
+          className="flex items-center justify-center p-2 text-foreground-muted hover:text-foreground transition-colors cursor-pointer"
+        >
+          <Menu size={18} />
+        </button>
+      )}
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
