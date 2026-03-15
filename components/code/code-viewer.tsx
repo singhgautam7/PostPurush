@@ -5,8 +5,7 @@ import { Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import CodeMirror from "@uiw/react-codemirror";
-import { vscodeDark } from "@uiw/codemirror-theme-vscode";
-import { githubLight } from "@uiw/codemirror-theme-github";
+import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
 import { json } from "@codemirror/lang-json";
 import { javascript } from "@codemirror/lang-javascript";
 import { python } from "@codemirror/lang-python";
@@ -40,7 +39,7 @@ export function CodeViewer({ code, language, className, editable = false, showCo
   const [copied, setCopied] = useState(false);
   const { mode } = useTheme();
   const collectionSize = useCollectionSize();
-  const cmTheme = mode === "dark" ? vscodeDark : githubLight;
+  const cmTheme = mode === "dark" ? githubDark : githubLight;
   const activeEnvFn = useEnvironmentStore((s) => s.activeEnv);
   const activeEnvId = useEnvironmentStore((s) => s.activeEnvId);
   // Subscribe to the active env's variables so extensions rebuild when vars change
@@ -92,7 +91,7 @@ export function CodeViewer({ code, language, className, editable = false, showCo
           height={editable ? "100%" : "auto"}
           basicSetup={{
             lineNumbers: true,
-            foldGutter: false,
+            foldGutter: true,
             highlightActiveLine: editable,
             highlightActiveLineGutter: editable,
           }}
