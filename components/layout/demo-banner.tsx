@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 
 const STORAGE_KEY = "postpurush-demo-banner-dismissed";
 
@@ -40,9 +41,13 @@ function CopyButton({ text }: { text: string }) {
 
 function CodeBlock({ code }: { code: string }) {
   return (
-    <div className="flex items-center justify-between gap-2 rounded-md bg-zinc-900 dark:bg-zinc-800/50 px-3 py-2 font-mono text-xs border border-zinc-700/50 min-w-0">
-      <code className="text-zinc-300 truncate min-w-0">{code}</code>
-      <CopyButton text={code} />
+    <div className="relative w-full overflow-hidden rounded-md bg-zinc-900 dark:bg-zinc-800/50 font-mono text-xs border border-zinc-700/50">
+      <pre className="text-zinc-300 overflow-x-auto whitespace-pre px-3 py-2.5 pr-12">
+        <code>{code}</code>
+      </pre>
+      <div className="absolute top-1.5 right-1.5">
+        <CopyButton text={code} />
+      </div>
     </div>
   );
 }
@@ -74,6 +79,7 @@ export function DemoBanner() {
             You&apos;re viewing the live demo.
           </span>
           <span className="text-accent-foreground/70">
+            It is recommended that you use this platform on your machine after cloning it.
             Data is stored locally in your browser and won&apos;t sync across
             devices.
           </span>
@@ -96,7 +102,7 @@ export function DemoBanner() {
       </div>
 
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-lg rounded-lg overflow-hidden">
           <DialogHeader>
             <DialogTitle>Run PostPurush Locally</DialogTitle>
             <DialogDescription>
@@ -104,6 +110,22 @@ export function DemoBanner() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-2">
+            <div className="space-y-1.5">
+              <h4 className="text-sm font-semibold text-foreground">
+                Before you begin
+              </h4>
+              <p className="text-sm text-foreground-muted">
+                Make sure Git and Bun are installed. Get Bun at{" "}
+                <a
+                  href="https://bun.sh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-2 hover:text-foreground"
+                >
+                  bun.sh
+                </a>
+              </p>
+            </div>
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-foreground">
                 1. Clone the repo
@@ -112,9 +134,9 @@ export function DemoBanner() {
             </div>
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-foreground">
-                2. Install dependencies
+                2. Navigate & install dependencies
               </h4>
-              <CodeBlock code="bun install" />
+              <CodeBlock code={"cd PostPurush\nbun install"} />
             </div>
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-foreground">
@@ -122,9 +144,23 @@ export function DemoBanner() {
               </h4>
               <CodeBlock code="bun run dev" />
             </div>
+            <Separator />
+            <p className="text-xs text-foreground-muted">
+              Having trouble? You can also check the {" "}
+                <a
+                  href="https://github.com/singhgautam7/PostPurush/blob/main/README.md"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-2 hover:text-foreground"
+                >
+                  README.md
+              </a>
+              {" "}in the repo for
+              detailed setup instructions.
+            </p>
             <Button
               variant="outline"
-              className="w-full gap-2 bg-accent/10"
+              className="w-full gap-2 hover:bg-accent/10"
               asChild
             >
               <a

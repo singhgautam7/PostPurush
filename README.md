@@ -14,7 +14,7 @@ Built with Next.js App Router and Tailwind CSS.
 ![Collections](./docs/how-to/assets/05-response.png)
 
 ### Analytics Dashboard
-![Analytics](./docs/how-to/assets/09-analytocs.png)
+![Analytics](./docs/how-to/assets/09-analytics.png)
 
 ### Environments
 ![Environments](./docs/how-to/assets/08-env-edit.png)
