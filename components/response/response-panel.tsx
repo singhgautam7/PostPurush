@@ -42,7 +42,7 @@ export function ResponsePanel() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2 }}
-        className="flex flex-col h-full overflow-auto"
+        className="flex flex-col h-full overflow-auto pb-14 md:pb-0"
       >
         <ResponseMeta />
         <ResponseTabs />

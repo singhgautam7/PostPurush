@@ -181,7 +181,7 @@ export function TestingView() {
   const noRequest = !selectedRequest;
 
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="h-full overflow-y-auto pb-14 md:pb-0">
       <div className="max-w-5xl mx-auto px-4 md:px-8 py-6 space-y-6">
         <div>
           <h1 className="text-lg font-semibold text-foreground">API Testing</h1>

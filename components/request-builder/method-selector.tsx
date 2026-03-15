@@ -17,6 +17,7 @@ const methods: { value: HttpMethod; color: string }[] = [
   { value: "PUT", color: "text-amber-400" },
   { value: "PATCH", color: "text-violet-400" },
   { value: "DELETE", color: "text-red-400" },
+  { value: "OPTIONS", color: "text-pink-400" },
 ];
 
 export function MethodSelector({ compact }: { compact?: boolean }) {

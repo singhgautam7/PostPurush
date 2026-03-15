@@ -10,7 +10,7 @@ export interface KeyValuePair {
   _revealed?: boolean; // UI only — not saved to storage
 }
 
-export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "OPTIONS";
 
 export type BodyType = "json" | "raw" | "form";
 

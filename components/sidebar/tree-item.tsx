@@ -39,6 +39,7 @@ const methodColors: Record<string, string> = {
   PUT: "text-amber-400",
   PATCH: "text-violet-400",
   DELETE: "text-red-400",
+  OPTIONS: "text-pink-400",
 };
 
 interface TreeItemProps {

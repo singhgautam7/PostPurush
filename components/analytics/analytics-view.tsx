@@ -54,7 +54,7 @@ export function AnalyticsView() {
 
       {/* Main content */}
       {!loading && allRecords.length > 0 && (
-        <div className="flex flex-col flex-1 min-h-0 overflow-y-auto">
+        <div className="flex flex-col flex-1 min-h-0 overflow-y-auto pb-14 md:pb-0">
           {/* Title — scrolls away */}
           <div className="flex items-center justify-between px-4 md:px-6 py-4 shrink-0">
             <h1 className="text-lg font-semibold text-foreground">Analytics</h1>

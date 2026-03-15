@@ -318,7 +318,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="h-full overflow-y-auto pb-14 md:pb-0">
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-10 space-y-6">
       <div>
         <h1 className="text-xl font-semibold text-foreground">Settings</h1>

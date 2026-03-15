@@ -341,7 +341,7 @@ export default function ApiDocsPreviewPage() {
           )}
 
           {/* Main scrollable content */}
-          <div className="h-full overflow-y-auto">
+          <div className="h-full overflow-y-auto pb-14 md:pb-0">
             {groups.map((group) => {
               const key = group.folderId ?? "ungrouped";
               return (

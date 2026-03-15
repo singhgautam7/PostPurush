@@ -139,7 +139,7 @@ export default function ApiDocsPage() {
       </div>
 
       {/* Tree */}
-      <div className="flex-1 overflow-auto min-h-0">
+      <div className="flex-1 overflow-auto min-h-0 pb-14 md:pb-0">
         <SelectionTree
           requests={savedRequests}
           folders={folders}

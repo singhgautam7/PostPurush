@@ -140,7 +140,7 @@ export default function AboutPage() {
   const howToData = loadHowToSections();
 
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="h-full overflow-y-auto pb-14 md:pb-0">
       <div className="max-w-3xl mx-auto px-4 md:px-8 py-10 space-y-12">
       {/* Page header */}
       <div>
