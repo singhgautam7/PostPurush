@@ -292,7 +292,7 @@ export function RequestsTable({ filtered, filters }: RequestsTableProps) {
       {/* Pagination */}
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between px-4 py-3 border-t border-border">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mr-4">
             <span className="text-xs text-foreground-muted">Rows per page:</span>
             <Select
               value={String(pageSize)}
