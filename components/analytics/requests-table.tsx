@@ -290,7 +290,7 @@ export function RequestsTable({ filtered, filters }: RequestsTableProps) {
         </div>
 
       {/* Pagination */}
-      <div className="flex flex-col gap-2 px-4 py-3 border-t border-border">
+      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between px-4 py-3 border-t border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-xs text-foreground-muted">Rows per page:</span>
@@ -319,7 +319,7 @@ export function RequestsTable({ filtered, filters }: RequestsTableProps) {
               : `${(page - 1) * pageSize + 1}\u2013${Math.min(page * pageSize, sorted.length)} of ${sorted.length}`}
           </span>
         </div>
-        <div className="flex items-center justify-center gap-1">
+        <div className="flex items-center justify-center md:justify-end gap-1">
           <Button
             variant="ghost"
             size="icon"
