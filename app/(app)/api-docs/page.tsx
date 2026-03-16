@@ -102,7 +102,7 @@ export default function ApiDocsPage() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col md:h-full">
       {/* Header */}
       <div className="px-4 md:px-8 py-6 border-b border-border shrink-0">
         <h1 className="text-2xl font-semibold text-foreground">
@@ -141,7 +141,7 @@ export default function ApiDocsPage() {
       </div>
 
       {/* Tree */}
-      <div className="flex-1 overflow-auto min-h-0 pb-14 md:pb-0">
+      <div className="md:flex-1 md:overflow-auto md:min-h-0 pb-14 md:pb-0">
         <SelectionTree
           requests={savedRequests}
           folders={folders}

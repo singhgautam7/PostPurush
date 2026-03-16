@@ -30,7 +30,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <MobileWarningBanner />
       <div className="flex flex-1 overflow-hidden">
         <NavigationSidebar />
-        <main className="flex-1 overflow-hidden pb-14 md:pb-0">
+        <main className="flex-1 overflow-auto md:overflow-hidden pb-14 md:pb-0">
           {children}
         </main>
       </div>
