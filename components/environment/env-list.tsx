@@ -117,19 +117,20 @@ export function EnvList() {
     <div className="flex flex-col h-full bg-background">
       <div className="p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
+        <div className="flex flex-col gap-3 mb-6">
+          <div className="flex items-center justify-between">
             <h1 className="text-xl font-semibold text-foreground">Environments</h1>
-            <p className="text-sm text-foreground-muted mt-0.5">
-              Manage variable sets for different stages of your workflow
-            </p>
+            <Button
+              size="icon"
+              onClick={() => setCreateOpen(true)}
+              className="h-8 w-8 md:h-9 md:w-auto md:px-4 bg-primary-action text-primary-action-fg hover:bg-primary-action/85"
+            >
+              <Plus size={14} /> <span className="hidden md:inline">New Environment</span>
+            </Button>
           </div>
-          <Button
-            onClick={() => setCreateOpen(true)}
-            className="gap-1.5 bg-primary-action text-primary-action-fg hover:bg-primary-action/85"
-          >
-            <Plus size={14} /> New Environment
-          </Button>
+          <p className="text-sm text-foreground-muted hidden md:block">
+            Manage variable sets for different stages of your workflow
+          </p>
         </div>
 
         {/* Empty state */}

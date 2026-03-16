@@ -83,7 +83,7 @@ export function EnvCreateDialog({
         <DialogHeader>
           <DialogTitle>{renameId ? "Rename Environment" : "New Environment"}</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
+        <div className="space-y-4 max-h-[60vh] overflow-y-auto">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-foreground-muted">Name *</label>
             <Input
@@ -118,12 +118,12 @@ export function EnvCreateDialog({
                 />
               </div>
 
-              <div className="flex gap-6">
-                <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-4 md:flex-row md:gap-6">
+                <div className="flex flex-col gap-2 flex-1 min-w-0">
                   <label className="text-xs text-foreground-muted">Color</label>
                   <ColorPicker value={color} onChange={setColor} />
                 </div>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 flex-1 min-w-0">
                   <label className="text-xs text-foreground-muted">Icon</label>
                   <IconPicker value={icon} color={color} onChange={setIcon} />
                 </div>

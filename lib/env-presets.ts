@@ -9,7 +9,6 @@ export const PRESET_COLORS: Record<string, { bg: string; text: string; ring: str
   yellow:  { bg: "bg-yellow-500/15",  text: "text-yellow-400",  ring: "ring-yellow-400",  swatch: "bg-yellow-500",  label: "Yellow" },
   cyan:    { bg: "bg-cyan-500/15",    text: "text-cyan-400",    ring: "ring-cyan-400",    swatch: "bg-cyan-500",    label: "Cyan" },
   rose:    { bg: "bg-rose-500/15",    text: "text-rose-400",    ring: "ring-rose-400",    swatch: "bg-rose-500",    label: "Rose" },
-  indigo:  { bg: "bg-indigo-500/15",  text: "text-indigo-400",  ring: "ring-indigo-400",  swatch: "bg-indigo-500",  label: "Indigo" },
 };
 
 export const PRESET_ICONS = [

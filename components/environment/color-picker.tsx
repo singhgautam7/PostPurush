@@ -10,7 +10,7 @@ interface ColorPickerProps {
 
 export function ColorPicker({ value, onChange }: ColorPickerProps) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex gap-1.5 overflow-x-auto p-1 sm:grid sm:grid-cols-5 sm:overflow-x-visible">
       {Object.entries(PRESET_COLORS).map(([key, tokens]) => (
         <button
           key={key}
@@ -18,7 +18,7 @@ export function ColorPicker({ value, onChange }: ColorPickerProps) {
           title={tokens.label}
           onClick={() => onChange(key)}
           className={cn(
-            "w-6 h-6 rounded-full transition-all",
+            "w-8 h-8 rounded-full transition-all shrink-0",
             tokens.swatch,
             (value ?? "gray") === key && `ring-2 ring-offset-2 ring-offset-background ${tokens.ring}`
           )}

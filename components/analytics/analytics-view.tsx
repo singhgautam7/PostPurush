@@ -9,8 +9,10 @@ import { RequestsTable } from "./requests-table";
 import { ResponseTimeChart } from "./response-time-chart";
 import { ErrorRateChart } from "./error-rate-chart";
 import { SlowestEndpoints } from "./slowest-endpoints";
+import { useRouter } from "next/navigation";
 
 export function AnalyticsView() {
+  const router = useRouter();
   const {
     allRecords,
     filtered,
@@ -41,15 +43,24 @@ export function AnalyticsView() {
 
       {/* Empty — no data */}
       {!loading && allRecords.length === 0 && (
-        <div className="flex flex-col items-center justify-center h-64 gap-2">
-          <BarChart2 size={32} className="text-foreground-subtle" />
+        <div className="flex flex-col items-center justify-center py-20 gap-3 px-6 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-raised/60 flex items-center justify-center">
+            <BarChart2 size={24} className="text-foreground-subtle" />
+          </div>
           <p className="text-sm font-medium text-foreground">
             No request history yet
           </p>
           <p className="text-xs text-foreground-muted">
             Send some requests from the Collections tab to see analytics here.
           </p>
-        </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.push("/")}
+          >
+            Go to Collections
+          </Button>
+      </div>
       )}
 
       {/* Main content */}

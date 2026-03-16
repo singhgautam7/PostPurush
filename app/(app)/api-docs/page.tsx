@@ -79,8 +79,10 @@ export default function ApiDocsPage() {
   // Empty state
   if (totalRequestCount === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 gap-3">
-        <BookOpen size={32} className="text-foreground-subtle" />
+      <div className="flex flex-col items-center justify-center py-20 gap-3 px-6 text-center">
+        <div className="w-14 h-14 rounded-2xl bg-raised/60 flex items-center justify-center">
+          <BookOpen size={24} className="text-foreground-subtle" />
+        </div>
         <p className="text-sm font-medium text-foreground">
           No requests in your collection
         </p>

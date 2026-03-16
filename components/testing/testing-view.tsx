@@ -183,13 +183,13 @@ export function TestingView() {
   return (
     <div className="h-full overflow-y-auto pb-14 md:pb-0">
       <div className="max-w-5xl mx-auto px-4 md:px-8 py-6 space-y-6">
-        <div>
+        {/* <div>
           <h1 className="text-lg font-semibold text-foreground">API Testing</h1>
           <p className="text-xs text-foreground-subtle mt-1">
             Run assertions, load tests, rate limit detection, and uptime
             monitoring
           </p>
-        </div>
+        </div> */}
 
         {/* Top tabs */}
         <div className="flex bg-panel border border-border rounded-md p-0.5 w-fit">
