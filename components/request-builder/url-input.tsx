@@ -63,7 +63,6 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
   const activeTabId = useTabStore((s) => s.activeTabId);
   const updateTab = useTabStore((s) => s.updateTab);
   const openTab = useTabStore((s) => s.openTab);
-  const setActiveTab = useTabStore((s) => s.setActiveTab);
   const resetRequest = useRequestStore((s) => s.resetRequest);
   const clearResponse = useResponseStore((s) => s.clearResponse);
 
@@ -131,14 +130,13 @@ export function UrlInput({ onCodeExport }: UrlInputProps) {
         e.preventDefault();
         const newId = `new-${crypto.randomUUID()}`;
         openTab(newId, "Untitled Request");
-        setActiveTab(newId);
         resetRequest();
         clearResponse();
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [openTab, setActiveTab, resetRequest, clearResponse]);
+  }, [openTab, resetRequest, clearResponse]);
 
   const handleSend = async () => {
     const resolvedRequest = {

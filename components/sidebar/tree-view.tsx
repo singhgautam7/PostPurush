@@ -99,7 +99,6 @@ export function TreeView() {
   };
 
   const openTab = useTabStore((s) => s.openTab);
-  const setActiveTab = useTabStore((s) => s.setActiveTab);
   const loadRequest = useRequestStore((s) => s.loadRequest);
   const clearResponse = useResponseStore((s) => s.clearResponse);
 
@@ -110,7 +109,6 @@ export function TreeView() {
     addSavedRequest(req);
     if (parentId) setOpenFolders(prev => new Set(prev).add(parentId));
     openTab(req.id, req.name);
-    setActiveTab(req.id);
     loadRequest(req);
     clearResponse();
   };
@@ -133,7 +131,7 @@ export function TreeView() {
       window.removeEventListener("trigger-expand-all", onExpandAll);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [folders, openTab, setActiveTab, loadRequest, clearResponse]);
+  }, [folders, openTab, loadRequest, clearResponse]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
